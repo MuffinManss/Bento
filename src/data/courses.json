@@ -1,1 +1,1198 @@
-[]
+[
+  {
+    "code": "CS005",
+    "title": "INTRODUCTION TO COMPUTER PROGRAMMING",
+    "units": 4
+  },
+  {
+    "code": "CS006",
+    "title": "EFFECTIVE USE OF THE WORLD WIDE WEB",
+    "units": 4
+  },
+  {
+    "code": "CS008",
+    "title": "INTRODUCTION TO COMPUTING",
+    "units": 4
+  },
+  {
+    "code": "CS009A",
+    "title": "DATA ORIENTED INTRODUCTION TO COMPUTING I",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH004",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH005A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH006A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH006B",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH007A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH009A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH09HA",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH022",
+          "concurrentOk": true
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS009B",
+    "title": "DATA ORIENTED INTRODUCTION TO COMPUTING II",
+    "units": 4,
+    "prereq": {
+      "course": "CS009A",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS010A",
+    "title": "INTRODUCTION TO COMPUTER SCIENCE FOR SCIENCE, MATHEMATICS, AND ENGINEERING I",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH006A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH006B",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH007A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH009A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH09HA",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS010B",
+    "title": "INTRODUCTION TO COMPUTER SCIENCE FOR SCIENCE, MATHEMATICS, AND ENGINEERING 2",
+    "units": 4,
+    "prereq": {
+      "course": "CS010A",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS010C",
+    "title": "INTRODUCTION TO DATA STRUCTURES AND ALGORITHMS",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS010B",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS009C",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS011",
+    "title": "INTRODUCTION TO DISCRETE STRUCTURES",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS009A",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS010A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS042",
+    "title": "A HITCHHIKER'S GUIDE TO ARTIFICIAL INTELLIGENCE (AI)",
+    "units": 4
+  },
+  {
+    "code": "CS061",
+    "title": "MACHINE ORGANIZATION AND ASSEMBLY LANGUAGE PROGRAMMING",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS009A",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS010A",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS100",
+    "title": "SOFTWARE CONSTRUCTION",
+    "units": 5,
+    "prereq": {
+      "course": "CS010C",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS105",
+    "title": "DATA ANALYSIS METHODS",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS010B",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS108",
+    "title": "DATA SCIENCE ETHICS",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS105",
+          "concurrentOk": false
+        },
+        {
+          "course": "STAT107",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS171",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS111",
+    "title": "DISCRETE STRUCTURES",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "CS011",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH011",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "MATH009C",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH09HC",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "MATH031",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE020B",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "CS009A",
+              "concurrentOk": false
+            },
+            {
+              "course": "CS010A",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS119L",
+    "title": "LABORATORY IN PROBLEM SOLVING AND PROGRAMMING",
+    "units": 2,
+    "prereq": {
+      "course": "CS010C",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS120A",
+    "title": "LOGIC DESIGN",
+    "units": 5,
+    "prereq": {
+      "course": "CS061",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS120B",
+    "title": "INTRODUCTION TO EMBEDDED SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "CS010C",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE016",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "CS120A",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE120A",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS130",
+    "title": "COMPUTER GRAPHICS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "MATH031",
+              "concurrentOk": true
+            },
+            {
+              "course": "EE020B",
+              "concurrentOk": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS141",
+    "title": "INTERMEDIATE DATA STRUCTURES AND ALGORITHMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS010C",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "MATH009C",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH09HC",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS144",
+    "title": "ALGORITHMS FOR BIOINFORMATICS",
+    "units": 4,
+    "prereq": {
+      "course": "CS141",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS150",
+    "title": "AUTOMATA AND FORMAL LANGUAGES",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS010C",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "MATH009C",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH09HC",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS152",
+    "title": "COMPILER DESIGN",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS061",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS150",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS153",
+    "title": "DESIGN OF OPERATING SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS061",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS160",
+    "title": "CONCURRENT PROGRAMMING AND PARALLEL SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS061",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS161",
+    "title": "DESIGN AND ARCHITECTURE OF COMPUTER SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "EE120A",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS120A",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS164",
+    "title": "COMPUTER NETWORKS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS153",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS165",
+    "title": "COMPUTER SECURITY",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS141",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS153",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS166",
+    "title": "DATABASE MANAGEMENT SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS168",
+    "title": "INTRODUCTION TO VERY LARGE SCALE INTEGRATION DESIGN",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS120A",
+          "concurrentOk": false
+        },
+        {
+          "course": "EE120A",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS170",
+    "title": "INTRODUCTION TO ARTIFICIAL INTELLIGENCE",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS171",
+    "title": "INTRODUCTION TO MACHINE LEARNING AND DATA MINING",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "MATH010A",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "MATH031",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE020B",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "STAT155",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE114",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT156A",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT160A",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "CS100",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE016",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS175",
+    "title": "ENTREPRENEURSHIP IN COMPUTING",
+    "units": 4,
+    "prereq": {
+      "course": "CS100",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS178A",
+    "title": "PROJECT SEQUENCE IN COMPUTER SCIENCE AND ENGINEERING",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS141",
+          "concurrentOk": false
+        },
+        {
+          "course": "ENGR180W",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS179G",
+    "title": "PROJECT IN COMPUTER SCIENCE: DATABASE SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "CS166",
+              "concurrentOk": false
+            },
+            {
+              "course": "CS167",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "course": "ENGR180W",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS179M",
+    "title": "PROJECT IN COMPUTER SCIENCE: ARTIFICIAL INTELLIGENCE",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS170",
+          "concurrentOk": false
+        },
+        {
+          "course": "ENGR180W",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS180",
+    "title": "INTRODUCTION TO SOFTWARE ENGINEERING",
+    "units": 4,
+    "prereq": {
+      "course": "CS100",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS182",
+    "title": "SOFTWARE TESTING AND VERIFICATION",
+    "units": 4,
+    "prereq": {
+      "course": "CS100",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS189",
+    "title": "APPRENTICE TUTORING",
+    "units": 1
+  },
+  {
+    "code": "CS190",
+    "title": "SPECIAL STUDIES",
+    "units": 5
+  },
+  {
+    "code": "CS193",
+    "title": "DESIGN PROJECT",
+    "units": 4,
+    "prereq": {
+      "course": "CS141",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS197",
+    "title": "RESEARCH FOR UNDERGRADUATES",
+    "units": 4
+  },
+  {
+    "code": "CS198I",
+    "title": "INDIVIDUAL INTERNSHIP IN COMPUTER SCIENCE",
+    "units": 4
+  },
+  {
+    "code": "CS201",
+    "title": "COMPILER CONSTRUCTION",
+    "units": 4,
+    "prereq": {
+      "course": "CS152",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS202",
+    "title": "ADVANCED OPERATING SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "course": "CS153",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS203",
+    "title": "ADVANCED COMPUTER ARCHITECTURE",
+    "units": 4,
+    "prereq": {
+      "course": "CS161",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS205",
+    "title": "ARTIFICIAL INTELLIGENCE",
+    "units": 4,
+    "prereq": {
+      "course": "CS170",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS210",
+    "title": "SCIENTIFIC COMPUTING",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS010B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH010A",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS212",
+    "title": "DATA SCIENCE ETHICS",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS252A",
+          "concurrentOk": false
+        },
+        {
+          "course": "EE251A",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS235",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS224",
+          "concurrentOk": false
+        },
+        {
+          "course": "STAT207",
+          "concurrentOk": false
+        },
+        {
+          "course": "STAT208",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS213",
+    "title": "MULTIPROCESSOR ARCHITECTURE AND PROGRAMMING",
+    "units": 4,
+    "prereq": {
+      "course": "CS203",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS214",
+    "title": "PARALLEL ALGORITHMS",
+    "units": 4,
+    "prereq": {
+      "course": "CS141",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS215",
+    "title": "THEORY OF COMPUTATION",
+    "units": 4,
+    "prereq": {
+      "course": "CS150",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS217",
+    "title": "GRAPHICS PROCESSING UNIT ARCHITECTURE AND PARALLEL PROGRAMMING",
+    "units": 4,
+    "prereq": {
+      "course": "CS160",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS218",
+    "title": "DESIGN AND ANALYSIS OF ALGORITHMS",
+    "units": 4,
+    "prereq": {
+      "course": "CS141",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS220",
+    "title": "SYNTHESIS OF DIGITAL SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS141",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS161",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS224",
+    "title": "FOUNDATIONS OF MACHINE LEARNING",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "STAT155",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE114",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "course": "MATH031",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS235",
+    "title": "DATA MINING TECHNIQUES",
+    "units": 4,
+    "prereq": {
+      "course": "CS141",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS236",
+    "title": "DATABASE MANAGEMENT SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "course": "CS141",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS252A",
+    "title": "DATA ANALYTICS AND EXPLORATION",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS141",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "STAT155",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE114",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS255",
+    "title": "COMPUTER SECURITY",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS153",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS164",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS165",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS258",
+    "title": "INTRODUCTION TO REINFORCEMENT LEARNING",
+    "units": 4
+  },
+  {
+    "code": "CS279",
+    "title": "CAPSTONE PROJECT IN DATA SCIENCE",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "CS252A",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE251A",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "CS252B",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE251B",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS287",
+    "title": "COLLOQUIUM IN COMPUTER SCIENCE",
+    "units": 1
+  },
+  {
+    "code": "CS290",
+    "title": "DIRECTED STUDIES",
+    "units": 6
+  },
+  {
+    "code": "CS297",
+    "title": "DIRECTED RESEARCH",
+    "units": 6
+  },
+  {
+    "code": "CS298I",
+    "title": "INDIVIDUAL INTERNSHIP",
+    "units": 12
+  },
+  {
+    "code": "CS299",
+    "title": "RESEARCH FOR THESIS OR DISSERTATION",
+    "units": 12
+  },
+  {
+    "code": "CS302",
+    "title": "APPRENTICE TEACHING",
+    "units": 1
+  },
+  {
+    "code": "MATH004",
+    "title": "INTRODUCTION TO COLLEGE MATHEMATICS FOR BUSINESS AND THE SOCIAL SCIENCES",
+    "units": 5
+  },
+  {
+    "code": "MATH005A",
+    "title": "THE PRINCIPLES OF CALCULUS 1",
+    "units": 5
+  },
+  {
+    "code": "MATH006A",
+    "title": "PRECALCULUS: AN INTRODUCTION TO FUNCTIONS 1",
+    "units": 4
+  },
+  {
+    "code": "MATH006B",
+    "title": "PRECALCULUS: AN INTRODUCTION TO FUNCTIONS 2",
+    "units": 4
+  },
+  {
+    "code": "MATH007A",
+    "title": "CALCULUS FOR LIFE SCIENCES",
+    "units": 4
+  },
+  {
+    "code": "MATH007B",
+    "title": "CALCULUS FOR LIFE SCIENCES",
+    "units": 4
+  },
+  {
+    "code": "MATH009A",
+    "title": "FIRST-YEAR CALCULUS",
+    "units": 4
+  },
+  {
+    "code": "MATH009B",
+    "title": "FIRST YEAR CALCULUS",
+    "units": 4
+  },
+  {
+    "code": "MATH009C",
+    "title": "FIRST YEAR CALCULUS",
+    "units": 4
+  },
+  {
+    "code": "MATH010A",
+    "title": "CALCULUS OF SEVERAL VARIABLES",
+    "units": 4
+  },
+  {
+    "code": "MATH010B",
+    "title": "CALCULUS OF SEVERAL VARIABLES",
+    "units": 4
+  },
+  {
+    "code": "MATH011",
+    "title": "INTRODUCTION TO DISCRETE STRUCTURES",
+    "units": 4
+  },
+  {
+    "code": "MATH022",
+    "title": "CALCULUS FOR BUSINESS",
+    "units": 5
+  },
+  {
+    "code": "MATH031",
+    "title": "APPLIED LINEAR ALGEBRA",
+    "units": 5
+  },
+  {
+    "code": "MATH045",
+    "title": "INTRODUCTION TO ORDINARY DIFFERENTIAL EQUATIONS FOR PHYSICAL SCIENCES AND ENGINEERING",
+    "units": 4
+  },
+  {
+    "code": "MATH046",
+    "title": "INTRODUCTION TO ORDINARY DIFFERENTIAL EQUATIONS",
+    "units": 4
+  },
+  {
+    "code": "MATH120",
+    "title": "OPTIMIZATION",
+    "units": 4
+  },
+  {
+    "code": "MATH135A",
+    "title": "INTRODUCTION TO NUMERICAL ANALYSIS 1",
+    "units": 4
+  },
+  {
+    "code": "PHYS040A",
+    "title": "GENERAL PHYSICS",
+    "units": 5
+  },
+  {
+    "code": "PHYS040C",
+    "title": "GENERAL PHYSICS",
+    "units": 5
+  }
+]

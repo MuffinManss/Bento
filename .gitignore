@@ -4,6 +4,11 @@ dist-ssr
 *.local
 *.tsbuildinfo
 
+# Scraper cache (regenerate with npm run scrape / npm run parse-catalog) —
+# includes the uploaded catalog PDF and extracted text, which are large
+# and not source we want to track.
+raw/
+
 # Editor
 .vscode/*
 !.vscode/extensions.json

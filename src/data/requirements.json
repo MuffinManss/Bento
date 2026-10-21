@@ -1,1 +1,272 @@
-[]
+[
+  {
+    "id": "cs-bs-ld-calculus-sequence",
+    "name": "Calculus Sequence (choose one track)",
+    "rule": {
+      "type": "chooseN",
+      "n": 3
+    },
+    "courses": [
+      "MATH005A",
+      "MATH005B",
+      "MATH005C",
+      "MATH009A",
+      "MATH009B",
+      "MATH009C"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-core",
+    "name": "Lower-Division CS Core",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "CS010A",
+      "CS010B",
+      "CS010C",
+      "CS061"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-diffeq-or-circuits",
+    "name": "Differential Equations or Circuit Analysis",
+    "rule": {
+      "type": "chooseN",
+      "n": 1
+    },
+    "courses": [
+      "MATH031",
+      "EE020B"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-discrete-math",
+    "name": "Introduction to Discrete Structures",
+    "rule": {
+      "type": "chooseN",
+      "n": 1
+    },
+    "courses": [
+      "CS011",
+      "MATH011"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-engineering-elective",
+    "name": "Engineering Depth/Breadth Elective",
+    "rule": {
+      "type": "chooseUnits",
+      "units": 8
+    },
+    "courses": [
+      "BIEN010",
+      "EE020A",
+      "EE030LA",
+      "EE005",
+      "EE016",
+      "ENSC001",
+      "ENSC002",
+      "MATH010B",
+      "ME002",
+      "ME005",
+      "ME018A",
+      "ME018B",
+      "ME009",
+      "ME010",
+      "MATH045",
+      "MATH046",
+      "CHEM001A",
+      "CHEM01HA",
+      "CHEM001B",
+      "CHEM01HB",
+      "CHEM001C",
+      "CHEM01HC",
+      "CHEM01LA",
+      "CHEM1HLA",
+      "CHEM01LB",
+      "CHEM1HLB",
+      "CHEM01LC",
+      "CHEM1HLC",
+      "CHEM008A",
+      "CHEM008HA",
+      "CHEM08LA",
+      "CHEM08HLA",
+      "ECON005",
+      "ECON060",
+      "LING020",
+      "LING021",
+      "PHIL125",
+      "PHIL126",
+      "PHIL127",
+      "STAT004",
+      "STAT008",
+      "STAT010"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-engr-intro",
+    "name": "Engineering Introduction Seminar",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "ENGR001I"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-linear-algebra",
+    "name": "Linear Algebra",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "MATH010A"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-physics",
+    "name": "Physics Sequence",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "PHYS040A",
+      "PHYS040B",
+      "PHYS040C"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-core",
+    "name": "Upper-Division CS Core",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "CS100",
+      "CS141",
+      "CS150",
+      "CS152",
+      "CS153",
+      "CS161"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-discrete-structures",
+    "name": "Discrete Structures",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "CS111"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-engr-intro",
+    "name": "Engineering Introduction Seminar II",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "ENGR101I"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-logic-design",
+    "name": "Logic Design",
+    "rule": {
+      "type": "chooseN",
+      "n": 1
+    },
+    "courses": [
+      "CS120A",
+      "EE120A"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-stats",
+    "name": "Probability and Statistics",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "STAT155"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-tech-electives",
+    "name": "Technical Electives",
+    "rule": {
+      "type": "chooseUnits",
+      "units": 32
+    },
+    "courses": [
+      "CS105",
+      "CS108",
+      "CS110",
+      "CS119L",
+      "CS120B",
+      "EE120B",
+      "CS122A",
+      "CS122B",
+      "CS130",
+      "CS131",
+      "CS133",
+      "CS135",
+      "CS142",
+      "CS144",
+      "CS145",
+      "CS147",
+      "CS160",
+      "CS162",
+      "CS164",
+      "CS165",
+      "CS166",
+      "CS167",
+      "CS168",
+      "EE168",
+      "CS169",
+      "CS170",
+      "CS171",
+      "CS172",
+      "CS173",
+      "CS175",
+      "CS177",
+      "CS178B",
+      "CS179G",
+      "CS179M",
+      "CS180",
+      "CS181",
+      "CS182",
+      "CS183",
+      "CS193",
+      "MATH120",
+      "MATH126",
+      "MATH135A",
+      "MATH135B",
+      "PHIL124"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-topics-seminar",
+    "name": "CS 179 Topics Seminar",
+    "rule": {
+      "type": "chooseN",
+      "n": 1
+    },
+    "courses": [
+      "CS179G",
+      "CS179M"
+    ]
+  },
+  {
+    "id": "cs-bs-ud-writing",
+    "name": "Technical Writing",
+    "rule": {
+      "type": "all"
+    },
+    "courses": [
+      "ENGR180W"
+    ]
+  }
+]
