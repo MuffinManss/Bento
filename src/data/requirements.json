@@ -3,8 +3,19 @@
     "id": "cs-bs-ld-calculus-sequence",
     "name": "Calculus Sequence (choose one track)",
     "rule": {
-      "type": "chooseN",
-      "n": 3
+      "type": "oneOfTracks",
+      "tracks": [
+        [
+          "MATH005A",
+          "MATH005B",
+          "MATH005C"
+        ],
+        [
+          "MATH009A",
+          "MATH009B",
+          "MATH009C"
+        ]
+      ]
     },
     "courses": [
       "MATH005A",
@@ -54,7 +65,7 @@
   },
   {
     "id": "cs-bs-ld-engineering-elective",
-    "name": "Engineering Depth/Breadth Elective",
+    "name": "Engineering Depth Elective",
     "rule": {
       "type": "chooseUnits",
       "units": 8
@@ -75,33 +86,7 @@
       "ME009",
       "ME010",
       "MATH045",
-      "MATH046",
-      "CHEM001A",
-      "CHEM01HA",
-      "CHEM001B",
-      "CHEM01HB",
-      "CHEM001C",
-      "CHEM01HC",
-      "CHEM01LA",
-      "CHEM1HLA",
-      "CHEM01LB",
-      "CHEM1HLB",
-      "CHEM01LC",
-      "CHEM1HLC",
-      "CHEM008A",
-      "CHEM008HA",
-      "CHEM08LA",
-      "CHEM08HLA",
-      "ECON005",
-      "ECON060",
-      "LING020",
-      "LING021",
-      "PHIL125",
-      "PHIL126",
-      "PHIL127",
-      "STAT004",
-      "STAT008",
-      "STAT010"
+      "MATH046"
     ]
   },
   {
@@ -200,6 +185,9 @@
       "type": "chooseUnits",
       "units": 32
     },
+    "preferSubjects": [
+      "CS"
+    ],
     "courses": [
       "CS105",
       "CS108",

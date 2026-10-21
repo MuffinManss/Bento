@@ -10,7 +10,8 @@
     "test": "vitest run",
     "scrape": "tsx scripts/scrape-ucr.ts",
     "validate-data": "tsx scripts/validate-data.ts",
-    "parse-catalog": "tsx scripts/parse-catalog.ts"
+    "parse-catalog": "tsx scripts/parse-catalog.ts",
+    "check-prereqs": "tsx scripts/check-prereqs.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

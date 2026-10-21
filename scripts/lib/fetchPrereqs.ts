@@ -5,29 +5,27 @@ import type { BannerSection } from "./bannerTypes.ts";
 import type { Prereq } from "../../src/solver/types.ts";
 
 /**
- * Fetches (one CRN per course) and parses the prerequisite tree for every
- * unique course code in `rows`. Raw HTML is cached to raw/prereqs/<course>.html.
+ * Fetches (one representative row per course) and parses the prerequisite
+ * tree for every course in `representativeRows`. Each row's own `term` is
+ * used — not a single global term — since some rows are backfilled from an
+ * older term the course was actually offered in. Raw HTML is cached to
+ * raw/prereqs/<course>.html (shared across terms: a course's prereq rule
+ * doesn't change just because we looked it up via an older offering).
  */
 export async function fetchPrereqs(
   client: BannerClient,
-  term: string,
+  representativeRows: Map<string, BannerSection>,
   rawDir: string,
-  rows: BannerSection[],
   subjectDescToCode: Map<string, string>,
 ): Promise<{ trees: Map<string, Prereq>; warnings: string[] }> {
   const warnings: string[] = [];
   const trees = new Map<string, Prereq>();
 
-  const representativeCrn = new Map<string, string>();
-  for (const row of rows) {
-    if (!representativeCrn.has(row.subjectCourse)) {
-      representativeCrn.set(row.subjectCourse, row.courseReferenceNumber);
-    }
-  }
-
-  for (const [course, crn] of representativeCrn) {
+  for (const [course, row] of representativeRows) {
     const cachePath = `${rawDir}/prereqs/${course}.html`;
-    const html = await cached(cachePath, () => client.post("/searchResults/getSectionPrerequisites", { term, courseReferenceNumber: crn }));
+    const html = await cached(cachePath, () =>
+      client.post("/searchResults/getSectionPrerequisites", { term: row.term, courseReferenceNumber: row.courseReferenceNumber }),
+    );
     const { tree, warnings: w } = parsePrereqHtml(html, course, subjectDescToCode);
     warnings.push(...w);
     if (tree) trees.set(course, tree);

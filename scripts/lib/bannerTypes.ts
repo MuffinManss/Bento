@@ -28,6 +28,7 @@ export type BannerFaculty = {
 
 export type BannerSection = {
   courseReferenceNumber: string;
+  term: string;
   subject: string;
   subjectDescription: string;
   courseNumber: string;

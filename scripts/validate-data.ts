@@ -104,6 +104,8 @@ function validateSections(offerings: Offering[], courseCodes: Set<string>): void
       if (seenLectureIds.has(lecture.id)) errors.push(`Duplicate lecture id "${lecture.id}" (${offering.course}).`);
       seenLectureIds.add(lecture.id);
 
+      if (lecture.online !== undefined && typeof lecture.online !== "boolean") errors.push(`${offering.course}: lecture ${lecture.id} has a non-boolean "online".`);
+      if (lecture.meetings.length === 0 && lecture.online !== true) warnings.push(`${offering.course}: lecture ${lecture.id} has no meetings and isn't marked "online" — the solver can never detect a conflict for it.`);
       lecture.meetings.forEach((m, i) => validateMeeting(m, `${offering.course} lecture ${lecture.id} meetings[${i}]`));
 
       for (const activity of lecture.linked) {
@@ -114,6 +116,8 @@ function validateSections(offerings: Offering[], courseCodes: Set<string>): void
         if (activity.type !== "LAB" && activity.type !== "DIS") {
           errors.push(`${offering.course}: activity ${activity.id} has invalid type "${String(activity.type)}".`);
         }
+        if (activity.online !== undefined && typeof activity.online !== "boolean") errors.push(`${offering.course}: activity ${activity.id} has a non-boolean "online".`);
+        if (activity.meetings.length === 0 && activity.online !== true) warnings.push(`${offering.course}: activity ${activity.id} has no meetings and isn't marked "online" — the solver can never detect a conflict for it.`);
         seenActivityIds.add(activity.id);
         activity.meetings.forEach((m, i) => validateMeeting(m, `${offering.course} activity ${activity.id} meetings[${i}]`));
       }
@@ -145,8 +149,24 @@ function validateRequirements(groups: RequirementGroup[], courseCodes: Set<strin
       else if (rule.n > group.courses.length) errors.push(`${group.id}: chooseN n=${rule.n} exceeds its course list length (${group.courses.length}).`);
     } else if (rule.type === "chooseUnits") {
       if (typeof rule.units !== "number" || rule.units <= 0) errors.push(`${group.id}: chooseUnits rule has invalid "units".`);
+    } else if (rule.type === "oneOfTracks") {
+      if (!Array.isArray(rule.tracks) || rule.tracks.length === 0) {
+        errors.push(`${group.id}: oneOfTracks rule needs a non-empty "tracks" array.`);
+      } else {
+        const trackCourses = new Set<string>();
+        rule.tracks.forEach((track, i) => {
+          if (!Array.isArray(track) || track.length === 0) errors.push(`${group.id}: oneOfTracks track[${i}] must be a non-empty array.`);
+          else track.forEach((c) => trackCourses.add(c));
+        });
+        for (const c of group.courses) if (!trackCourses.has(c)) warnings.push(`${group.id}: "courses" lists "${c}", which isn't in any oneOfTracks track.`);
+        for (const c of trackCourses) if (!group.courses.includes(c)) warnings.push(`${group.id}: oneOfTracks references "${c}", which isn't in "courses".`);
+      }
     } else if (rule.type !== "all") {
       errors.push(`${group.id}: unknown rule type "${String((rule as { type: unknown }).type)}".`);
+    }
+
+    if (group.preferSubjects !== undefined && (!Array.isArray(group.preferSubjects) || group.preferSubjects.some((s) => typeof s !== "string"))) {
+      errors.push(`${group.id}: "preferSubjects" must be an array of strings.`);
     }
   }
 }

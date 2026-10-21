@@ -21,13 +21,14 @@ import { buildCourse } from "./lib/courses.ts";
 import { collectLeafCourses } from "./lib/prereqTree.ts";
 import { writeJson } from "./lib/cache.ts";
 import { upsertDataTodoSection } from "./lib/dataTodo.ts";
+import { isInScopeCsCourse } from "./lib/scopeFilter.ts";
+import { buildMetadataLookup, METADATA_SUBJECTS } from "./lib/metadataLookup.ts";
 import type { BannerSection } from "./lib/bannerTypes.ts";
 import type { Course, Offering } from "../src/solver/types.ts";
 
 const BASE_URL = "https://registrationssb.ucr.edu/StudentRegistrationSsb/ssb";
 const RAW_DIR = "raw";
 const SCHEDULED_SUBJECT = "CS"; // the only subject we build Offering/section data for
-const METADATA_ONLY_SUBJECTS = ["MATH", "PHYS"]; // fetched to resolve CS-prereq leaf courses' title/units
 
 async function main(): Promise<void> {
   const term = process.argv[2];
@@ -62,36 +63,40 @@ async function main(): Promise<void> {
   const descToCode = bySubjectDescription(subjects);
 
   console.log(`Searching ${SCHEDULED_SUBJECT} sections for term ${term}...`);
-  const csRows = await searchSubject(client, term, RAW_DIR, SCHEDULED_SUBJECT);
-  console.log(`  -> ${csRows.length} ${SCHEDULED_SUBJECT} section rows.`);
+  const allCsRows = await searchSubject(client, term, RAW_DIR, SCHEDULED_SUBJECT);
+  const csRows = allCsRows.filter((r) => isInScopeCsCourse(r.subjectCourse));
+  const outOfScopeCount = allCsRows.length - csRows.length;
+  console.log(`  -> ${allCsRows.length} ${SCHEDULED_SUBJECT} section rows (${outOfScopeCount} excluded: grad-level or research/individual-study/internship/colloquium — not schedulable undergrad courses).`);
 
-  const metadataRows = new Map<string, BannerSection>();
-  for (const subject of METADATA_ONLY_SUBJECTS) {
-    console.log(`Searching ${subject} sections for term ${term} (metadata only)...`);
-    const rows = await searchSubject(client, term, RAW_DIR, subject);
-    console.log(`  -> ${rows.length} ${subject} section rows.`);
-    for (const row of rows) {
-      if (!metadataRows.has(row.subjectCourse)) metadataRows.set(row.subjectCourse, row);
+  console.log(`Searching metadata-only subjects (${METADATA_SUBJECTS.join(", ")}) for term ${term}, plus CS/MATH fallback terms for courses not offered now...`);
+  const metadataRows = await buildMetadataLookup(client, term, RAW_DIR);
+  console.log(`  -> ${metadataRows.size} distinct courses resolved across all metadata subjects/terms.`);
+
+  // courses.json: one entry per unique CS course, plus one entry per distinct
+  // course referenced as a prereq leaf that we have metadata for (fetched
+  // above). Leaves from a subject we never scraped, or placeholder
+  // TEST:/UNRESOLVED: codes, are flagged in DATA_TODO.md instead of fabricated.
+  const csFirstRow = new Map<string, BannerSection>();
+  for (const row of csRows) {
+    if (!csFirstRow.has(row.subjectCourse)) csFirstRow.set(row.subjectCourse, row);
+  }
+  // Prereqs get fetched for every in-scope current-term CS course AND every
+  // CS course backfilled from an older term (it's still a real course with a
+  // real prereq rule, just not offered this term) — using each row's own term.
+  const csPrereqRows = new Map(csFirstRow);
+  for (const [code, row] of metadataRows) {
+    if (row.subject === SCHEDULED_SUBJECT && isInScopeCsCourse(code) && !csPrereqRows.has(code)) {
+      csPrereqRows.set(code, row);
     }
   }
 
-  console.log(`Fetching prerequisites for every ${SCHEDULED_SUBJECT} course...`);
-  const { trees, warnings: prereqWarnings } = await fetchPrereqs(client, term, RAW_DIR, csRows, descToCode);
+  console.log(`Fetching prerequisites for every ${SCHEDULED_SUBJECT} course (${csPrereqRows.size}, including ${csPrereqRows.size - csFirstRow.size} not offered this term)...`);
+  const { trees, warnings: prereqWarnings } = await fetchPrereqs(client, csPrereqRows, RAW_DIR, descToCode);
   warnings.push(...prereqWarnings);
 
   console.log(`Fetching linked lecture/activity sections and building offerings...`);
   const { offerings, warnings: offeringWarnings } = await buildOfferings(client, term, RAW_DIR, csRows);
   warnings.push(...offeringWarnings);
-
-  // courses.json: one entry per unique CS course (with prereq tree, if any),
-  // plus one entry per distinct course referenced as a prereq leaf that we
-  // have metadata for (MATH/PHYS rows fetched above). Leaves from other
-  // subjects (e.g. EE, ENGR) or placeholder TEST:/UNRESOLVED: codes are
-  // flagged in DATA_TODO.md instead of fabricated.
-  const csFirstRow = new Map<string, BannerSection>();
-  for (const row of csRows) {
-    if (!csFirstRow.has(row.subjectCourse)) csFirstRow.set(row.subjectCourse, row);
-  }
 
   const courses: Course[] = [];
   for (const [code, row] of csFirstRow) {
@@ -107,14 +112,14 @@ async function main(): Promise<void> {
     if (leaf.startsWith("TEST:") || leaf.startsWith("UNRESOLVED:")) continue; // already flagged by the parser
     const row = metadataRows.get(leaf);
     if (row) {
-      courses.push(buildCourse(row, undefined, warnings));
+      courses.push(buildCourse(row, trees.get(leaf), warnings));
     } else {
       missingLeaves.push(leaf);
     }
   }
   if (missingLeaves.length > 0) {
     warnings.push(
-      `Referenced in a CS prerequisite but no title/units available (not offered this term, or its subject wasn't scraped — only CS/${METADATA_ONLY_SUBJECTS.join("/")} were): ${[...new Set(missingLeaves)].sort().join(", ")}`,
+      `Referenced in a CS prerequisite but no title/units available (not offered in any searched term, or its subject wasn't scraped — only CS/${METADATA_SUBJECTS.join("/")} were): ${[...new Set(missingLeaves)].sort().join(", ")}`,
     );
   }
 
@@ -125,15 +130,16 @@ async function main(): Promise<void> {
   writeJson("src/data/sections.json", offerings satisfies Offering[]);
 
   const csCourseCount = csFirstRow.size;
-  const prereqCount = trees.size;
   upsertDataTodoSection("DATA_TODO.md", "scrape-ucr.ts", [
-    `Last run: term ${term}, ${csCourseCount} CS courses, ${prereqCount} with a parsed prerequisite tree, ${offerings.length} offerings, ${courses.length} total courses.json entries.`,
+    `Last run: term ${term}, ${csCourseCount} CS courses offered this term (${offerings.length} offerings), ${csPrereqRows.size} CS courses total had their prerequisites fetched (including ${csPrereqRows.size - csCourseCount} not offered this term but still real prereq leaves/electives), ${trees.size} of those had a parsed prerequisite tree, ${courses.length} total courses.json entries.`,
     "",
     `**Term used:** ${termNote}`,
     "",
     "**Banner session quirk (adaptation):** changing the search subject on a second `searchResults` call within the same session is silently ignored by the server — it returns the first search's cached results. Fixed by re-POSTing `term/search` + `classSearch/resetDataForm` before every subject's search (see `scripts/lib/bannerClient.ts`).",
     "",
-    "**AND/OR grouping assumption:** prerequisite HTML wraps every single leaf term in its own parentheses, so parens carry no real nesting information. The tree is built by treating \"or\" as binding adjacent leaf terms (equivalent/alternate courses) and \"and\" as chaining those groups — this matched every multi-term example seen, but is an inference, not something the HTML states directly. Re-verify against the catalog for any course below whose tree looks wrong.",
+    "**AND/OR grouping assumption:** prerequisite HTML wraps every single leaf term in its own parentheses, so parens carry no real nesting information. The tree is built by treating \"or\" as binding adjacent leaf terms (equivalent/alternate courses) and \"and\" as chaining those groups — this matched every multi-term example seen, but is an inference, not something the HTML states directly. Cross-checked against the catalog's own course-description text with `npm run check-prereqs` (see its DATA_TODO section below for results).",
+    "",
+    `**Scope:** ${outOfScopeCount} CS section rows were excluded before any processing — grad-level courses (200+) and research/individual-study/internship/colloquium types (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302). None of these can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see \`scripts/lib/scopeFilter.ts\`).`,
     "",
     "**Variable-unit / grouping / leaf-resolution warnings from this run:**",
     ...(warnings.length > 0 ? warnings.map((w) => `- ${w}`) : ["- (none)"]),

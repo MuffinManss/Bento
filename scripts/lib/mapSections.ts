@@ -28,19 +28,15 @@ async function fetchLinked(client: BannerClient, term: string, rawDir: string, c
   return [...seen.values()];
 }
 
-function toActivity(row: BannerSection, warnings: string[], asyncByCourse: Map<string, Set<string>>): Activity | undefined {
+function toActivity(row: BannerSection, warnings: string[]): Activity | undefined {
   const type = ACTIVITY_TYPE[row.scheduleTypeDescription];
   if (!type) {
     warnings.push(`${row.subjectCourse}: linked section CRN ${row.courseReferenceNumber} has scheduleType "${row.scheduleTypeDescription}", which isn't LAB or DIS — skipped (not representable in the Activity type).`);
     return undefined;
   }
   const meetings = toMeetings(row.meetingsFaculty);
-  if (meetings.length === 0 && hasAsyncComponent(row.meetingsFaculty)) {
-    const set = asyncByCourse.get(row.subjectCourse) ?? new Set<string>();
-    set.add(row.courseReferenceNumber);
-    asyncByCourse.set(row.subjectCourse, set);
-  }
-  return { id: row.courseReferenceNumber, type, meetings };
+  const online = meetings.length === 0 && hasAsyncComponent(row.meetingsFaculty);
+  return online ? { id: row.courseReferenceNumber, type, meetings, online: true } : { id: row.courseReferenceNumber, type, meetings };
 }
 
 export async function buildOfferings(
@@ -51,8 +47,6 @@ export async function buildOfferings(
 ): Promise<{ offerings: Offering[]; warnings: string[] }> {
   const warnings: string[] = [];
   const offerings: Offering[] = [];
-  const asyncLecturesByCourse = new Map<string, Set<string>>();
-  const asyncActivitiesByCourse = new Map<string, Set<string>>();
 
   const byCourse = new Map<string, BannerSection[]>();
   for (const row of rows) {
@@ -63,43 +57,37 @@ export async function buildOfferings(
 
   for (const [course, courseRows] of byCourse) {
     const lectureRows = courseRows.filter((r) => r.scheduleTypeDescription === "Lecture");
-    const standaloneRows = lectureRows.length > 0 ? [] : courseRows;
+    // UCR runs a few courses (e.g. CS179G/CS179M topics sections) as a Discussion
+    // + linked Laboratory pair with no separate "Lecture" row at all. Treat the
+    // Discussion as the lecture-equivalent primary so it still gets a linked Lab.
+    const discussionRows = lectureRows.length === 0 ? courseRows.filter((r) => r.scheduleTypeDescription === "Discussion") : [];
+    const standaloneRows = lectureRows.length === 0 && discussionRows.length === 0 ? courseRows : [];
 
-    if (lectureRows.length === 0) {
+    if (lectureRows.length === 0 && discussionRows.length === 0) {
       warnings.push(`${course}: no "Lecture" type section found; treating each of its ${standaloneRows.length} section(s) (${[...new Set(standaloneRows.map((r) => r.scheduleTypeDescription))].join(", ")}) as a standalone Lecture with no linked activity.`);
     }
 
-    const sourceRows = lectureRows.length > 0 ? lectureRows : standaloneRows;
+    const sourceRows = lectureRows.length > 0 ? lectureRows : discussionRows.length > 0 ? discussionRows : standaloneRows;
     const lectures: Lecture[] = [];
 
     for (const row of sourceRows) {
       let linked: Activity[] = [];
       if (row.isSectionLinked) {
         const linkedRows = await fetchLinked(client, term, rawDir, row.courseReferenceNumber);
-        linked = linkedRows.map((r) => toActivity(r, warnings, asyncActivitiesByCourse)).filter((a): a is Activity => a !== undefined);
+        linked = linkedRows.map((r) => toActivity(r, warnings)).filter((a): a is Activity => a !== undefined);
       }
       const meetings = toMeetings(row.meetingsFaculty);
-      if (meetings.length === 0 && hasAsyncComponent(row.meetingsFaculty) && !INHERENTLY_UNSCHEDULED_TYPES.has(row.scheduleTypeDescription)) {
-        const set = asyncLecturesByCourse.get(course) ?? new Set<string>();
-        set.add(row.courseReferenceNumber);
-        asyncLecturesByCourse.set(course, set);
-      }
+      const online = meetings.length === 0 && hasAsyncComponent(row.meetingsFaculty) && !INHERENTLY_UNSCHEDULED_TYPES.has(row.scheduleTypeDescription);
       lectures.push({
         id: row.courseReferenceNumber,
         instructor: primaryInstructor(row),
         meetings,
         linked,
+        ...(online ? { online: true } : {}),
       });
     }
 
     offerings.push({ course, lectures });
-  }
-
-  for (const [course, crns] of asyncLecturesByCourse) {
-    warnings.push(`${course}: lecture CRN(s) ${[...crns].join(", ")} fully async/online with no scheduled time — "meetings" is empty, so the solver can never detect a conflict for them. Verify this is intentional.`);
-  }
-  for (const [course, crns] of asyncActivitiesByCourse) {
-    warnings.push(`${course}: linked activity CRN(s) ${[...crns].join(", ")} fully async/online with no scheduled time — "meetings" is empty, so the solver can never detect a conflict for them. Verify this is intentional (e.g. an online-only lab/discussion).`);
   }
 
   return { offerings, warnings };

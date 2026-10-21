@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Course, Filters, Schedule } from "./types";
+import type { Activity, Course, Filters, RequirementGroup, Schedule } from "./types";
 
 describe("solver data model", () => {
   it("accepts a well-formed Course", () => {
@@ -29,5 +29,38 @@ describe("solver data model", () => {
     const schedule: Schedule = { courses: [], units: 0, score: 0 };
 
     expect(schedule.courses).toHaveLength(0);
+  });
+
+  it("marks a fully async/online Activity with no meetings", () => {
+    const activity: Activity = { id: "33958", type: "LAB", meetings: [], online: true };
+
+    expect(activity.online).toBe(true);
+    expect(activity.meetings).toHaveLength(0);
+  });
+
+  it("accepts a oneOfTracks RequirementGroup for the calculus sequence", () => {
+    const group: RequirementGroup = {
+      id: "cs-bs-ld-calculus-sequence",
+      name: "Calculus Sequence (choose one track)",
+      rule: { type: "oneOfTracks", tracks: [["MATH005A", "MATH005B", "MATH005C"], ["MATH009A", "MATH009B", "MATH009C"]] },
+      courses: ["MATH005A", "MATH005B", "MATH005C", "MATH009A", "MATH009B", "MATH009C"],
+    };
+
+    expect(group.rule.type).toBe("oneOfTracks");
+    if (group.rule.type === "oneOfTracks") {
+      expect(group.rule.tracks).toHaveLength(2);
+    }
+  });
+
+  it("accepts a RequirementGroup with preferSubjects", () => {
+    const group: RequirementGroup = {
+      id: "cs-bs-ud-tech-electives",
+      name: "Technical Electives",
+      rule: { type: "chooseUnits", units: 32 },
+      preferSubjects: ["CS"],
+      courses: ["CS105", "CS108"],
+    };
+
+    expect(group.preferSubjects).toEqual(["CS"]);
   });
 });

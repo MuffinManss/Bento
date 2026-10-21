@@ -26,6 +26,8 @@ export type Activity = {
   id: string;
   type: "LAB" | "DIS";
   meetings: Meeting[];
+  /** Fully async/online component with no fixed meeting time — never conflicts with anything. */
+  online?: boolean;
 };
 
 export type Lecture = {
@@ -33,6 +35,8 @@ export type Lecture = {
   instructor?: string;
   meetings: Meeting[];
   linked: Activity[];
+  /** Fully async/online component with no fixed meeting time — never conflicts with anything. */
+  online?: boolean;
 };
 
 // UCR rule: a lecture and ONE of its linked activities must be taken together.
@@ -41,11 +45,20 @@ export type Offering = {
   lectures: Lecture[];
 };
 
+export type RequirementRule =
+  | { type: "all" }
+  | { type: "chooseN"; n: number }
+  | { type: "chooseUnits"; units: number }
+  /** Satisfy one whole track (e.g. one of several alternate course sequences), not a mix across tracks. */
+  | { type: "oneOfTracks"; tracks: string[][] };
+
 export type RequirementGroup = {
   id: string;
   name: string;
-  rule: { type: "all" } | { type: "chooseN"; n: number } | { type: "chooseUnits"; units: number };
+  rule: RequirementRule;
   courses: string[];
+  /** Subjects the solver should prefer when picking courses to satisfy this group (e.g. ["CS"]). */
+  preferSubjects?: string[];
 };
 
 export type Filters = {

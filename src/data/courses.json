@@ -1,5 +1,10 @@
 [
   {
+    "code": "BIEN010",
+    "title": "OVERVIEW OF BIOENGINEERING",
+    "units": 4
+  },
+  {
     "code": "CS005",
     "title": "INTRODUCTION TO COMPUTER PROGRAMMING",
     "units": 4
@@ -62,6 +67,47 @@
     "prereq": {
       "course": "CS009A",
       "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS009C",
+    "title": "C++ FOR PROGRAMMERS",
+    "units": 2,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS009B",
+          "concurrentOk": true
+        },
+        {
+          "or": [
+            {
+              "course": "MATH006B",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH007A",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH005A",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH004",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH009A",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH09HA",
+              "concurrentOk": true
+            }
+          ]
+        }
+      ]
     }
   },
   {
@@ -226,6 +272,15 @@
     }
   },
   {
+    "code": "CS110",
+    "title": "PRINCIPLES OF WEB DEVELOPMENT",
+    "units": 4,
+    "prereq": {
+      "course": "CS100",
+      "concurrentOk": false
+    }
+  },
+  {
     "code": "CS111",
     "title": "DISCRETE STRUCTURES",
     "units": 4,
@@ -334,6 +389,31 @@
     }
   },
   {
+    "code": "CS122A",
+    "title": "INTERMEDIATE EMBEDDED AND REAL-TIME SYSTEMS",
+    "units": 5,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS010B",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "CS120B",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE120B",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     "code": "CS130",
     "title": "COMPUTER GRAPHICS",
     "units": 4,
@@ -356,6 +436,36 @@
           ]
         }
       ]
+    }
+  },
+  {
+    "code": "CS131",
+    "title": "EDGE COMPUTING",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "EE120B",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS120B",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS135",
+    "title": "VIRTUAL REALITY",
+    "units": 4,
+    "prereq": {
+      "course": "CS100",
+      "concurrentOk": false
     }
   },
   {
@@ -394,6 +504,52 @@
     "prereq": {
       "course": "CS141",
       "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS145",
+    "title": "COMBINATORIAL OPTIMIZATION ALGORITHMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS141",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "MATH031",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH131",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS147",
+    "title": "GRAPHICS PROCESSING UNIT COMPUTING AND PROGRAMMING",
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS120B",
+          "concurrentOk": false
+        },
+        {
+          "course": "EE120B",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        }
+      ]
     }
   },
   {
@@ -510,6 +666,15 @@
     }
   },
   {
+    "code": "CS162",
+    "title": "COMPUTER ARCHITECTURE",
+    "units": 4,
+    "prereq": {
+      "course": "CS161",
+      "concurrentOk": false
+    }
+  },
+  {
     "code": "CS164",
     "title": "COMPUTER NETWORKS",
     "units": 4,
@@ -579,6 +744,15 @@
           "concurrentOk": false
         }
       ]
+    }
+  },
+  {
+    "code": "CS169",
+    "title": "MOBILE WIRELESS NETWORKS",
+    "units": 4,
+    "prereq": {
+      "course": "CS153",
+      "concurrentOk": false
     }
   },
   {
@@ -656,6 +830,80 @@
     }
   },
   {
+    "code": "CS172",
+    "title": "INTRODUCTION TO INFORMATION RETRIEVAL",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "EE114",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT155",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT156A",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT160A",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS173",
+    "title": "INTRODUCTION TO NATURAL LANGUAGE PROCESSING",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "EE114",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT155",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT156A",
+              "concurrentOk": false
+            },
+            {
+              "course": "STAT160A",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     "code": "CS175",
     "title": "ENTREPRENEURSHIP IN COMPUTING",
     "units": 4,
@@ -679,6 +927,15 @@
           "concurrentOk": false
         }
       ]
+    }
+  },
+  {
+    "code": "CS178B",
+    "title": "PROJECT SEQUENCE IN COMPUTER SCIENCE AND ENGINEERING",
+    "units": 4,
+    "prereq": {
+      "course": "CS178A",
+      "concurrentOk": false
     }
   },
   {
@@ -745,8 +1002,38 @@
     }
   },
   {
+    "code": "CS181",
+    "title": "PRINCIPLES OF PROGRAMMING LANGUAGES",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS061",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
     "code": "CS182",
     "title": "SOFTWARE TESTING AND VERIFICATION",
+    "units": 4,
+    "prereq": {
+      "course": "CS100",
+      "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS183",
+    "title": "UNIX SYSTEM ADMINISTRATION",
     "units": 4,
     "prereq": {
       "course": "CS100",
@@ -759,11 +1046,6 @@
     "units": 1
   },
   {
-    "code": "CS190",
-    "title": "SPECIAL STUDIES",
-    "units": 5
-  },
-  {
     "code": "CS193",
     "title": "DESIGN PROJECT",
     "units": 4,
@@ -773,327 +1055,64 @@
     }
   },
   {
-    "code": "CS197",
-    "title": "RESEARCH FOR UNDERGRADUATES",
+    "code": "EE005",
+    "title": "CIRCUITS AND ELECTRONICS",
     "units": 4
   },
   {
-    "code": "CS198I",
-    "title": "INDIVIDUAL INTERNSHIP IN COMPUTER SCIENCE",
+    "code": "EE016",
+    "title": "DATA ANALYSIS FOR ENGINEERING APPLICATIONS",
     "units": 4
   },
   {
-    "code": "CS201",
-    "title": "COMPILER CONSTRUCTION",
-    "units": 4,
-    "prereq": {
-      "course": "CS152",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS202",
-    "title": "ADVANCED OPERATING SYSTEMS",
-    "units": 4,
-    "prereq": {
-      "course": "CS153",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS203",
-    "title": "ADVANCED COMPUTER ARCHITECTURE",
-    "units": 4,
-    "prereq": {
-      "course": "CS161",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS205",
-    "title": "ARTIFICIAL INTELLIGENCE",
-    "units": 4,
-    "prereq": {
-      "course": "CS170",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS210",
-    "title": "SCIENTIFIC COMPUTING",
-    "units": 4,
-    "prereq": {
-      "and": [
-        {
-          "course": "CS010B",
-          "concurrentOk": false
-        },
-        {
-          "course": "MATH010A",
-          "concurrentOk": false
-        }
-      ]
-    }
-  },
-  {
-    "code": "CS212",
-    "title": "DATA SCIENCE ETHICS",
-    "units": 4,
-    "prereq": {
-      "or": [
-        {
-          "course": "CS252A",
-          "concurrentOk": false
-        },
-        {
-          "course": "EE251A",
-          "concurrentOk": false
-        },
-        {
-          "course": "CS235",
-          "concurrentOk": false
-        },
-        {
-          "course": "CS224",
-          "concurrentOk": false
-        },
-        {
-          "course": "STAT207",
-          "concurrentOk": false
-        },
-        {
-          "course": "STAT208",
-          "concurrentOk": false
-        }
-      ]
-    }
-  },
-  {
-    "code": "CS213",
-    "title": "MULTIPROCESSOR ARCHITECTURE AND PROGRAMMING",
-    "units": 4,
-    "prereq": {
-      "course": "CS203",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS214",
-    "title": "PARALLEL ALGORITHMS",
-    "units": 4,
-    "prereq": {
-      "course": "CS141",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS215",
-    "title": "THEORY OF COMPUTATION",
-    "units": 4,
-    "prereq": {
-      "course": "CS150",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS217",
-    "title": "GRAPHICS PROCESSING UNIT ARCHITECTURE AND PARALLEL PROGRAMMING",
-    "units": 4,
-    "prereq": {
-      "course": "CS160",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS218",
-    "title": "DESIGN AND ANALYSIS OF ALGORITHMS",
-    "units": 4,
-    "prereq": {
-      "course": "CS141",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS220",
-    "title": "SYNTHESIS OF DIGITAL SYSTEMS",
-    "units": 4,
-    "prereq": {
-      "and": [
-        {
-          "course": "CS141",
-          "concurrentOk": false
-        },
-        {
-          "course": "CS161",
-          "concurrentOk": false
-        }
-      ]
-    }
-  },
-  {
-    "code": "CS224",
-    "title": "FOUNDATIONS OF MACHINE LEARNING",
-    "units": 4,
-    "prereq": {
-      "and": [
-        {
-          "course": "CS100",
-          "concurrentOk": false
-        },
-        {
-          "or": [
-            {
-              "course": "STAT155",
-              "concurrentOk": false
-            },
-            {
-              "course": "EE114",
-              "concurrentOk": false
-            }
-          ]
-        },
-        {
-          "course": "MATH031",
-          "concurrentOk": false
-        }
-      ]
-    }
-  },
-  {
-    "code": "CS235",
-    "title": "DATA MINING TECHNIQUES",
-    "units": 4,
-    "prereq": {
-      "course": "CS141",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS236",
-    "title": "DATABASE MANAGEMENT SYSTEMS",
-    "units": 4,
-    "prereq": {
-      "course": "CS141",
-      "concurrentOk": false
-    }
-  },
-  {
-    "code": "CS252A",
-    "title": "DATA ANALYTICS AND EXPLORATION",
-    "units": 4,
-    "prereq": {
-      "and": [
-        {
-          "course": "CS100",
-          "concurrentOk": false
-        },
-        {
-          "course": "CS141",
-          "concurrentOk": false
-        },
-        {
-          "or": [
-            {
-              "course": "STAT155",
-              "concurrentOk": false
-            },
-            {
-              "course": "EE114",
-              "concurrentOk": false
-            }
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "code": "CS255",
-    "title": "COMPUTER SECURITY",
-    "units": 4,
-    "prereq": {
-      "or": [
-        {
-          "course": "CS153",
-          "concurrentOk": false
-        },
-        {
-          "course": "CS164",
-          "concurrentOk": false
-        },
-        {
-          "course": "CS165",
-          "concurrentOk": false
-        }
-      ]
-    }
-  },
-  {
-    "code": "CS258",
-    "title": "INTRODUCTION TO REINFORCEMENT LEARNING",
+    "code": "EE020A",
+    "title": "INTRODUCTION TO ORDINARY DIFFERENTIAL EQUATIONS FOR PHYSICAL SCIENCES AND ENGINEERING",
     "units": 4
   },
   {
-    "code": "CS279",
-    "title": "CAPSTONE PROJECT IN DATA SCIENCE",
-    "units": 4,
-    "prereq": {
-      "and": [
-        {
-          "or": [
-            {
-              "course": "CS252A",
-              "concurrentOk": false
-            },
-            {
-              "course": "EE251A",
-              "concurrentOk": false
-            }
-          ]
-        },
-        {
-          "or": [
-            {
-              "course": "CS252B",
-              "concurrentOk": false
-            },
-            {
-              "course": "EE251B",
-              "concurrentOk": false
-            }
-          ]
-        }
-      ]
-    }
+    "code": "EE020B",
+    "title": "LINEAR METHODS FOR ENGINEERING ANALYSIS AND DESIGN USING MATLAB",
+    "units": 4
   },
   {
-    "code": "CS287",
-    "title": "COLLOQUIUM IN COMPUTER SCIENCE",
+    "code": "EE030LA",
+    "title": "FUNDAMENTALS OF ELEC CIRCUITS I LABORATORY",
     "units": 1
   },
   {
-    "code": "CS290",
-    "title": "DIRECTED STUDIES",
-    "units": 6
+    "code": "EE114",
+    "title": "PROBABILITY, RANDOM VARIABLES, AND RANDOM PROCESSES IN ELECTRICAL ENGINEERING",
+    "units": 4
   },
   {
-    "code": "CS297",
-    "title": "DIRECTED RESEARCH",
-    "units": 6
+    "code": "EE120A",
+    "title": "LOGIC DESIGN",
+    "units": 5
   },
   {
-    "code": "CS298I",
-    "title": "INDIVIDUAL INTERNSHIP",
-    "units": 12
+    "code": "EE120B",
+    "title": "INTRODUCTION TO EMBEDDED SYSTEMS",
+    "units": 4
   },
   {
-    "code": "CS299",
-    "title": "RESEARCH FOR THESIS OR DISSERTATION",
-    "units": 12
+    "code": "EE168",
+    "title": "INTRODUCTION TO VERY LARGE SCALE INTEGRATION DESIGN",
+    "units": 4
   },
   {
-    "code": "CS302",
-    "title": "APPRENTICE TEACHING",
+    "code": "ENGR001I",
+    "title": "COMPUTER SCIENCE",
     "units": 1
+  },
+  {
+    "code": "ENGR180W",
+    "title": "TECHNICAL COMMUNICATIONS",
+    "units": 4
+  },
+  {
+    "code": "ENSC001",
+    "title": "INTRODUCTION TO ENVIRONMENTAL SCIENCE: NATURAL RESOURCES",
+    "units": 4
   },
   {
     "code": "MATH004",
@@ -1103,6 +1122,16 @@
   {
     "code": "MATH005A",
     "title": "THE PRINCIPLES OF CALCULUS 1",
+    "units": 5
+  },
+  {
+    "code": "MATH005B",
+    "title": "THE PRINCIPLES OF CALCULUS 2",
+    "units": 5
+  },
+  {
+    "code": "MATH005C",
+    "title": "THE PRINCIPLES OF CALCULUS 3",
     "units": 5
   },
   {
@@ -1181,8 +1210,43 @@
     "units": 4
   },
   {
+    "code": "MATH126",
+    "title": "COMBINATORICS",
+    "units": 4
+  },
+  {
+    "code": "MATH131",
+    "title": "LINEAR ALGEBRA I",
+    "units": 4
+  },
+  {
     "code": "MATH135A",
     "title": "INTRODUCTION TO NUMERICAL ANALYSIS 1",
+    "units": 4
+  },
+  {
+    "code": "MATH135B",
+    "title": "INTRODUCTION TO NUMERICAL ANALYSIS 2",
+    "units": 4
+  },
+  {
+    "code": "ME009",
+    "title": "ENGINEERING GRAPHICS AND DESIGN",
+    "units": 4
+  },
+  {
+    "code": "ME010",
+    "title": "STATICS",
+    "units": 4
+  },
+  {
+    "code": "ME018A",
+    "title": "INTRODUCTION TO ENGINEERING COMPUTATION",
+    "units": 4
+  },
+  {
+    "code": "ME018B",
+    "title": "INTRODUCTION TO COMPUTATIONAL MODELING IN MECHANICAL ENGINEERING",
     "units": 4
   },
   {
@@ -1194,5 +1258,20 @@
     "code": "PHYS040C",
     "title": "GENERAL PHYSICS",
     "units": 5
+  },
+  {
+    "code": "STAT107",
+    "title": "INTRODUCTION TO STATISTICAL COMPUTING WITH R",
+    "units": 4
+  },
+  {
+    "code": "STAT156A",
+    "title": "MATHEMATICAL STATISTICS WITH APPLICATIONS FOR DATA SCIENCE I",
+    "units": 4
+  },
+  {
+    "code": "STAT160A",
+    "title": "ELEMENTS OF PROBABILITY AND STATISTICAL THEORY",
+    "units": 4
   }
 ]
