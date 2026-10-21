@@ -108,7 +108,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS010A",
@@ -278,7 +279,8 @@
     "prereq": {
       "course": "CS100",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS111",
@@ -411,7 +413,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS130",
@@ -457,6 +460,26 @@
           "concurrentOk": false
         }
       ]
+    },
+    "offered": false
+  },
+  {
+    "code": "CS133",
+    "title": "COMPUTATIONAL GEOMETRY",
+    "units": 4,
+    "offered": false,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100"
+        },
+        {
+          "course": "CS111"
+        },
+        {
+          "course": "MATH031"
+        }
+      ]
     }
   },
   {
@@ -466,7 +489,8 @@
     "prereq": {
       "course": "CS100",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS141",
@@ -493,6 +517,22 @@
               "concurrentOk": false
             }
           ]
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS142",
+    "title": "ALGORITHM ENGINEERING",
+    "units": 4,
+    "offered": false,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100"
+        },
+        {
+          "course": "CS141"
         }
       ]
     }
@@ -529,7 +569,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS147",
@@ -550,7 +591,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS150",
@@ -672,7 +714,8 @@
     "prereq": {
       "course": "CS161",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS164",
@@ -730,6 +773,22 @@
     }
   },
   {
+    "code": "CS167",
+    "title": "INTRODUCTION TO BIG-DATA MANAGEMENT",
+    "units": 4,
+    "offered": false,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100"
+        },
+        {
+          "course": "CS111"
+        }
+      ]
+    }
+  },
+  {
     "code": "CS168",
     "title": "INTRODUCTION TO VERY LARGE SCALE INTEGRATION DESIGN",
     "units": 4,
@@ -753,7 +812,8 @@
     "prereq": {
       "course": "CS153",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS170",
@@ -864,7 +924,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS173",
@@ -901,7 +962,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS175",
@@ -910,6 +972,22 @@
     "prereq": {
       "course": "CS100",
       "concurrentOk": false
+    }
+  },
+  {
+    "code": "CS177",
+    "title": "MODELING AND SIMULATION",
+    "units": 4,
+    "offered": false,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100"
+        },
+        {
+          "course": "CS111"
+        }
+      ]
     }
   },
   {
@@ -936,7 +1014,8 @@
     "prereq": {
       "course": "CS178A",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS179G",
@@ -1020,7 +1099,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS182",
@@ -1038,7 +1118,8 @@
     "prereq": {
       "course": "CS100",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS189",
@@ -1105,6 +1186,12 @@
     "units": 1
   },
   {
+    "code": "ENGR101I",
+    "title": "PROFESSIONAL DEVELOPMENT AND MENTORING",
+    "units": 1,
+    "offered": false
+  },
+  {
     "code": "ENGR180W",
     "title": "TECHNICAL COMMUNICATIONS",
     "units": 4
@@ -1113,6 +1200,12 @@
     "code": "ENSC001",
     "title": "INTRODUCTION TO ENVIRONMENTAL SCIENCE: NATURAL RESOURCES",
     "units": 4
+  },
+  {
+    "code": "ENSC002",
+    "title": "INTRODUCTION TO ENVIRONMENTAL SCIENCE: ENVIRONMENTAL QUALITY",
+    "units": 4,
+    "offered": false
   },
   {
     "code": "MATH004",
@@ -1127,12 +1220,14 @@
   {
     "code": "MATH005B",
     "title": "THE PRINCIPLES OF CALCULUS 2",
-    "units": 5
+    "units": 5,
+    "offered": false
   },
   {
     "code": "MATH005C",
     "title": "THE PRINCIPLES OF CALCULUS 3",
-    "units": 5
+    "units": 5,
+    "offered": false
   },
   {
     "code": "MATH006A",
@@ -1212,7 +1307,8 @@
   {
     "code": "MATH126",
     "title": "COMBINATORICS",
-    "units": 4
+    "units": 4,
+    "offered": false
   },
   {
     "code": "MATH131",
@@ -1227,7 +1323,39 @@
   {
     "code": "MATH135B",
     "title": "INTRODUCTION TO NUMERICAL ANALYSIS 2",
-    "units": 4
+    "units": 4,
+    "offered": false
+  },
+  {
+    "code": "ME002",
+    "title": "INTRODUCTION TO MECHANICAL ENGINEERING",
+    "units": 4,
+    "offered": false,
+    "prereq": {
+      "or": [
+        {
+          "course": "PHYS040A"
+        },
+        {
+          "course": "PHYS002A"
+        },
+        {
+          "course": "PHYS02HA"
+        },
+        {
+          "course": "PHYS040HA"
+        },
+        {
+          "course": "PHYS041A"
+        }
+      ]
+    }
+  },
+  {
+    "code": "ME005",
+    "title": "THE SCIENCE OF MYTHBUSTING",
+    "units": 4,
+    "offered": false
   },
   {
     "code": "ME009",
@@ -1250,9 +1378,46 @@
     "units": 4
   },
   {
+    "code": "PHIL124",
+    "title": "FORMAL LOGIC",
+    "units": 4,
+    "offered": false,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS011"
+        },
+        {
+          "course": "MATH011"
+        },
+        {
+          "course": "CS120A"
+        },
+        {
+          "course": "EE120A"
+        },
+        {
+          "course": "CS150"
+        },
+        {
+          "course": "PHIL008"
+        },
+        {
+          "course": "PHIL008H"
+        }
+      ]
+    }
+  },
+  {
     "code": "PHYS040A",
     "title": "GENERAL PHYSICS",
     "units": 5
+  },
+  {
+    "code": "PHYS040B",
+    "title": "GENERAL PHYSICS",
+    "units": 5,
+    "offered": false
   },
   {
     "code": "PHYS040C",
@@ -1263,6 +1428,28 @@
     "code": "STAT107",
     "title": "INTRODUCTION TO STATISTICAL COMPUTING WITH R",
     "units": 4
+  },
+  {
+    "code": "STAT155",
+    "title": "PROBABILITY AND STATISTICS FOR SCIENCE AND ENGINEERING",
+    "units": 4,
+    "offered": false,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH009C",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH09HC",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH005C",
+          "concurrentOk": true
+        }
+      ]
+    }
   },
   {
     "code": "STAT156A",

@@ -52,6 +52,18 @@ describe("solver data model", () => {
     }
   });
 
+  it("marks a Course not offered this term", () => {
+    const course: Course = { code: "STAT155", title: "Probability and Statistics", units: 4, offered: false };
+
+    expect(course.offered).toBe(false);
+  });
+
+  it("treats an omitted offered field as offered", () => {
+    const course: Course = { code: "CS010A", title: "Introduction to Computer Science I", units: 4 };
+
+    expect(course.offered).toBeUndefined();
+  });
+
   it("accepts a RequirementGroup with preferSubjects", () => {
     const group: RequirementGroup = {
       id: "cs-bs-ud-tech-electives",

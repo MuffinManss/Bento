@@ -111,7 +111,10 @@ function main(): void {
     if (headingCount > 1) ambiguousHeadings.push(`${course.code} (${headingCount} heading matches, used the first)`);
     // No "Prerequisite(s):" label at all (as opposed to an explicit "...none.")
     // means the same thing here — some catalog entries just omit the line.
+    // A course can't be its own prereq — drop self-references (e.g. CS167's
+    // "CS 167 online section: enrollment in..." restriction note).
     const catalogLeaves = extractCatalogLeaves(clause ?? "");
+    catalogLeaves.delete(course.code);
     const parsedLeaves = course.prereq ? collectLeafCourses(course.prereq) : new Set<string>();
     const parsedCourseLeaves = new Set([...parsedLeaves].filter((l) => !l.startsWith("TEST:") && !l.startsWith("UNRESOLVED:")));
 

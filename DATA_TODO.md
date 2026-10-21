@@ -43,13 +43,17 @@ Source: UCR 2026-27 General Catalog (`raw/catalog-cs.pdf`), Department of Comput
 - `ENGR001I`, `ENGR101I`, and `MATH046` (catalog: "ENGR 001-I", "ENGR 101-I", "MATH 46") were originally guessed code formats, not verified live. Now confirmed correct against live Banner data once ENGR/MATH were added to the metadata scrape: ENGR001I = "Computer Science" (there's also an ENGR001G for Computer Engineering and ENGR001M for CS+Business — 001I is the right one), ENGR101I likewise, and MATH046 = "Introduction to Ordinary Differential Equations" (distinct from MATH045, the physical-sciences/engineering variant).
 - The catalog's engineering-elective depth list has what reads like a literal duplicate: "EE 020A & 30LA" and, later in the same sentence, "EE 20A" — transcribed as EE020A + EE030LA (once) rather than twice.
 
-**Course codes referenced by requirements.json with no courses.json entry** (subject never scraped, or not offered in any searched term): CS122B, CS133, CS142, CS167, CS177, ENGR101I, ENSC002, ME002, ME005, PHIL124, PHYS040B, STAT155
+**Courses with no live Banner section in any scraped term** (`scripts/lib/catalogOnlyCourses.ts`): CS133, CS142, CS167, CS177, ENSC002, ME002, ME005, PHIL124, STAT155, and ENGR101I were all hand-transcribed from this catalog's own course-description text instead, each marked `offered: false` since there's no evidence any of them ran in Fall/Winter/Spring 2025-26. Dropped non-course restrictions that can't be a Prereq leaf: CS167's online-section enrollment restriction, CS177's "C++ programming proficiency", PHIL124's "consent of instructor", STAT155's university-GE-style "or equivalent" disclaimers, and ENGR101I's class-standing/major restriction (confirmed via "ENGR 001 (E-Z)"'s letter key that I = Computer Science, matching live ENGR001I data).
+
+**CS122B could not be resolved at all** — no live Banner section in term 202640 or its CS fallback terms (202620, 202610), AND no standalone course-description entry anywhere in the catalog text (only appears inside other courses' technical-elective lists, e.g. "CS 110, CS 122A, CS 122B, CS 130..."). It's likely only described under a cross-listed pair in a different catalog section (CS122A's own catalog entry couldn't be found either, for the same reason — see check-prereqs.ts's "not found" list). Left out of courses.json rather than guessed; still listed in `cs-bs-ud-tech-electives`'s `courses` array as a known elective option.
+
+**Course codes referenced by requirements.json with no courses.json entry** (subject never scraped, or not offered in any searched term, and no catalog description found): CS122B
 <!-- END parse-catalog.ts -->
 
 <!-- BEGIN check-prereqs.ts -->
 ## check-prereqs.ts
 
-Cross-checked every in-scope CS course's Banner-sourced Prereq tree against the catalog's own "Prerequisite(s):" text (`raw/catalog-text/full-raw.txt`, see the file header comment in `scripts/check-prereqs.ts` for why `-raw` mode specifically). Last run: 50 match, 1 mismatch, 3 not found in catalog text, 0 ambiguous heading(s).
+Cross-checked every in-scope CS course's Banner-sourced Prereq tree against the catalog's own "Prerequisite(s):" text (`raw/catalog-text/full-raw.txt`, see the file header comment in `scripts/check-prereqs.ts` for why `-raw` mode specifically). Last run: 54 match, 1 mismatch, 3 not found in catalog text, 0 ambiguous heading(s).
 
 **CS178A was previously flagged as a grouping anomaly (see scrape-ucr.ts section) but is confirmed CORRECT**: the catalog says "Prerequisite(s): CS 141, ENGR 180W" (comma = AND), matching the parsed tree `{and: [CS141, ENGR180W]}` exactly. No fix needed.
 

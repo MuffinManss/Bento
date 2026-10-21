@@ -20,6 +20,8 @@ export type Course = {
   title: string;
   units: number;
   prereq?: Prereq;
+  /** False if the course isn't offered this term — shown in the completed-courses checklist, never scheduled. Omitted (not false) means it is offered. */
+  offered?: boolean;
 };
 
 export type Activity = {

@@ -9,11 +9,12 @@ export const METADATA_SUBJECTS = ["MATH", "PHYS", "EE", "ENGR", "STAT", "CHEM", 
 // fallback-term resolution for its prereq-leaf courses not offered now.
 const PRIMARY_TERM_SUBJECTS = ["CS", ...METADATA_SUBJECTS];
 
-// Catalog courses not offered in the primary term get a second look in these
-// older terms — but only for CS/MATH, per the scope this was asked for.
+// Catalog courses not offered in the primary term get a second look in
+// these older terms.
 const FALLBACK_TERMS: Record<string, string[]> = {
   CS: ["202620", "202610"],
   MATH: ["202620", "202610"],
+  PHYS: ["202620", "202610"],
 };
 
 /**

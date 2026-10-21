@@ -12,11 +12,12 @@ function unitsFor(row: BannerSection, warnings: string[]): number {
   return row.creditHourHigh ?? row.creditHourLow ?? 0;
 }
 
-export function buildCourse(row: BannerSection, prereq: Prereq | undefined, warnings: string[]): Course {
+export function buildCourse(row: BannerSection, prereq: Prereq | undefined, warnings: string[], offered = true): Course {
   const course: Course = {
     code: row.subjectCourse,
     title: decodeEntities(row.courseTitle),
     units: unitsFor(row, warnings),
   };
-  return prereq ? { ...course, prereq } : course;
+  const withPrereq = prereq ? { ...course, prereq } : course;
+  return offered ? withPrereq : { ...withPrereq, offered: false };
 }

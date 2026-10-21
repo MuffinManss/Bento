@@ -112,7 +112,7 @@ async function main(): Promise<void> {
     if (leaf.startsWith("TEST:") || leaf.startsWith("UNRESOLVED:")) continue; // already flagged by the parser
     const row = metadataRows.get(leaf);
     if (row) {
-      courses.push(buildCourse(row, trees.get(leaf), warnings));
+      courses.push(buildCourse(row, trees.get(leaf), warnings, row.term === term));
     } else {
       missingLeaves.push(leaf);
     }
