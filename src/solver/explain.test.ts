@@ -33,6 +33,17 @@ describe("explainInfeasibility", () => {
     );
   });
 
+  it("suggests the exact filters to apply, with unit relaxations set to the reported value", () => {
+    const blocked = input({ daysOff: ["M", "F"] });
+    const [monOff, , minUnits] = explainInfeasibility(blocked).relaxations;
+    expect(monOff.suggestedFilters).toEqual({ ...blocked.filters, daysOff: ["F"] });
+    expect(minUnits.suggestedFilters).toEqual({ ...blocked.filters, minUnits: 4 });
+    // Applying a suggestion really does make the search feasible.
+    for (const relaxation of explainInfeasibility(blocked).relaxations) {
+      expect(generateSchedules({ ...blocked, filters: relaxation.suggestedFilters }).schedules.length).toBeGreaterThan(0);
+    }
+  });
+
   it("only lists relaxations that actually help", () => {
     const explanation = explainInfeasibility(input({ earliestStart: "12:00", daysOff: ["F"] }));
     expect(explanation.relaxations.map((r) => r.constraint)).toEqual(["no class before 12:00"]);

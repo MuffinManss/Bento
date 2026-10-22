@@ -17,6 +17,8 @@ export type Relaxation = {
   optionCount: number;
   /** True if the search hit its node cap, so optionCount is a lower bound. */
   atLeast: boolean;
+  /** The student's filters with just this one change applied — what an "apply" button should set. */
+  suggestedFilters: Filters;
 };
 
 export type Explanation = {
@@ -28,13 +30,25 @@ export type Explanation = {
   message: string;
 };
 
+function units(count: number): string {
+  return `${count} unit${count === 1 ? "" : "s"}`;
+}
+
 const DAY_NAMES: Record<Day, string> = { M: "Mon", T: "Tue", W: "Wed", R: "Thu", F: "Fri" };
 /** Unit ceiling used when testing "what if the max-units filter were lifted". */
 const RELAXED_MAX_UNITS = 30;
 /** Node cap per relaxation re-run — there can be a dozen of them. */
 const RELAXATION_MAX_NODES = 10_000;
 
-type Trial = { filter: RelaxedFilter; constraint: string; filters: Filters; change: (unitsFound: number[]) => string };
+type Trial = {
+  filter: RelaxedFilter;
+  constraint: string;
+  /** Filters to search with. */
+  filters: Filters;
+  change: (unitsFound: number[]) => string;
+  /** Filters to suggest, given the unit totals found (defaults to `filters`). */
+  suggest?: (unitsFound: number[]) => Filters;
+};
 
 function without<T>(items: T[], item: T): T[] {
   return items.filter((other) => other !== item);
@@ -62,7 +76,8 @@ function trials(filters: Filters): Trial[] {
       filter: "minUnits",
       constraint: `at least ${filters.minUnits} units`,
       filters: { ...filters, minUnits: 0 },
-      change: (unitsFound) => `lowering the minimum to ${Math.max(...unitsFound)} units`,
+      change: (unitsFound) => `lowering the minimum to ${units(Math.max(...unitsFound))}`,
+      suggest: (unitsFound) => ({ ...filters, minUnits: Math.max(...unitsFound) }),
     });
   }
   if (filters.maxUnits < RELAXED_MAX_UNITS) {
@@ -70,7 +85,8 @@ function trials(filters: Filters): Trial[] {
       filter: "maxUnits",
       constraint: `at most ${filters.maxUnits} units`,
       filters: { ...filters, maxUnits: RELAXED_MAX_UNITS },
-      change: (unitsFound) => `raising the maximum to ${Math.min(...unitsFound)} units`,
+      change: (unitsFound) => `raising the maximum to ${units(Math.min(...unitsFound))}`,
+      suggest: (unitsFound) => ({ ...filters, maxUnits: Math.min(...unitsFound) }),
     });
   }
   for (const code of filters.mustInclude) {
@@ -111,12 +127,14 @@ export function explainInfeasibility(input: SolverInput): Explanation {
   for (const trial of trials(input.filters)) {
     const { ranked, truncated } = findAllSchedules({ ...input, filters: trial.filters }, RELAXATION_MAX_NODES);
     if (ranked.length === 0) continue;
+    const unitsFound = ranked.map((schedule) => schedule.units);
     relaxations.push({
       filter: trial.filter,
       constraint: trial.constraint,
-      change: trial.change(ranked.map((schedule) => schedule.units)),
+      change: trial.change(unitsFound),
       optionCount: ranked.length,
       atLeast: truncated,
+      suggestedFilters: trial.suggest?.(unitsFound) ?? trial.filters,
     });
   }
 
