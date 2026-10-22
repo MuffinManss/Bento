@@ -5,7 +5,7 @@ Ambiguities, gaps, and assumptions found while scraping/parsing UCR data. Never 
 <!-- BEGIN scrape-ucr.ts -->
 ## scrape-ucr.ts
 
-Last run: term 202640, 39 CS courses offered this term (39 offerings), 60 CS courses total had their prerequisites fetched (including 21 not offered this term but still real prereq leaves/electives), 55 of those had a parsed prerequisite tree, 64 total courses.json entries.
+Last run: term 202640, 39 CS courses offered this term, 60 CS courses total had their prerequisites fetched (including 21 not offered this term but still real prereq leaves/electives), 55 of those had a parsed prerequisite tree. Plus 40 MATH/PHYS/ENGR/EE/STAT courses that appear in requirements.json or a CS prereq (35 with sections this term), 38 with a parsed prerequisite tree. 74 offerings, 80 total courses.json entries.
 
 **Term used:** Requested term 202640 ("Fall 2026 (View Only)") is the newest term Banner currently publishes.
 
@@ -13,7 +13,9 @@ Last run: term 202640, 39 CS courses offered this term (39 offerings), 60 CS cou
 
 **AND/OR grouping assumption:** prerequisite HTML wraps every single leaf term in its own parentheses, so parens carry no real nesting information. The tree is built by treating "or" as binding adjacent leaf terms (equivalent/alternate courses) and "and" as chaining those groups — this matched every multi-term example seen, but is an inference, not something the HTML states directly. Cross-checked against the catalog's own course-description text with `npm run check-prereqs` (see its DATA_TODO section below for results).
 
-**Scope:** 250 CS section rows were excluded before any processing — grad-level courses (200+) and research/individual-study/internship/colloquium types (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302). None of these can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see `scripts/lib/scopeFilter.ts`).
+**Scope:** 250 CS section rows were excluded before any processing — grad-level courses (200+), research/individual-study/internship/colloquium numbers (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302), and research/thesis/internship/individual-study schedule types. MATH/PHYS/ENGR/EE/STAT use the same rule (200+ and 190-199 excluded) and are further limited to courses in requirements.json or a CS prereq. None of the excluded rows can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see `scripts/lib/scopeFilter.ts`).
+
+**Linked sections:** Banner's `fetchLinkedSections` returns every valid lecture+activities combination. These are grouped by activity type into `Lecture.linked` (one `ActivityGroup` per type); the solver takes one activity from EACH group. Every lecture's combinations are checked to be the exact cross product of its groups — any that aren't are listed in the warnings below.
 
 **Variable-unit / grouping / leaf-resolution warnings from this run:**
 - CS178A: found a parenthesized group with 2 leaf terms (expected exactly 1) — the flat and/or grouping assumption may not hold here. Group text: "Course or Test: Computer Science 141 
@@ -23,8 +25,34 @@ and
  Course or Test: Engineering 180W 
  Minimum Grade of D-
  May not be taken concurrently."
+- MATH004: unrecognized prerequisite line, ignored: "Math: Score for Prereq 622 to 623"
+- MATH004: unrecognized prerequisite line, ignored: "Math: Score for Prereq 630 to 631"
+- MATH004: unrecognized prerequisite line, ignored: "Math: Score for Prereq 624 to 625"
+- MATH004: unrecognized prerequisite line, ignored: "Math: Score for Prereq 626 to 627"
+- MATH004: connector count (1) didn't match leaves-1 (0) — tree below may be wrong, verify manually.
+- MATH005A: unrecognized prerequisite line, ignored: "Math: Score for Prereq 626 to 627"
+- MATH005A: unrecognized prerequisite line, ignored: "Math: Score for Prereq 624 to 625"
+- MATH005A: unrecognized prerequisite line, ignored: "Math: Score for Prereq 620 to 621"
+- MATH005A: prereq HTML had content but no "Course or Test:" leaves were found.
+- MATH006A: unrecognized prerequisite line, ignored: "Math: Score for Prereq 614 to 615"
+- MATH006A: unrecognized prerequisite line, ignored: "Math: Score for Prereq 628 to 629"
+- MATH006A: connector count (1) didn't match leaves-1 (0) — tree below may be wrong, verify manually.
+- MATH006B: found a parenthesized group with 2 leaf terms (expected exactly 1) — the flat and/or grouping assumption may not hold here. Group text: "Course or Test: Mathematics 006A 
+ Minimum Grade of C-
+ May not be taken concurrently. 
+and
+ Course or Test: Mathematics 06LB 
+ May be taken concurrently."
+- MATH007A: unrecognized prerequisite line, ignored: "Math: Score for Prereq 616 to 617"
+- MATH009A: unrecognized prerequisite line, ignored: "Math: Score for Prereq 612 to 613"
+- MATH022: unrecognized prerequisite line, ignored: "Math: Score for Prereq 610 to 611"
+- EE030LA: found a parenthesized group with 0 leaf terms (expected exactly 1) — the flat and/or grouping assumption may not hold here. Group text: "Rule: PICK2: Pick 2 of 5 courses  for a total of 2 conditions"
+- EE030LA: unrecognized prerequisite line, ignored: "Rule: PICK2: Pick 2 of 5 courses  for a total of 2 conditions Electrical Engineering 020  May not be taken concurrently. Electrical Engineering 020A  May be taken concurrently. Electrical Engineering 020B  May be taken concurrently. Mathematics 045  May be taken concurrently. Mathematics 046  May be taken concurrently. End of Rule PICK2"
+- EE030LA: connector count (2) didn't match leaves-1 (1) — tree below may be wrong, verify manually.
 - CS119L: no "Lecture" type section found; treating each of its 1 section(s) (Laboratory) as a standalone Lecture with no linked activity.
 - CS189: no "Lecture" type section found; treating each of its 1 section(s) (Activity) as a standalone Lecture with no linked activity.
+- ENGR001I: no "Lecture" type section found; treating each of its 1 section(s) (Activity) as a standalone Lecture with no linked activity.
+- EE030LA: no "Lecture" type section found; treating each of its 4 section(s) (Laboratory) as a standalone Lecture with no linked activity.
 - Referenced in a CS prerequisite but no title/units available (not offered in any searched term, or its subject wasn't scraped — only CS/MATH/PHYS/EE/ENGR/STAT/CHEM/ME/PHIL/LING/ECON/ENSC/BIEN were): CS167, MATH09HA, MATH09HB, MATH09HC, STAT155
 <!-- END scrape-ucr.ts -->
 
@@ -71,9 +99,15 @@ with a grade of C- or better; or equivalent"
 <!-- BEGIN solver -->
 ## solver
 
-**TODO — sections.json only has CS sections.** The scheduler treats "has an offering in sections.json" as "offered this term", so every non-CS requirement course (MATH 009B/C, MATH 010A, MATH 031, PHYS 040A-C, ENGR 001I/180W, EE electives, STAT 155, ...) can never appear in a generated schedule, even when the student is eligible for it. Real schedules for freshmen/sophomores will therefore look lighter than they should. Fix: scrape MATH/PHYS/ENGR/EE/STAT sections into sections.json. `npm run samples` prints the affected courses per student.
+**Resolved — non-CS section data.** `scrape-ucr.ts` now also scrapes sections + prerequisite trees for MATH/PHYS/ENGR/EE/STAT (term 202640), limited to courses in requirements.json or referenced by a CS prereq, with the same undergrad scope filter. Remaining requirement courses with no section data are ME/BIEN/ENSC engineering electives (BIEN010, ENSC001, ME009, ME010, ME018A, ME018B) — those subjects aren't scraped for sections yet.
 
-**TODO — non-CS prerequisite trees are missing.** Only CS courses had prerequisites fetched, so e.g. PHYS040C / MATH009C show up as "eligible" for a student who hasn't taken PHYS040A / MATH009B. Harmless today (no non-CS sections exist), but it must be filled in alongside the section data above.
+**Resolved — linked activity groups.** Banner's `fetchLinkedSections` lists every valid lecture+activities combination. For CS100 and PHYS040A/C these are one DIS **and** one LAB; every lecture's combinations were verified to be the exact cross product of its per-type groups, so `Lecture.linked` is now `ActivityGroup[]` (one per type) and the solver takes one activity from each group.
 
-**Data-model limitation:** some lectures link both a DIS and a LAB (e.g. CS100). Per CLAUDE.md the solver picks exactly ONE linked activity per lecture; if UCR actually requires one DIS *and* one LAB for those courses, the Activity model needs a per-type choice.
+**TODO — EE030LA prereq tree is wrong (too strict).** Banner's rule is "PHYS 040C/040HC (concurrent ok) AND pick 2 of {EE 020, EE 020A, EE 020B, MATH 045, MATH 046}". The parser can't represent `PICK2` (see scrape-ucr.ts warnings) and produced `PHYS040C AND PHYS040HC`, which nobody satisfies — so EE030LA is never suggested. Needs either a pick-N parser case or a hand fix.
+
+**TODO — MATH placement-score prereqs are dropped (too strict).** Lines like "Math: Score for Prereq 612 to 613" aren't parsed, so e.g. MATH009A only accepts MATH005/005A/006B and MATH004/006A only MATH003 — an incoming freshman who placed in via the exam is never offered MATH009A. Harmless for students who already have MATH009A. A fix needs a "placement" pseudo-course the student can tick.
+
+**TODO — prereq leaves with no courses.json entry (can't be ticked in the checklist).** ENGR180W's only prereqs (WRIT020, WRIT020S, ENGL001B) aren't in courses.json, so ENGR180W can never be suggested unless the completed list comes from pasted audit text. Also missing but harmless (OR-alternatives): honors MATH09HA/HB/HC, PHYS040HB/HC, MATH005.
+
+**TODO — requirement group display names look swapped.** `cs-bs-ld-linear-algebra` is named "Linear Algebra" but holds MATH010A ("Calculus of Several Variables"); `cs-bs-ld-diffeq-or-circuits` is named "Differential Equations or Circuit Analysis" but holds MATH031 ("Applied Linear Algebra") / EE020B. Course membership looks right; only the names (hand-transcribed in parse-catalog.ts) need re-checking against the catalog.
 <!-- END solver -->

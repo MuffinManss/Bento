@@ -11,7 +11,7 @@ import { courseBlocker, generateSchedules, weekStats } from "../src/solver/gener
 import type { SolverInput } from "../src/solver/generate";
 import { prereqSatisfied } from "../src/solver/prereqs";
 import { validateSchedule } from "../src/solver/testing/validateSchedule";
-import type { Meeting, Schedule } from "../src/solver/types";
+import type { Activity, Lecture, Meeting, Schedule, ScheduledCourse } from "../src/solver/types";
 
 function table(rows: string[][]): string {
   const widths = rows[0].map((_, column) => Math.max(...rows.map((row) => row[column].length)));
@@ -23,25 +23,34 @@ function when(meetings: Meeting[], online: boolean | undefined): string[] {
   return meetings.map((meeting) => `${meeting.days.join("").padEnd(3)} ${meeting.start}-${meeting.end}${meeting.location ? `  ${meeting.location}` : ""}`);
 }
 
+function lectureOf(entry: ScheduledCourse): Lecture | undefined {
+  return offerings.find((offering) => offering.course === entry.course)?.lectures.find((candidate) => candidate.id === entry.lectureId);
+}
+
+/** The chosen activity from each of the lecture's linked groups. */
+function activitiesOf(entry: ScheduledCourse, lecture: Lecture | undefined): Activity[] {
+  return (lecture?.linked ?? []).flatMap((group, index) => group.activities.filter((activity) => activity.id === entry.activityIds[index]));
+}
+
 function scheduleTable(schedule: Schedule): string {
   const rows: string[][] = [["Course", "Title", "Part", "CRN", "Days/time", "Requirement"]];
   for (const entry of schedule.courses) {
     const course = courses.find((candidate) => candidate.code === entry.course);
-    const lecture = offerings.find((offering) => offering.course === entry.course)?.lectures.find((candidate) => candidate.id === entry.lectureId);
-    const activity = lecture?.linked.find((candidate) => candidate.id === entry.activityId);
+    const lecture = lectureOf(entry);
     const requirement = requirements.find((group) => group.id === entry.requirementId)?.name ?? entry.requirementId;
     const lectureTimes = when(lecture?.meetings ?? [], lecture?.online);
     lectureTimes.forEach((time, index) => rows.push(index === 0 ? [entry.course, (course?.title ?? "").slice(0, 32), "LEC", entry.lectureId, time, requirement] : ["", "", "", "", time, ""]));
-    if (activity) when(activity.meetings, activity.online).forEach((time, index) => rows.push(["", "", index === 0 ? activity.type : "", index === 0 ? activity.id : "", time, ""]));
+    for (const activity of activitiesOf(entry, lecture)) {
+      when(activity.meetings, activity.online).forEach((time, index) => rows.push(["", "", index === 0 ? activity.type : "", index === 0 ? activity.id : "", time, ""]));
+    }
   }
   return table(rows);
 }
 
 function meetingsOf(schedule: Schedule): Meeting[] {
   return schedule.courses.flatMap((entry) => {
-    const lecture = offerings.find((offering) => offering.course === entry.course)?.lectures.find((candidate) => candidate.id === entry.lectureId);
-    const activity = lecture?.linked.find((candidate) => candidate.id === entry.activityId);
-    return [...(lecture && !lecture.online ? lecture.meetings : []), ...(activity && !activity.online ? activity.meetings : [])];
+    const lecture = lectureOf(entry);
+    return [...(lecture && !lecture.online ? lecture.meetings : []), ...activitiesOf(entry, lecture).flatMap((activity) => (activity.online ? [] : activity.meetings))];
   });
 }
 

@@ -1138,47 +1138,175 @@
   {
     "code": "EE005",
     "title": "CIRCUITS AND ELECTRONICS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "PHYS040C",
+          "concurrentOk": false
+        },
+        {
+          "course": "PHYS040HC",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "EE016",
     "title": "DATA ANALYSIS FOR ENGINEERING APPLICATIONS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "course": "CS010B",
+      "concurrentOk": false
+    }
   },
   {
     "code": "EE020A",
     "title": "INTRODUCTION TO ORDINARY DIFFERENTIAL EQUATIONS FOR PHYSICAL SCIENCES AND ENGINEERING",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "EE020B",
     "title": "LINEAR METHODS FOR ENGINEERING ANALYSIS AND DESIGN USING MATLAB",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS010A",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "MATH009A",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH09HA",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "code": "EE030LA",
     "title": "FUNDAMENTALS OF ELEC CIRCUITS I LABORATORY",
-    "units": 1
+    "units": 1,
+    "prereq": {
+      "and": [
+        {
+          "course": "PHYS040C",
+          "concurrentOk": true
+        },
+        {
+          "course": "PHYS040HC",
+          "concurrentOk": true
+        }
+      ]
+    }
   },
   {
     "code": "EE114",
     "title": "PROBABILITY, RANDOM VARIABLES, AND RANDOM PROCESSES IN ELECTRICAL ENGINEERING",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "EE020A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH045",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH046",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "EE120A",
     "title": "LOGIC DESIGN",
-    "units": 5
+    "units": 5,
+    "prereq": {
+      "course": "CS061",
+      "concurrentOk": false
+    }
   },
   {
     "code": "EE120B",
     "title": "INTRODUCTION TO EMBEDDED SYSTEMS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "CS010C",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE016",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "CS120A",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE120A",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "code": "EE168",
     "title": "INTRODUCTION TO VERY LARGE SCALE INTEGRATION DESIGN",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS120A",
+          "concurrentOk": false
+        },
+        {
+          "course": "EE120A",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "ENGR001I",
@@ -1194,7 +1322,23 @@
   {
     "code": "ENGR180W",
     "title": "TECHNICAL COMMUNICATIONS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "WRIT020",
+          "concurrentOk": false
+        },
+        {
+          "course": "WRIT020S",
+          "concurrentOk": false
+        },
+        {
+          "course": "ENGL001B",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "ENSC001",
@@ -1210,7 +1354,11 @@
   {
     "code": "MATH004",
     "title": "INTRODUCTION TO COLLEGE MATHEMATICS FOR BUSINESS AND THE SOCIAL SCIENCES",
-    "units": 5
+    "units": 5,
+    "prereq": {
+      "course": "MATH003",
+      "concurrentOk": false
+    }
   },
   {
     "code": "MATH005A",
@@ -1221,109 +1369,417 @@
     "code": "MATH005B",
     "title": "THE PRINCIPLES OF CALCULUS 2",
     "units": 5,
+    "prereq": {
+      "course": "MATH005A",
+      "concurrentOk": false
+    },
     "offered": false
   },
   {
     "code": "MATH005C",
     "title": "THE PRINCIPLES OF CALCULUS 3",
     "units": 5,
+    "prereq": {
+      "course": "MATH005B",
+      "concurrentOk": false
+    },
     "offered": false
   },
   {
     "code": "MATH006A",
     "title": "PRECALCULUS: AN INTRODUCTION TO FUNCTIONS 1",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "course": "MATH003",
+      "concurrentOk": false
+    }
   },
   {
     "code": "MATH006B",
     "title": "PRECALCULUS: AN INTRODUCTION TO FUNCTIONS 2",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "MATH006A",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "MATH06LB",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH006A",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "code": "MATH007A",
     "title": "CALCULUS FOR LIFE SCIENCES",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH005A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH006B",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH007B",
     "title": "CALCULUS FOR LIFE SCIENCES",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HA",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH009A",
     "title": "FIRST-YEAR CALCULUS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH005A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH006B",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH009B",
     "title": "FIRST YEAR CALCULUS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HA",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH009C",
     "title": "FIRST YEAR CALCULUS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH010A",
     "title": "CALCULUS OF SEVERAL VARIABLES",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH010B",
     "title": "CALCULUS OF SEVERAL VARIABLES",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "course": "MATH010A",
+      "concurrentOk": false
+    }
   },
   {
     "code": "MATH011",
     "title": "INTRODUCTION TO DISCRETE STRUCTURES",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS009A",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS010A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH022",
     "title": "CALCULUS FOR BUSINESS",
-    "units": 5
+    "units": 5,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH004",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH006B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH005A",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH031",
     "title": "APPLIED LINEAR ALGEBRA",
-    "units": 5
+    "units": 5,
+    "prereq": {
+      "or": [
+        {
+          "course": "CS010A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH045",
     "title": "INTRODUCTION TO ORDINARY DIFFERENTIAL EQUATIONS FOR PHYSICAL SCIENCES AND ENGINEERING",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH046",
     "title": "INTRODUCTION TO ORDINARY DIFFERENTIAL EQUATIONS",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH007B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009B",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH09HB",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH120",
     "title": "OPTIMIZATION",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "MATH010A",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH031",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "MATH126",
     "title": "COMBINATORICS",
     "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH011",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS011",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH110",
+          "concurrentOk": false
+        }
+      ]
+    },
     "offered": false
   },
   {
     "code": "MATH131",
     "title": "LINEAR ALGEBRA I",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "MATH010A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH031",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH110",
+          "concurrentOk": true
+        }
+      ]
+    }
   },
   {
     "code": "MATH135A",
     "title": "INTRODUCTION TO NUMERICAL ANALYSIS 1",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS010A",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH031",
+          "concurrentOk": true
+        }
+      ]
+    }
   },
   {
     "code": "MATH135B",
     "title": "INTRODUCTION TO NUMERICAL ANALYSIS 2",
     "units": 4,
+    "prereq": {
+      "course": "MATH135A",
+      "concurrentOk": false
+    },
     "offered": false
   },
   {
@@ -1411,23 +1867,143 @@
   {
     "code": "PHYS040A",
     "title": "GENERAL PHYSICS",
-    "units": 5
+    "units": 5,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "MATH005B",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH007A",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH009A",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH09HA",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "MATH007B",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH009B",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH09HB",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH005C",
+              "concurrentOk": true
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "code": "PHYS040B",
     "title": "GENERAL PHYSICS",
     "units": 5,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "MATH009C",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH09HC",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH005C",
+              "concurrentOk": true
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "PHYS040A",
+              "concurrentOk": false
+            },
+            {
+              "course": "PHYS040HA",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    },
     "offered": false
   },
   {
     "code": "PHYS040C",
     "title": "GENERAL PHYSICS",
-    "units": 5
+    "units": 5,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "MATH009C",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH09HC",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH005C",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "course": "PHYS040B",
+              "concurrentOk": false
+            },
+            {
+              "course": "PHYS040HB",
+              "concurrentOk": false
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "code": "STAT107",
     "title": "INTRODUCTION TO STATISTICAL COMPUTING WITH R",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "STAT008",
+          "concurrentOk": false
+        },
+        {
+          "course": "STAT010",
+          "concurrentOk": false
+        }
+      ]
+    }
   },
   {
     "code": "STAT155",
@@ -1454,11 +2030,43 @@
   {
     "code": "STAT156A",
     "title": "MATHEMATICAL STATISTICS WITH APPLICATIONS FOR DATA SCIENCE I",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH005C",
+          "concurrentOk": false
+        },
+        {
+          "course": "MATH009C",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH09HC",
+          "concurrentOk": true
+        }
+      ]
+    }
   },
   {
     "code": "STAT160A",
     "title": "ELEMENTS OF PROBABILITY AND STATISTICAL THEORY",
-    "units": 4
+    "units": 4,
+    "prereq": {
+      "or": [
+        {
+          "course": "MATH009C",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH09HC",
+          "concurrentOk": true
+        },
+        {
+          "course": "MATH005C",
+          "concurrentOk": true
+        }
+      ]
+    }
   }
 ]

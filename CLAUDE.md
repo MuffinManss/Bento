@@ -61,9 +61,12 @@ type Prereq =
 
 type Course = { code: string; title: string; units: number; prereq?: Prereq };
 
-type Activity = { id: string; type: "LAB" | "DIS"; meetings: Meeting[] };
-type Lecture = { id: string; instructor?: string; meetings: Meeting[]; linked: Activity[] };
-// UCR rule: a lecture and ONE of its linked activities must be taken together.
+type ActivityType = "LAB" | "DIS" | "LCA" | "WRK" | "ACT" | "TUT" | "SEM"; // Banner meeting-type codes
+type Activity = { id: string; type: ActivityType; meetings: Meeting[]; online?: boolean };
+type ActivityGroup = { type: ActivityType; activities: Activity[] }; // one group per linked type
+type Lecture = { id: string; instructor?: string; meetings: Meeting[]; linked: ActivityGroup[]; online?: boolean };
+// UCR rule: a lecture is taken with exactly ONE activity from EACH of its linked groups
+// (e.g. CS100 = lecture + one DIS + one LAB).
 type Offering = { course: string; lectures: Lecture[] };
 
 type RequirementGroup = {
@@ -78,7 +81,7 @@ type Filters = {
   daysOff: Day[]; mustInclude: string[]; exclude: string[];
 };
 
-type ScheduledCourse = { course: string; lectureId: string; activityId?: string; requirementId: string };
+type ScheduledCourse = { course: string; lectureId: string; activityIds: string[]; requirementId: string }; // one id per linked group
 type Schedule = { courses: ScheduledCourse[]; units: number; score: number };
 ```
 
@@ -87,7 +90,7 @@ type Schedule = { courses: ScheduledCourse[]; units: number; score: number };
    requirement group AND offered this term AND not excluded.
 2. Priority per course: lower-division/core first, then courses that unlock the most downstream courses.
 3. Enumerate course sets whose units are within [minUnits, maxUnits]; mustInclude courses are forced in.
-4. For each course set, backtrack over (lecture, linked activity) choices; prune on any time overlap or filter
+4. For each course set, backtrack over (lecture, one activity per linked group) choices; prune on any time overlap or filter
    violation (days off, earliest/latest).
 5. Score valid schedules (higher = better): requirement priority, fewer campus days, fewer gaps > 2h, fewer
    early classes. Deduplicate (two schedules that differ only by section count as distinct, but prefer variety

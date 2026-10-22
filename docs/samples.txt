@@ -1,0 +1,151 @@
+====================================================================================================
+Freshman after first quarter
+Completed: CS010A, MATH009A, ENGR001I
+Filters: 12-16 units
+Eligible but NO SECTION DATA this term (can't be scheduled): BIEN010, ENSC001, ME018A, ME018B, ME009, ME010
+Found 845 schedules; showing top 4.
+
+Option 1: 16 units | score 1245 | 5 campus days, 0 gaps >2h, 1 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+CS010B    INTRODUCTION TO COMPUTER SCIENCE  LEC   30948  MWF 13:00-13:50  UTLF 0415  Lower-Division CS Core
+                                            LAB   32708  R   08:00-09:50  UTLF 0204
+CS061     MACHINE ORGANIZATION AND ASSEMBL  LEC   13049  TR  11:00-12:20  SSC 235    Lower-Division CS Core
+                                            LAB   32714  W   10:00-11:50  UTLF 0203
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+                                            DIS   34884  W   09:00-09:50  SKYE 171
+MATH009B  FIRST YEAR CALCULUS               LEC   33520  TR  12:30-13:50  UTLF 0107  Calculus Sequence (choose one track)
+                                            DIS   33523  F   15:00-15:50  SPR 2360
+
+Option 2: 16 units | score 1235 | 5 campus days, 0 gaps >2h, 2 early days | validator OK
+Course    Title                             Part  CRN    Days/time                    Requirement
+CS010B    INTRODUCTION TO COMPUTER SCIENCE  LEC   30949  MWF 11:00-11:50  UTLF 0315   Lower-Division CS Core
+                                            LAB   32711  R   14:00-15:50  UTLF 0206
+CS011     INTRODUCTION TO DISCRETE STRUCTU  LEC   23198  MW  08:00-09:20  BRNHL A125  Introduction to Discrete Structures
+                                            DIS   23204  F   14:00-14:50  INTS 2134
+CS061     MACHINE ORGANIZATION AND ASSEMBL  LEC   13048  TR  09:30-10:50  SSC 235     Lower-Division CS Core
+                                            LAB   32715  W   12:00-13:50  UTLF 0203
+MATH009B  FIRST YEAR CALCULUS               LEC   33520  TR  12:30-13:50  UTLF 0107   Calculus Sequence (choose one track)
+                                            DIS   33521  F   13:00-13:50  SPR 2360
+
+Option 3: 16 units | score 1235 | 5 campus days, 0 gaps >2h, 2 early days | validator OK
+Course    Title                             Part  CRN    Days/time                    Requirement
+CS010B    INTRODUCTION TO COMPUTER SCIENCE  LEC   30949  MWF 11:00-11:50  UTLF 0315   Lower-Division CS Core
+                                            LAB   32711  R   14:00-15:50  UTLF 0206
+CS061     MACHINE ORGANIZATION AND ASSEMBL  LEC   13048  TR  09:30-10:50  SSC 235     Lower-Division CS Core
+                                            LAB   32715  W   12:00-13:50  UTLF 0203
+MATH009B  FIRST YEAR CALCULUS               LEC   33520  TR  12:30-13:50  UTLF 0107   Calculus Sequence (choose one track)
+                                            DIS   33521  F   13:00-13:50  SPR 2360
+MATH011   INTRODUCTION TO DISCRETE STRUCTU  LEC   23423  MW  08:00-09:20  BRNHL A125  Introduction to Discrete Structures
+                                            DIS   23919  F   14:00-14:50  INTS 2134
+
+Option 4: 16 units | score 1205 | 5 campus days, 2 gaps >2h, 2 early days | validator OK
+Course  Title                             Part  CRN    Days/time                    Requirement
+CS010B  INTRODUCTION TO COMPUTER SCIENCE  LEC   30948  MWF 13:00-13:50  UTLF 0415   Lower-Division CS Core
+                                          LAB   32710  R   12:00-13:50  UTLF 0204
+CS011   INTRODUCTION TO DISCRETE STRUCTU  LEC   23198  MW  08:00-09:20  BRNHL A125  Introduction to Discrete Structures
+                                          DIS   30105  F   15:00-15:50  INTS 2136
+CS061   MACHINE ORGANIZATION AND ASSEMBL  LEC   13048  TR  09:30-10:50  SSC 235     Lower-Division CS Core
+                                          LAB   32714  W   10:00-11:50  UTLF 0203
+EE020B  LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107   Differential Equations or Circuit Analysis
+                                          DIS   34883  T   18:30-19:20  CHUNG 141
+
+====================================================================================================
+2nd year (finished first year)
+Completed: CS010A, MATH009A, ENGR001I, CS010B, CS011, CS061, MATH009B, MATH009C, CS010C, PHYS040A
+Filters: 12-16 units
+Eligible but NO SECTION DATA this term (can't be scheduled): BIEN010, ENSC001, ME018A, ME018B, ME009, ME010
+Found 4048 schedules; showing top 4.
+
+Option 1: 15 units | score 915 | 5 campus days, 1 gaps >2h, 0 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+                                            DIS   34884  W   09:00-09:50  SKYE 171
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Linear Algebra
+                                            DIS   36924  T   12:00-12:50  WAT 2240
+CS100     SOFTWARE CONSTRUCTION             LEC   35393  TR  14:00-15:20  SPR 1102   Upper-Division CS Core
+                                            DIS   35406  W   10:00-10:50  SOM2 205
+                                            LAB   32724  F   16:00-17:50  UTLF 0204
+CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   40466  W   17:00-19:50  UTLF 0303  Technical Electives
+
+Option 2: 15 units | score 900 | 4 campus days, 2 gaps >2h, 1 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+                                            DIS   34883  T   18:30-19:20  CHUNG 141
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Linear Algebra
+                                            DIS   24081  T   09:00-09:50  MSE 003
+CS120A    LOGIC DESIGN                      LEC   13063  MWF 13:00-13:50  UTLF 0103  Logic Design
+                                            LAB   13069  F   08:00-10:50  CHUNG 128
+CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   40466  W   17:00-19:50  UTLF 0303  Technical Electives
+
+Option 3: 15 units | score 900 | 4 campus days, 2 gaps >2h, 1 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+                                            DIS   34883  T   18:30-19:20  CHUNG 141
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Linear Algebra
+                                            DIS   24081  T   09:00-09:50  MSE 003
+EE120A    LOGIC DESIGN                      LEC   13908  MWF 13:00-13:50  UTLF 0103  Logic Design
+                                            LAB   13914  F   08:00-10:50  CHUNG 128
+CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   40466  W   17:00-19:50  UTLF 0303  Technical Electives
+
+Option 4: 16 units | score 865 | 5 campus days, 3 gaps >2h, 2 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+MATH031   APPLIED LINEAR ALGEBRA            LEC   27351  MW  12:30-13:50  SSC 335    Differential Equations or Circuit Analysis
+                                            DIS   27352  TR  12:00-12:50  MSE 113
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   37721  TR  08:00-09:20  UTLF 0107  Linear Algebra
+                                            DIS   37722  M   14:00-14:50  SPR 2360
+CS100     SOFTWARE CONSTRUCTION             LEC   35393  TR  14:00-15:20  SPR 1102   Upper-Division CS Core
+                                            DIS   35406  W   10:00-10:50  SOM2 205
+                                            LAB   32722  F   12:00-13:50  UTLF 0204
+CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   40466  W   17:00-19:50  UTLF 0303  Technical Electives
+
+====================================================================================================
+3rd year (finished second year), Fridays off, nothing before 9:00
+Completed: CS010A, MATH009A, ENGR001I, CS010B, CS011, CS061, MATH009B, MATH009C, CS010C, PHYS040A, CS100, CS111, CS120A, CS105, MATH010A, MATH031, PHYS040B, PHYS040C
+Filters: 12-16 units, days off F, start >= 09:00
+Eligible but NO SECTION DATA this term (can't be scheduled): BIEN010, ENSC001, ME018A, ME018B, ME009, ME010
+Found 6436 schedules; showing top 4.
+
+Option 1: 16 units | score 658 | 3 campus days, 0 gaps >2h, 0 early days | validator OK
+Course  Title                             Part  CRN    Days/time                   Requirement
+CS141   INTERMEDIATE DATA STRUCTURES AND  LEC   26230  TR  18:30-19:50  SPR 1102   Upper-Division CS Core
+                                          DIS   26231  R   16:00-16:50  UTLF 0204
+CS161   DESIGN AND ARCHITECTURE OF COMPU  LEC   13082  TR  12:30-13:50  UTLF 0403  Upper-Division CS Core
+                                          DIS   13083  W   12:00-12:50  UTLF 0204
+CS120B  INTRODUCTION TO EMBEDDED SYSTEMS  LEC   28044  TR  17:00-18:20  LFSC 1500  Technical Electives
+                                          DIS   32740  W   10:00-10:50  UTLF 0215
+CS170   INTRODUCTION TO ARTIFICIAL INTEL  LEC   32210  TR  14:00-15:20  SSC 329    Technical Electives
+                                          DIS   37066  W   14:00-14:50  UTLF 0303
+
+Option 2: 16 units | score 649 | 3 campus days, 0 gaps >2h, 0 early days | validator OK
+Course  Title                             Part  CRN    Days/time                   Requirement
+CS141   INTERMEDIATE DATA STRUCTURES AND  LEC   26230  TR  18:30-19:50  SPR 1102   Upper-Division CS Core
+                                          DIS   26231  R   16:00-16:50  UTLF 0204
+CS161   DESIGN AND ARCHITECTURE OF COMPU  LEC   13082  TR  12:30-13:50  UTLF 0403  Upper-Division CS Core
+                                          DIS   13083  W   12:00-12:50  UTLF 0204
+CS170   INTRODUCTION TO ARTIFICIAL INTEL  LEC   32210  TR  14:00-15:20  SSC 329    Technical Electives
+                                          DIS   37066  W   14:00-14:50  UTLF 0303
+CS175   ENTREPRENEURSHIP IN COMPUTING     LEC   34176  TR  17:00-18:20  UTLF 0315  Technical Electives
+                                          DIS   36244  W   16:00-16:50  UTLF 0403
+
+Option 3: 16 units | score 634 | 3 campus days, 1 gaps >2h, 0 early days | validator OK
+Course  Title                             Part  CRN    Days/time                   Requirement
+CS141   INTERMEDIATE DATA STRUCTURES AND  LEC   26230  TR  18:30-19:50  SPR 1102   Upper-Division CS Core
+                                          DIS   26231  R   16:00-16:50  UTLF 0204
+CS161   DESIGN AND ARCHITECTURE OF COMPU  LEC   13082  TR  12:30-13:50  UTLF 0403  Upper-Division CS Core
+                                          DIS   13083  W   12:00-12:50  UTLF 0204
+CS170   INTRODUCTION TO ARTIFICIAL INTEL  LEC   32210  TR  14:00-15:20  SSC 329    Technical Electives
+                                          DIS   32211  W   17:00-17:50  UTLF 0315
+CS180   INTRODUCTION TO SOFTWARE ENGINEE  LEC   39420  TR  09:30-10:50  UTLF 0203  Technical Electives
+                                          LAB   39422  W   14:00-15:50  UTLF 0403
+
+Option 4: 16 units | score 634 | 3 campus days, 1 gaps >2h, 0 early days | validator OK
+Course  Title                             Part  CRN    Days/time                   Requirement
+CS141   INTERMEDIATE DATA STRUCTURES AND  LEC   26230  TR  18:30-19:50  SPR 1102   Upper-Division CS Core
+                                          DIS   26231  R   16:00-16:50  UTLF 0204
+CS161   DESIGN AND ARCHITECTURE OF COMPU  LEC   13082  TR  12:30-13:50  UTLF 0403  Upper-Division CS Core
+                                          DIS   13083  W   12:00-12:50  UTLF 0204
+CS170   INTRODUCTION TO ARTIFICIAL INTEL  LEC   32210  TR  14:00-15:20  SSC 329    Technical Electives
+                                          DIS   37066  W   14:00-14:50  UTLF 0303
+CS108   DATA SCIENCE ETHICS               LEC   41698  TR  09:30-10:50  SSC 308    Technical Electives
+                                          DIS   41703  W   16:00-16:50  UTLF 0215
+

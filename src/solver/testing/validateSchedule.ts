@@ -66,13 +66,14 @@ export function validateSchedule(schedule: Schedule, input: ValidationInput): st
       continue;
     }
     if (!lecture.online) blocks.push(...blocksOf(lecture.meetings, `${course.code} lecture`));
-    if (lecture.linked.length > 0) {
-      const activity = lecture.linked.find((candidate) => candidate.id === entry.activityId);
-      if (!activity) problems.push(`${course.code}: needs one linked activity of lecture ${lecture.id}, got ${entry.activityId ?? "none"}`);
-      else if (!activity.online) blocks.push(...blocksOf(activity.meetings, `${course.code} ${activity.type}`));
-    } else if (entry.activityId) {
-      problems.push(`${course.code}: lecture ${lecture.id} has no linked activities`);
+    if (entry.activityIds.length !== lecture.linked.length) {
+      problems.push(`${course.code}: lecture ${lecture.id} has ${lecture.linked.length} linked group(s) but ${entry.activityIds.length} activity id(s) were chosen`);
     }
+    lecture.linked.forEach((group, index) => {
+      const activity = group.activities.find((candidate) => candidate.id === entry.activityIds[index]);
+      if (!activity) problems.push(`${course.code}: needs one ${group.type} of lecture ${lecture.id}, got ${entry.activityIds[index] ?? "none"}`);
+      else if (!activity.online) blocks.push(...blocksOf(activity.meetings, `${course.code} ${activity.type} ${activity.id}`));
+    });
   }
 
   if (schedule.courses.length === 0) problems.push("empty schedule");

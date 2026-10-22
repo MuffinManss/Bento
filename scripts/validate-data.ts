@@ -3,7 +3,7 @@
 // Run with: npm run validate-data
 
 import { readJson } from "./lib/cache.ts";
-import type { Course, Offering, RequirementGroup } from "../src/solver/types.ts";
+import type { Activity, ActivityType, Course, Offering, RequirementGroup } from "../src/solver/types.ts";
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -11,6 +11,7 @@ const warnings: string[] = [];
 const COURSE_CODE_RE = /^[A-Z]{2,4}\d{2,3}[A-Z]{0,3}$/;
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DAY_VALUES = new Set(["M", "T", "W", "R", "F"]);
+const ACTIVITY_TYPES = new Set<string>(["LAB", "DIS", "LCA", "WRK", "ACT", "TUT", "SEM"] satisfies ActivityType[]);
 
 function isPlaceholderCode(code: string): boolean {
   return code.startsWith("TEST:") || code.startsWith("UNRESOLVED:");
@@ -86,7 +87,6 @@ function validateMeeting(meeting: unknown, context: string): void {
 
 function validateSections(offerings: Offering[], courseCodes: Set<string>): void {
   const seenLectureIds = new Set<string>();
-  const seenActivityIds = new Set<string>();
 
   for (const offering of offerings) {
     if (!courseCodes.has(offering.course)) {
@@ -108,21 +108,30 @@ function validateSections(offerings: Offering[], courseCodes: Set<string>): void
       if (lecture.meetings.length === 0 && lecture.online !== true) warnings.push(`${offering.course}: lecture ${lecture.id} has no meetings and isn't marked "online" — the solver can never detect a conflict for it.`);
       lecture.meetings.forEach((m, i) => validateMeeting(m, `${offering.course} lecture ${lecture.id} meetings[${i}]`));
 
-      for (const activity of lecture.linked) {
-        if (typeof activity.id !== "string" || activity.id.length === 0) {
-          errors.push(`${offering.course}: lecture ${lecture.id} has a linked activity missing a valid "id".`);
+      const groupTypes = new Set<string>();
+      for (const group of lecture.linked) {
+        if (!ACTIVITY_TYPES.has(group.type)) errors.push(`${offering.course}: lecture ${lecture.id} has a linked group with invalid type "${String(group.type)}".`);
+        if (groupTypes.has(group.type)) errors.push(`${offering.course}: lecture ${lecture.id} has two linked groups of type ${group.type} — should be one group per type.`);
+        groupTypes.add(group.type);
+        if (!Array.isArray(group.activities) || group.activities.length === 0) {
+          errors.push(`${offering.course}: lecture ${lecture.id}'s ${group.type} group has no activities — the lecture could never be taken.`);
           continue;
         }
-        if (activity.type !== "LAB" && activity.type !== "DIS") {
-          errors.push(`${offering.course}: activity ${activity.id} has invalid type "${String(activity.type)}".`);
-        }
-        if (activity.online !== undefined && typeof activity.online !== "boolean") errors.push(`${offering.course}: activity ${activity.id} has a non-boolean "online".`);
-        if (activity.meetings.length === 0 && activity.online !== true) warnings.push(`${offering.course}: activity ${activity.id} has no meetings and isn't marked "online" — the solver can never detect a conflict for it.`);
-        seenActivityIds.add(activity.id);
-        activity.meetings.forEach((m, i) => validateMeeting(m, `${offering.course} activity ${activity.id} meetings[${i}]`));
+        for (const activity of group.activities) validateActivity(activity, group.type, `${offering.course} lecture ${lecture.id}`);
       }
     }
   }
+}
+
+function validateActivity(activity: Activity, groupType: ActivityType, context: string): void {
+  if (typeof activity.id !== "string" || activity.id.length === 0) {
+    errors.push(`${context}: a linked activity is missing a valid "id".`);
+    return;
+  }
+  if (activity.type !== groupType) errors.push(`${context}: activity ${activity.id} has type "${String(activity.type)}" but sits in the ${groupType} group.`);
+  if (activity.online !== undefined && typeof activity.online !== "boolean") errors.push(`${context}: activity ${activity.id} has a non-boolean "online".`);
+  if (activity.meetings.length === 0 && activity.online !== true) warnings.push(`${context}: activity ${activity.id} has no meetings and isn't marked "online" — the solver can never detect a conflict for it.`);
+  activity.meetings.forEach((m, i) => validateMeeting(m, `${context} activity ${activity.id} meetings[${i}]`));
 }
 
 function validateRequirements(groups: RequirementGroup[], courseCodes: Set<string>): void {

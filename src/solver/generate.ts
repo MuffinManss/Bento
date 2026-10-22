@@ -152,7 +152,7 @@ export function courseBlocker(input: SolverInput, code: string): BlockReason | u
 // Section options and time filters
 // ---------------------------------------------------------------------------
 
-type SectionOption = { lectureId: string; activityId?: string; meetings: Meeting[] };
+type SectionOption = { lectureId: string; activityIds: string[]; meetings: Meeting[] };
 
 /** Meetings that occupy real time — an online (async) lecture/activity occupies none. */
 function activeMeetings(part: { meetings: Meeting[]; online?: boolean }): Meeting[] {
@@ -167,22 +167,27 @@ export function meetingFitsFilters(meeting: Meeting, filters: Filters): boolean 
   return true;
 }
 
-/** Every (lecture, linked activity) pair of an offering that fits the filters on its own. */
+/**
+ * Every (lecture, one activity from each linked group) combination of an
+ * offering that fits the filters on its own and doesn't conflict with itself.
+ */
 function sectionOptions(offering: Offering, filters: Filters): SectionOption[] {
   const fits = (meetings: Meeting[]) => meetings.every((meeting) => meetingFitsFilters(meeting, filters));
   const options: SectionOption[] = [];
   for (const lecture of offering.lectures) {
     const lectureMeetings = activeMeetings(lecture);
     if (!fits(lectureMeetings)) continue;
-    if (lecture.linked.length === 0) {
-      options.push({ lectureId: lecture.id, meetings: lectureMeetings });
-      continue;
+    let partials: SectionOption[] = [{ lectureId: lecture.id, activityIds: [], meetings: lectureMeetings }];
+    for (const group of lecture.linked) {
+      partials = partials.flatMap((partial) =>
+        group.activities.flatMap((activity) => {
+          const activityMeetings = activeMeetings(activity);
+          if (!fits(activityMeetings) || hasConflict(partial.meetings, activityMeetings)) return [];
+          return [{ lectureId: lecture.id, activityIds: [...partial.activityIds, activity.id], meetings: [...partial.meetings, ...activityMeetings] }];
+        }),
+      );
     }
-    for (const activity of lecture.linked) {
-      const activityMeetings = activeMeetings(activity);
-      if (!fits(activityMeetings) || hasConflict(lectureMeetings, activityMeetings)) continue;
-      options.push({ lectureId: lecture.id, activityId: activity.id, meetings: [...lectureMeetings, ...activityMeetings] });
-    }
+    options.push(...partials);
   }
   return options;
 }
@@ -326,7 +331,7 @@ function sectionCombos(placed: Placed[], budget: Budget): SectionOption[][] {
 }
 
 function scheduleKey(courses: ScheduledCourse[]): string {
-  return courses.map((course) => `${course.course}:${course.lectureId}:${course.activityId ?? ""}`).join("|");
+  return courses.map((course) => `${course.course}:${course.lectureId}:${course.activityIds.join(",")}`).join("|");
 }
 
 /** Score every section combo of one course set and keep the best few. */
@@ -338,7 +343,7 @@ function schedulesForSet(placed: Placed[], combos: SectionOption[][], unlocks: R
     const courses: ScheduledCourse[] = placed.map(({ candidate, group }, index) => ({
       course: candidate.course.code,
       lectureId: combo[index].lectureId,
-      ...(combo[index].activityId ? { activityId: combo[index].activityId } : {}),
+      activityIds: combo[index].activityIds,
       requirementId: group.id,
     }));
     const schedule: Schedule = { courses, units, score: scoreSchedule(priorities, combo.flatMap((option) => option.meetings)) };

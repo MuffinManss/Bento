@@ -19,16 +19,19 @@ import { buildOfferings } from "./lib/mapSections.ts";
 import { fetchPrereqs } from "./lib/fetchPrereqs.ts";
 import { buildCourse } from "./lib/courses.ts";
 import { collectLeafCourses } from "./lib/prereqTree.ts";
-import { writeJson } from "./lib/cache.ts";
+import { readJson, writeJson } from "./lib/cache.ts";
 import { upsertDataTodoSection } from "./lib/dataTodo.ts";
-import { isInScopeCsCourse } from "./lib/scopeFilter.ts";
+import { isInScopeCourse, isInScopeCsCourse, isInScopeSection } from "./lib/scopeFilter.ts";
 import { buildMetadataLookup, METADATA_SUBJECTS } from "./lib/metadataLookup.ts";
 import type { BannerSection } from "./lib/bannerTypes.ts";
-import type { Course, Offering } from "../src/solver/types.ts";
+import type { Course, Offering, RequirementGroup } from "../src/solver/types.ts";
 
 const BASE_URL = "https://registrationssb.ucr.edu/StudentRegistrationSsb/ssb";
 const RAW_DIR = "raw";
-const SCHEDULED_SUBJECT = "CS"; // the only subject we build Offering/section data for
+const SCHEDULED_SUBJECT = "CS"; // scraped in full (every in-scope course)
+// Also get section + prereq data, but only for courses in requirements.json or referenced by a CS prereq.
+const SECTION_SUBJECTS = ["MATH", "PHYS", "ENGR", "EE", "STAT"];
+const REQUIREMENTS_PATH = "src/data/requirements.json";
 
 async function main(): Promise<void> {
   const term = process.argv[2];
@@ -64,7 +67,7 @@ async function main(): Promise<void> {
 
   console.log(`Searching ${SCHEDULED_SUBJECT} sections for term ${term}...`);
   const allCsRows = await searchSubject(client, term, RAW_DIR, SCHEDULED_SUBJECT);
-  const csRows = allCsRows.filter((r) => isInScopeCsCourse(r.subjectCourse));
+  const csRows = allCsRows.filter(isInScopeSection);
   const outOfScopeCount = allCsRows.length - csRows.length;
   console.log(`  -> ${allCsRows.length} ${SCHEDULED_SUBJECT} section rows (${outOfScopeCount} excluded: grad-level or research/individual-study/internship/colloquium — not schedulable undergrad courses).`);
 
@@ -94,21 +97,48 @@ async function main(): Promise<void> {
   const { trees, warnings: prereqWarnings } = await fetchPrereqs(client, csPrereqRows, RAW_DIR, descToCode);
   warnings.push(...prereqWarnings);
 
+  // CS prereq leaves are computed from CS trees only — non-CS prereq trees
+  // fetched below don't widen the scope any further.
+  const referencedLeaves = new Set<string>();
+  for (const tree of trees.values()) collectLeafCourses(tree, referencedLeaves);
+
+  // Non-CS section subjects: only courses a CS B.S. student could need —
+  // listed in requirements.json, or a leaf of some CS prerequisite.
+  const requirementCodes = new Set(readJson<RequirementGroup[]>(REQUIREMENTS_PATH).flatMap((group) => group.courses));
+  const wanted = (code: string) => requirementCodes.has(code) || referencedLeaves.has(code);
+  const sectionRows: BannerSection[] = [];
+  for (const subject of SECTION_SUBJECTS) {
+    const rows = (await searchSubject(client, term, RAW_DIR, subject)).filter((r) => isInScopeSection(r) && wanted(r.subjectCourse));
+    console.log(`  -> ${subject}: ${rows.length} in-scope section rows for ${new Set(rows.map((r) => r.subjectCourse)).size} wanted courses.`);
+    sectionRows.push(...rows);
+  }
+
+  // Prereq trees for every wanted non-CS course we have any row for — this
+  // term's, or an older term's (via metadataRows) if it isn't offered now.
+  const sectionPrereqRows = new Map<string, BannerSection>();
+  for (const row of sectionRows) if (!sectionPrereqRows.has(row.subjectCourse)) sectionPrereqRows.set(row.subjectCourse, row);
+  for (const [code, row] of metadataRows) {
+    if (SECTION_SUBJECTS.includes(row.subject) && wanted(code) && isInScopeCourse(row.subject, code) && !sectionPrereqRows.has(code)) sectionPrereqRows.set(code, row);
+  }
+  console.log(`Fetching prerequisites for ${sectionPrereqRows.size} wanted ${SECTION_SUBJECTS.join("/")} courses...`);
+  const { trees: sectionTrees, warnings: sectionPrereqWarnings } = await fetchPrereqs(client, sectionPrereqRows, RAW_DIR, descToCode);
+  warnings.push(...sectionPrereqWarnings);
+
   console.log(`Fetching linked lecture/activity sections and building offerings...`);
-  const { offerings, warnings: offeringWarnings } = await buildOfferings(client, term, RAW_DIR, csRows);
+  const { offerings, warnings: offeringWarnings } = await buildOfferings(client, term, RAW_DIR, [...csRows, ...sectionRows]);
   warnings.push(...offeringWarnings);
 
   const courses: Course[] = [];
   for (const [code, row] of csFirstRow) {
     courses.push(buildCourse(row, trees.get(code), warnings));
   }
-
-  const referencedLeaves = new Set<string>();
-  for (const tree of trees.values()) collectLeafCourses(tree, referencedLeaves);
+  for (const [code, row] of sectionPrereqRows) {
+    courses.push(buildCourse(row, sectionTrees.get(code), warnings, row.term === term));
+  }
 
   const missingLeaves: string[] = [];
   for (const leaf of referencedLeaves) {
-    if (csFirstRow.has(leaf)) continue; // already a CS course
+    if (csFirstRow.has(leaf) || sectionPrereqRows.has(leaf)) continue; // already added above
     if (leaf.startsWith("TEST:") || leaf.startsWith("UNRESOLVED:")) continue; // already flagged by the parser
     const row = metadataRows.get(leaf);
     if (row) {
@@ -131,7 +161,7 @@ async function main(): Promise<void> {
 
   const csCourseCount = csFirstRow.size;
   upsertDataTodoSection("DATA_TODO.md", "scrape-ucr.ts", [
-    `Last run: term ${term}, ${csCourseCount} CS courses offered this term (${offerings.length} offerings), ${csPrereqRows.size} CS courses total had their prerequisites fetched (including ${csPrereqRows.size - csCourseCount} not offered this term but still real prereq leaves/electives), ${trees.size} of those had a parsed prerequisite tree, ${courses.length} total courses.json entries.`,
+    `Last run: term ${term}, ${csCourseCount} CS courses offered this term, ${csPrereqRows.size} CS courses total had their prerequisites fetched (including ${csPrereqRows.size - csCourseCount} not offered this term but still real prereq leaves/electives), ${trees.size} of those had a parsed prerequisite tree. Plus ${sectionPrereqRows.size} ${SECTION_SUBJECTS.join("/")} courses that appear in requirements.json or a CS prereq (${new Set(sectionRows.map((r) => r.subjectCourse)).size} with sections this term), ${sectionTrees.size} with a parsed prerequisite tree. ${offerings.length} offerings, ${courses.length} total courses.json entries.`,
     "",
     `**Term used:** ${termNote}`,
     "",
@@ -139,7 +169,9 @@ async function main(): Promise<void> {
     "",
     "**AND/OR grouping assumption:** prerequisite HTML wraps every single leaf term in its own parentheses, so parens carry no real nesting information. The tree is built by treating \"or\" as binding adjacent leaf terms (equivalent/alternate courses) and \"and\" as chaining those groups — this matched every multi-term example seen, but is an inference, not something the HTML states directly. Cross-checked against the catalog's own course-description text with `npm run check-prereqs` (see its DATA_TODO section below for results).",
     "",
-    `**Scope:** ${outOfScopeCount} CS section rows were excluded before any processing — grad-level courses (200+) and research/individual-study/internship/colloquium types (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302). None of these can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see \`scripts/lib/scopeFilter.ts\`).`,
+    `**Scope:** ${outOfScopeCount} CS section rows were excluded before any processing — grad-level courses (200+), research/individual-study/internship/colloquium numbers (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302), and research/thesis/internship/individual-study schedule types. ${SECTION_SUBJECTS.join("/")} use the same rule (200+ and 190-199 excluded) and are further limited to courses in requirements.json or a CS prereq. None of the excluded rows can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see \`scripts/lib/scopeFilter.ts\`).`,
+    "",
+    "**Linked sections:** Banner's `fetchLinkedSections` returns every valid lecture+activities combination. These are grouped by activity type into `Lecture.linked` (one `ActivityGroup` per type); the solver takes one activity from EACH group. Every lecture's combinations are checked to be the exact cross product of its groups — any that aren't are listed in the warnings below.",
     "",
     "**Variable-unit / grouping / leaf-resolution warnings from this run:**",
     ...(warnings.length > 0 ? warnings.map((w) => `- ${w}`) : ["- (none)"]),

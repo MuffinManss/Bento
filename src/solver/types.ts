@@ -24,24 +24,35 @@ export type Course = {
   offered?: boolean;
 };
 
+/** Banner meeting-type codes for linked components: lab, discussion, additional lecture, workshop, activity, tutorial, seminar. */
+export type ActivityType = "LAB" | "DIS" | "LCA" | "WRK" | "ACT" | "TUT" | "SEM";
+
 export type Activity = {
   id: string;
-  type: "LAB" | "DIS";
+  type: ActivityType;
   meetings: Meeting[];
   /** Fully async/online component with no fixed meeting time — never conflicts with anything. */
   online?: boolean;
+};
+
+/** All of a lecture's linked activities of one type. The student takes exactly ONE from EACH group. */
+export type ActivityGroup = {
+  type: ActivityType;
+  activities: Activity[];
 };
 
 export type Lecture = {
   id: string;
   instructor?: string;
   meetings: Meeting[];
-  linked: Activity[];
+  /** One group per linked activity type (e.g. CS100: a DIS group and a LAB group); empty if none. */
+  linked: ActivityGroup[];
   /** Fully async/online component with no fixed meeting time — never conflicts with anything. */
   online?: boolean;
 };
 
-// UCR rule: a lecture and ONE of its linked activities must be taken together.
+// UCR rule: a lecture is taken together with one activity from each of its linked groups
+// (Banner lists every valid lecture+activities combination; they're always the full cross product of the groups).
 export type Offering = {
   course: string;
   lectures: Lecture[];
@@ -76,7 +87,8 @@ export type Filters = {
 export type ScheduledCourse = {
   course: string;
   lectureId: string;
-  activityId?: string;
+  /** One activity id per group in the lecture's `linked`, in the same order. */
+  activityIds: string[];
   requirementId: string;
 };
 

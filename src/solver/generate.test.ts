@@ -12,12 +12,17 @@ function meeting(days: string, start: string, end: string): Meeting {
   return { days: days.split("") as Day[], start, end };
 }
 
-function lecture(id: string, meetings: Meeting[], linked: Activity[] = [], extra: Partial<Lecture> = {}): Lecture {
-  return { id, meetings, linked, ...extra };
+/** `groups`: one array per linked activity type; the student takes one activity from each. */
+function lecture(id: string, meetings: Meeting[], groups: Activity[][] = [], extra: Partial<Lecture> = {}): Lecture {
+  return { id, meetings, linked: groups.map((activities) => ({ type: activities[0].type, activities })), ...extra };
 }
 
 function lab(id: string, meetings: Meeting[], extra: Partial<Activity> = {}): Activity {
   return { id, type: "LAB", meetings, ...extra };
+}
+
+function dis(id: string, meetings: Meeting[]): Activity {
+  return { id, type: "DIS", meetings };
 }
 
 function course(code: string, extra: Partial<Course> = {}): Course {
@@ -49,14 +54,14 @@ function world(completed: string[] = [], filterOverrides: Partial<Filters> = {})
     {
       course: "CS001",
       lectures: [
-        lecture("1001", [meeting("MWF", "09:00", "09:50")], [lab("1002", [meeting("R", "10:00", "11:50")]), lab("1003", [meeting("T", "14:00", "15:50")])]),
-        lecture("1011", [meeting("TR", "11:00", "12:20")], [lab("1012", [meeting("F", "10:00", "10:50")])]),
+        lecture("1001", [meeting("MWF", "09:00", "09:50")], [[lab("1002", [meeting("R", "10:00", "11:50")]), lab("1003", [meeting("T", "14:00", "15:50")])]]),
+        lecture("1011", [meeting("TR", "11:00", "12:20")], [[lab("1012", [meeting("F", "10:00", "10:50")])]]),
       ],
     },
     { course: "CS002", lectures: [lecture("2001", [meeting("MWF", "09:00", "09:50")]), lecture("2011", [meeting("MW", "13:00", "14:20")])] },
     { course: "CS003", lectures: [lecture("3001", [meeting("TR", "09:30", "10:50")])] },
     // Online: listed meeting times overlap CS001/CS002, but online sections never conflict.
-    { course: "CS004", lectures: [lecture("4001", [meeting("MWF", "09:00", "09:50")], [lab("4002", [meeting("MWF", "09:00", "09:50")], { online: true })], { online: true })] },
+    { course: "CS004", lectures: [lecture("4001", [meeting("MWF", "09:00", "09:50")], [[lab("4002", [meeting("MWF", "09:00", "09:50")], { online: true })]], { online: true })] },
     { course: "BIEN100", lectures: [lecture("5001", [meeting("MW", "13:00", "14:20")])] },
     { course: "CS005", lectures: [lecture("6001", [meeting("T", "16:00", "16:50")])] },
     { course: "MATH005A", lectures: [lecture("7001", [meeting("MWF", "07:00", "07:50")])] },
@@ -163,7 +168,7 @@ describe("generateSchedules: rules", () => {
     // With Tuesday off, CS001 only fits as lecture 1001 + Thursday lab 1002; MATH005*/MATH009* fall outside 09:00-15:00.
     const cs001 = schedules.flatMap((schedule) => schedule.courses.filter((entry) => entry.course === "CS001"));
     expect(cs001.length).toBeGreaterThan(0);
-    for (const entry of cs001) expect([entry.lectureId, entry.activityId]).toEqual(["1001", "1002"]);
+    for (const entry of cs001) expect([entry.lectureId, ...entry.activityIds]).toEqual(["1001", "1002"]);
     for (const schedule of schedules) expect(codesOf(schedule).some((code) => code.startsWith("MATH0"))).toBe(false);
   });
 
@@ -182,10 +187,43 @@ describe("generateSchedules: rules", () => {
   it("takes one linked activity with each lecture that has them", () => {
     for (const schedule of allPages(world())) {
       const cs001 = schedule.courses.find((entry) => entry.course === "CS001");
-      if (cs001) expect(cs001.activityId).toBeDefined();
+      if (cs001) expect(cs001.activityIds).toHaveLength(1);
       const cs002 = schedule.courses.find((entry) => entry.course === "CS002");
-      if (cs002) expect(cs002.activityId).toBeUndefined();
+      if (cs002) expect(cs002.activityIds).toEqual([]);
     }
+  });
+
+  describe("lecture with a DIS group AND a LAB group (like CS100)", () => {
+    // Lecture TR 14:00; one DIS (W 10:00) and two LABs — LAB 9003 overlaps the DIS, LAB 9002 doesn't.
+    const input: SolverInput = {
+      courses: [course("CS100")],
+      requirements: [{ id: "core", name: "Core", rule: { type: "all" }, courses: ["CS100"] }],
+      offerings: [
+        {
+          course: "CS100",
+          lectures: [
+            lecture("9000", [meeting("TR", "14:00", "15:20")], [[dis("9001", [meeting("W", "10:00", "10:50")])], [lab("9002", [meeting("F", "12:00", "13:50")]), lab("9003", [meeting("W", "10:00", "11:50")])]]),
+          ],
+        },
+      ],
+      completed: [],
+      filters: filters(),
+    };
+
+    it("picks exactly one activity from EACH group, skipping combos where they conflict", () => {
+      const schedules = allPages(input);
+      expect(schedules.map((schedule) => schedule.courses[0].activityIds)).toEqual([["9001", "9002"]]);
+      for (const schedule of schedules) expect(validateSchedule(schedule, input)).toEqual([]);
+    });
+
+    it("validator rejects a schedule that only takes one of the two groups", () => {
+      const missingLab: Schedule = { courses: [{ course: "CS100", lectureId: "9000", activityIds: ["9001"], requirementId: "core" }], units: 4, score: 0 };
+      expect(validateSchedule(missingLab, input).join()).toMatch(/2 linked group\(s\) but 1 activity/);
+    });
+
+    it("is infeasible when any one group has no activity that fits the filters", () => {
+      expect(allPages({ ...input, filters: filters({ daysOff: ["F"] }) })).toEqual([]);
+    });
   });
 
   it("oneOfTracks: never mixes tracks in one schedule before a track is started", () => {
