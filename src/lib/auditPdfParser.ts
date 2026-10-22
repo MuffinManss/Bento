@@ -46,10 +46,12 @@ const NOT_COMPLETED_GRADES = new Set(["F", "NP", "NC", "W", "I"]);
 const GRADE_ALT = "REG|NP|NC|TP|TA|TB|TC|TD|A\\+|A-|B\\+|B-|C\\+|C-|D\\+|D-|A|B|C|D|F|S|P|W|I";
 
 // Course line: SUBJ COURSE_NUM TITLE GRADE UNITS TERM YEAR
+// Not anchored at ^ so it finds the course code even when a requirement label
+// (from the x≈40 column) was merged onto the same text row by the PDF extractor.
 // (.+?) is lazy and anchored by $ so it correctly captures the title regardless
 // of whether the last word of the title looks like a grade.
 const COURSE_LINE_RE = new RegExp(
-  `^([A-Z]{2,4})\\s+(\\d{1,3}-?[A-Z]{0,2})\\s+(.+?)\\s+(${GRADE_ALT})\\s+(\\(\\d+(?:\\.\\d+)?\\)|\\d+(?:\\.\\d+)?)\\s+((?:Fall|Winter|Spring|Summer)\\s+\\d{4})$`,
+  `([A-Z]{2,4})\\s+(\\d{1,3}-?[A-Z]{0,2})\\s+(.+?)\\s+(${GRADE_ALT})\\s+(\\(\\d+(?:\\.\\d+)?\\)|\\d+(?:\\.\\d+)?)\\s+((?:Fall|Winter|Spring|Summer)\\s+\\d{4})$`,
   "i",
 );
 
@@ -78,6 +80,49 @@ function normCode(rawSubj: string, rawNum: string, catalogCodes: ReadonlySet<str
   const opts = spellings(subj, digits, suffix);
   const hit = opts.find((c) => catalogCodes.has(c));
   return hit ?? opts[0] ?? `${subj}${num}`;
+}
+
+/**
+ * Reconstructs text lines from pdfjs text items.
+ *
+ * Exported for testing. Called by `parsePdfAudit` for each PDF page.
+ *
+ * Key behaviour:
+ * - Groups items into visual rows using ±3pt Y tolerance (items on the same
+ *   printed row can have slightly different Y values due to sub-pixel rendering).
+ * - Degree Works audit PDFs have a requirement label column at x ≈ 40 and course
+ *   data columns starting at x ≈ 224. When both appear on the same visual row,
+ *   the label items are dropped so the reconstructed line starts with the course
+ *   code (subject + number) rather than the label text.
+ */
+export function itemsToLines(rawItems: { str: string; transform: number[] }[]): string[] {
+  // Filter empty strings.
+  const items = rawItems.filter((item) => item.str.trim());
+
+  // Sort top-to-bottom (descending Y in PDF coordinate space).
+  const sorted = [...items].sort((a, b) => b.transform[5] - a.transform[5]);
+
+  // Group into rows: items within ±3pt of the row's first item's Y.
+  const rows: { y: number; words: { x: number; str: string }[] }[] = [];
+  for (const item of sorted) {
+    const y = item.transform[5];
+    const x = item.transform[4];
+    const last = rows[rows.length - 1];
+    if (last && Math.abs(y - last.y) <= 3) {
+      last.words.push({ x, str: item.str });
+    } else {
+      rows.push({ y, words: [{ x, str: item.str }] });
+    }
+  }
+
+  // For each row: if course-column items (x ≥ 150) are present alongside
+  // label-column items (x < 150), drop the label-column items.
+  const LABEL_X_THRESHOLD = 150;
+  return rows.map(({ words }) => {
+    const hasContent = words.some((w) => w.x >= LABEL_X_THRESHOLD);
+    const relevant = hasContent ? words.filter((w) => w.x >= LABEL_X_THRESHOLD) : words;
+    return relevant.sort((a, b) => a.x - b.x).map((w) => w.str).join(" ");
+  });
 }
 
 /**
@@ -200,24 +245,14 @@ export async function parsePdfAudit(
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
 
-    // Group text items by rounded Y coordinate to reconstruct lines.
-    const byY = new Map<number, { x: number; str: string }[]>();
-    for (const item of content.items) {
-      if (!("str" in item)) continue;
-      const str = (item as { str: string }).str;
-      if (!str.trim()) continue;
-      const tf = (item as { transform: number[] }).transform;
-      const yKey = Math.round(tf[5]);
-      if (!byY.has(yKey)) byY.set(yKey, []);
-      byY.get(yKey)!.push({ x: tf[4], str });
-    }
+    const rawItems = content.items
+      .filter((item) => "str" in item)
+      .map((item) => ({
+        str: (item as { str: string }).str,
+        transform: (item as { transform: number[] }).transform,
+      }));
 
-    // Sort top-to-bottom (descending Y), then left-to-right (ascending X).
-    const lineStrings = [...byY.entries()]
-      .sort(([ya], [yb]) => yb - ya)
-      .map(([, ws]) => ws.sort((a, b) => a.x - b.x).map((w) => w.str).join(" "));
-
-    pages.push(lineStrings.join("\n"));
+    pages.push(itemsToLines(rawItems).join("\n"));
   }
 
   return parseDegreeWorksText(pages.join("\n"), catalogCodes);
