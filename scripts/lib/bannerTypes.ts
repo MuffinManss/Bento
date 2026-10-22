@@ -3,6 +3,8 @@
 // class names, etc.) that we deliberately ignore.
 
 export type BannerMeetingTime = {
+  startDate: string | null; // "09/24/2026" — first day this meeting runs
+  endDate: string | null; // "12/04/2026" — last day (before finals)
   beginTime: string | null; // "0930", 24h, no colon — or null for async/online
   endTime: string | null;
   building: string | null;

@@ -7,7 +7,7 @@ import { sampleStudents } from "../data/sampleStudents";
 import type { SampleStudent } from "../data/sampleStudents";
 import { parseAudit } from "../lib/auditParser";
 import type { AuditMatch } from "../lib/auditParser";
-import { catalogCodes, checklistGroups, displayCode, placementItems } from "../lib/catalog";
+import { catalogCodes, checklistGroups, displayCode, placementItems, titleCase } from "../lib/catalog";
 import type { Course } from "../solver/types";
 import { Chip, Section, SubHeading, inputClass, secondaryButton } from "./ui";
 
@@ -35,10 +35,6 @@ function StatusBox({ status }: { status: RowStatus }) {
       {status === "completed" ? "✓" : status === "planned" ? "+" : ""}
     </span>
   );
-}
-
-function titleCase(title: string): string {
-  return title.toLowerCase().replace(/\b([a-z])/g, (letter) => letter.toUpperCase());
 }
 
 function CourseCheckbox({ course, checked, onToggle, plannedLabel }: { course: Course; checked: boolean; onToggle: () => void; plannedLabel?: string }) {
@@ -69,6 +65,7 @@ function AuditPaste({ onFound }: { onFound: (codes: string[]) => void }) {
   return (
     <div className="space-y-2">
       <textarea
+        id="audit-text"
         value={text}
         onChange={(event) => setText(event.target.value)}
         rows={4}
@@ -79,12 +76,14 @@ function AuditPaste({ onFound }: { onFound: (codes: string[]) => void }) {
         <button type="button" onClick={run} disabled={!text.trim()} className={secondaryButton}>
           Find courses
         </button>
+        <span aria-live="polite">
         {result && (
-          <span className="text-sm text-slate-600" role="status">
+          <span className="text-sm text-slate-600">
             Found {result.matched.length} course{result.matched.length === 1 ? "" : "s"}
             {result.matched.length > 0 && " — ticked below"}
           </span>
         )}
+        </span>
       </div>
       {result && result.unmatched.length > 0 && (
         <div className="rounded-lg bg-amber-50 p-3 text-xs text-amber-900 ring-1 ring-amber-200">
@@ -120,6 +119,8 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
   const completedCourses = [...completed].filter((code) => catalogCodes.has(code)).length;
 
   const sampleSelect = (
+    <label className="flex flex-col gap-1 text-xs font-medium text-slate-600">
+    Try a sample student
     <select
       value=""
       onChange={(event) => {
@@ -127,7 +128,6 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
         if (student) onLoadSample(student);
       }}
       className={`${inputClass} w-auto text-xs`}
-      aria-label="Load sample student"
     >
       <option value="">Load sample student…</option>
       {sampleStudents.map((student, index) => (
@@ -136,6 +136,7 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
         </option>
       ))}
     </select>
+    </label>
   );
 
   return (
@@ -151,7 +152,7 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
         </div>
 
         <div>
-          <SubHeading>Paste your degree audit</SubHeading>
+          <SubHeading htmlFor="audit-text">Paste your degree audit</SubHeading>
           <AuditPaste onFound={(codes) => onChange(new Set([...completed, ...codes]))} />
         </div>
 
@@ -178,7 +179,10 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
               <StatusBox status="planned" /> {planned.size > 0 ? `Would be filled by ${plannedLabel}` : "Would be filled by the selected option"}
             </span>
           </div>
-          <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search, e.g. CS 100 or calculus" className={`${inputClass} mb-2`} />
+          <label htmlFor="course-search" className="mb-1 block text-xs font-medium text-slate-600">
+            Search courses
+          </label>
+          <input id="course-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search, e.g. CS 100 or calculus" className={`${inputClass} mb-2`} />
           <div className="divide-y divide-slate-100 rounded-xl ring-1 ring-slate-200">
             {groups.map((group) => {
               const done = group.courses.filter((course) => completed.has(course.code)).length;
@@ -187,12 +191,12 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
                 <details key={group.id} open={needle || plannedHere > 0 ? true : undefined} className="group">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2.5 text-sm hover:bg-slate-50">
                     <span className="flex items-center gap-2 font-medium text-slate-800">
-                      <span className="text-slate-400 transition group-open:rotate-90">›</span>
+                      <span aria-hidden className="text-slate-500 transition group-open:rotate-90">›</span>
                       {group.name}
                     </span>
                     <span className="flex shrink-0 items-center gap-1.5 text-xs">
                       {plannedHere > 0 && <span className="rounded-full bg-blue-600 px-1.5 py-0.5 font-semibold text-white">+{plannedHere}</span>}
-                      <span className={done > 0 ? "font-medium text-rose-700" : "text-slate-400"}>
+                      <span className={done > 0 ? "font-medium text-rose-700" : "text-slate-500"}>
                         {done}/{group.courses.length}
                       </span>
                     </span>

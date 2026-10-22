@@ -2,9 +2,16 @@ import { useMemo, useState } from "react";
 import { CoursesStep } from "./components/CoursesStep";
 import { PreferencesStep } from "./components/PreferencesStep";
 import { ResultsStep } from "./components/ResultsStep";
+import { meta } from "./data/index";
 import type { SampleStudent } from "./data/sampleStudents";
 import { useSolver } from "./lib/useSolver";
 import type { Filters } from "./solver/types";
+
+/** "2026-10-20" -> "October 20, 2026" (formatted as a calendar date, not shifted by timezone). */
+function longDate(iso: string): string {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+}
 
 const DEFAULT_FILTERS: Filters = { minUnits: 12, maxUnits: 16, daysOff: [], mustInclude: [], exclude: [] };
 
@@ -82,7 +89,7 @@ export default function App() {
               <p className="text-sm text-slate-500">Schedules that just fit.</p>
             </div>
           </div>
-          <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-200">Planning: Fall 2026</span>
+          <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-200">Planning: {meta.termLabel}</span>
         </div>
       </header>
 
@@ -107,8 +114,9 @@ export default function App() {
         </div>
       </main>
 
-      <footer className="mx-auto max-w-6xl px-4 pb-8 text-center text-xs text-slate-400">
-        UCR Computer Science B.S. · Fall 2026 sections · Everything runs in your browser — your courses never leave this device.
+      <footer className="mx-auto max-w-6xl px-4 pb-8 text-center text-xs text-slate-600">
+        <p className="font-medium">Always confirm in R'Web before registering. Class data from UCR's public schedule as of {longDate(meta.scrapedOn)}.</p>
+        <p className="mt-1">UCR Computer Science B.S. · {meta.termLabel} · Everything runs in your browser — your courses never leave this device.</p>
       </footer>
     </div>
   );

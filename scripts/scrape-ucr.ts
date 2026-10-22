@@ -23,6 +23,7 @@ import { readJson, writeJson } from "./lib/cache.ts";
 import { upsertDataTodoSection } from "./lib/dataTodo.ts";
 import { isInScopeCourse, isInScopeCsCourse, isInScopeSection } from "./lib/scopeFilter.ts";
 import { buildMetadataLookup, METADATA_SUBJECTS } from "./lib/metadataLookup.ts";
+import { buildTermMeta } from "./lib/termMeta.ts";
 import type { BannerSection } from "./lib/bannerTypes.ts";
 import type { Course, Offering, RequirementGroup } from "../src/solver/types.ts";
 
@@ -163,6 +164,10 @@ async function main(): Promise<void> {
   writeJson("src/data/courses.json", courses);
   writeJson("src/data/sections.json", offerings satisfies Offering[]);
 
+  const { meta, warnings: termWarnings } = buildTermMeta(term, requested?.description ?? term, [...csRows, ...sectionRows], `${RAW_DIR}/searchResults/${SCHEDULED_SUBJECT}_${term}_offset0.json`);
+  warnings.push(...termWarnings);
+  writeJson("src/data/meta.json", meta);
+
   const csCourseCount = csFirstRow.size;
   upsertDataTodoSection("DATA_TODO.md", "scrape-ucr.ts", [
     `Last run: term ${term}, ${csCourseCount} CS courses offered this term, ${csPrereqRows.size} CS courses total had their prerequisites fetched (including ${csPrereqRows.size - csCourseCount} not offered this term but still real prereq leaves/electives), ${trees.size} of those had a parsed prerequisite tree. Plus ${sectionPrereqRows.size} ${SECTION_SUBJECTS.join("/")} courses that appear in requirements.json or a CS prereq (${new Set(sectionRows.map((r) => r.subjectCourse)).size} with sections this term), ${sectionTrees.size} with a parsed prerequisite tree. ${offerings.length} offerings, ${courses.length} total courses.json entries.`,
@@ -178,6 +183,8 @@ async function main(): Promise<void> {
     "**Linked sections:** Banner's `fetchLinkedSections` returns every valid lecture+activities combination. These are grouped by activity type into `Lecture.linked` (one `ActivityGroup` per type); the solver takes one activity from EACH group. Every lecture's combinations are checked to be the exact cross product of its groups — any that aren't are listed in the warnings below.",
     "",
     `**Placement exams:** prereq lines like "Math: Score for Prereq 612 to 613" are OR-alternatives to a course (Banner's "Course or Test:"). Each course that accepts one gets a checklist-only \`PLACE:<course>\` item. The score codes are Banner's own and their meaning isn't published; which codes unlock which course: ${placements.map((p) => `${p.code} (${p.scoreRanges.join(", ")})`).join("; ") || "(none)"}.`,
+    "",
+    `**Term dates:** ${meta.termStart} to ${meta.termEnd} (most common meeting startDate/endDate in Banner), scraped ${meta.scrapedOn} — written to src/data/meta.json for the term badge, footer, and .ics export.`,
     "",
     "**Variable-unit / grouping / leaf-resolution warnings from this run:**",
     ...(warnings.length > 0 ? warnings.map((w) => `- ${w}`) : ["- (none)"]),

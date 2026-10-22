@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@layer base {
+  /* One visible keyboard focus style everywhere (inputs keep their own ring). */
+  :focus-visible {
+    outline: 2px solid var(--color-rose-600);
+    outline-offset: 2px;
+  }
+}

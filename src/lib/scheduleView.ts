@@ -1,14 +1,14 @@
 // Turns a Schedule into what the results view draws: calendar blocks,
 // online/async components, and per-course details.
 
-import type { ActivityType, Day, Schedule } from "../solver/types";
+import type { ActivityType, Day, Meeting, Schedule } from "../solver/types";
 import { activitiesOf, courseByCode, lectureOf, requirementName } from "./catalog";
 
 export type ComponentKind = "LEC" | ActivityType;
 
 export type CalendarBlock = { key: string; course: string; kind: ComponentKind; days: Day[]; start: string; end: string; location?: string; colorIndex: number };
 
-export type CourseComponent = { kind: ComponentKind; crn: string; online: boolean; when: string[] };
+export type CourseComponent = { kind: ComponentKind; crn: string; online: boolean; when: string[]; meetings: Meeting[] };
 
 export type CourseDetails = {
   code: string;
@@ -42,6 +42,7 @@ export function courseDetails(schedule: Schedule): CourseDetails[] {
         // A component with no meeting times is async even if Banner didn't flag it online.
         online: online || meetings.length === 0,
         when: meetings.map((meeting) => `${meeting.days.join("")} ${meeting.start}-${meeting.end}`),
+        meetings,
       })),
     };
   });

@@ -20,16 +20,26 @@ export function Section({ id, step, title, subtitle, action, children }: { id?: 
   );
 }
 
-export function SubHeading({ children, hint }: { children: ReactNode; hint?: ReactNode }) {
+/** Section sub-heading; pass `htmlFor` to make it the visible <label> of a control. */
+export function SubHeading({ children, hint, htmlFor, id }: { children: ReactNode; hint?: ReactNode; htmlFor?: string; id?: string }) {
+  const className = "text-sm font-semibold uppercase tracking-wide text-slate-600";
   return (
     <div className="mb-2 flex items-baseline justify-between gap-2">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</h3>
-      {hint && <span className="text-xs text-slate-400">{hint}</span>}
+      {htmlFor ? (
+        <label htmlFor={htmlFor} id={id} className={className}>
+          {children}
+        </label>
+      ) : (
+        <h3 id={id} className={className}>
+          {children}
+        </h3>
+      )}
+      {hint && <span className="text-xs text-slate-600">{hint}</span>}
     </div>
   );
 }
 
-export function Chip({ children, onRemove, tone = "slate" }: { children: ReactNode; onRemove?: () => void; tone?: "slate" | "rose" | "emerald" }) {
+export function Chip({ children, onRemove, removeLabel = "Remove", tone = "slate" }: { children: ReactNode; onRemove?: () => void; removeLabel?: string; tone?: "slate" | "rose" | "emerald" }) {
   const tones = {
     slate: "bg-slate-100 text-slate-700 ring-slate-200",
     rose: "bg-rose-50 text-rose-700 ring-rose-200",
@@ -39,7 +49,7 @@ export function Chip({ children, onRemove, tone = "slate" }: { children: ReactNo
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${tones[tone]}`}>
       {children}
       {onRemove && (
-        <button type="button" onClick={onRemove} className="-mr-1 rounded-full px-1 hover:bg-black/10" aria-label="Remove">
+        <button type="button" onClick={onRemove} className="-mr-1 rounded-full px-1 hover:bg-black/10" aria-label={removeLabel}>
           ×
         </button>
       )}

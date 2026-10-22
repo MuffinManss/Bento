@@ -9,6 +9,11 @@ export const catalogCodes: ReadonlySet<string> = new Set(courses.filter((course)
 
 export const placementItems: Course[] = courses.filter((course) => course.placement);
 
+/** "SOFTWARE CONSTRUCTION" -> "Software Construction" (Banner titles are all caps). */
+export function titleCase(title: string): string {
+  return title.toLowerCase().replace(/\b([a-z])/g, (letter) => letter.toUpperCase());
+}
+
 /** "MATH009A" -> "MATH 009A"; placement items show their title instead. */
 export function displayCode(code: string): string {
   return code.replace(/^([A-Z]+)(\d)/, "$1 $2");

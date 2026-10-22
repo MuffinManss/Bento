@@ -61,17 +61,14 @@ function TimeField({ label, value, onChange, emptyLabel }: { label: string; valu
   );
 }
 
-function CoursePicker({ label, hint, selected, unavailable, onAdd, onRemove, tone }: { label: string; hint: string; selected: string[]; unavailable: ReadonlySet<string>; onAdd: (code: string) => void; onRemove: (code: string) => void; tone: "emerald" | "rose" }) {
+function CoursePicker({ id, label, hint, selected, unavailable, onAdd, onRemove, tone }: { id: string; label: string; hint: string; selected: string[]; unavailable: ReadonlySet<string>; onAdd: (code: string) => void; onRemove: (code: string) => void; tone: "emerald" | "rose" }) {
   const options = pickableCourses.filter((course) => !unavailable.has(course.code) && !selected.includes(course.code));
   return (
     <div>
-      <SubHeading hint={hint}>{label}</SubHeading>
-      <select
-        value=""
-        onChange={(event) => event.target.value && onAdd(event.target.value)}
-        className={inputClass}
-        aria-label={label}
-      >
+      <SubHeading hint={hint} htmlFor={id}>
+        {label}
+      </SubHeading>
+      <select id={id} value="" onChange={(event) => event.target.value && onAdd(event.target.value)} className={inputClass}>
         <option value="">Add a course…</option>
         {options.map((course) => (
           <option key={course.code} value={course.code}>
@@ -82,7 +79,7 @@ function CoursePicker({ label, hint, selected, unavailable, onAdd, onRemove, ton
       {selected.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {selected.map((code) => (
-            <Chip key={code} tone={tone} onRemove={() => onRemove(code)}>
+            <Chip key={code} tone={tone} onRemove={() => onRemove(code)} removeLabel={`Remove ${displayCode(code)} from ${label.toLowerCase()}`}>
               {displayCode(code)}
             </Chip>
           ))}
@@ -126,8 +123,10 @@ export function PreferencesStep({ filters, onChange, geUnits, onGeUnitsChange, c
         </div>
 
         <div>
-          <SubHeading hint="Tap to keep a day free">Days off</SubHeading>
-          <div className="grid grid-cols-5 gap-2">
+          <SubHeading hint="Tap to keep a day free" id="days-off-label">
+            Days off
+          </SubHeading>
+          <div className="grid grid-cols-5 gap-2" role="group" aria-labelledby="days-off-label">
             {DAYS.map(({ day, label }) => {
               const off = filters.daysOff.includes(day);
               return (
@@ -147,6 +146,7 @@ export function PreferencesStep({ filters, onChange, geUnits, onGeUnitsChange, c
 
         <div className="grid gap-5 sm:grid-cols-2">
           <CoursePicker
+            id="must-include"
             label="Must include"
             hint="Always in every option"
             selected={filters.mustInclude}
@@ -156,6 +156,7 @@ export function PreferencesStep({ filters, onChange, geUnits, onGeUnitsChange, c
             tone="emerald"
           />
           <CoursePicker
+            id="exclude"
             label="Exclude"
             hint="Never suggest"
             selected={filters.exclude}

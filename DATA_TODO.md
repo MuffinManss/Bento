@@ -19,6 +19,8 @@ Last run: term 202640, 39 CS courses offered this term, 60 CS courses total had 
 
 **Placement exams:** prereq lines like "Math: Score for Prereq 612 to 613" are OR-alternatives to a course (Banner's "Course or Test:"). Each course that accepts one gets a checklist-only `PLACE:<course>` item. The score codes are Banner's own and their meaning isn't published; which codes unlock which course: PLACE:MATH004 (622-623, 630-631, 624-625, 626-627); PLACE:MATH005A (626-627, 624-625, 620-621); PLACE:MATH006A (614-615, 628-629); PLACE:MATH007A (616-617); PLACE:MATH009A (612-613); PLACE:MATH022 (610-611).
 
+**Term dates:** 2026-09-24 to 2026-12-04 (most common meeting startDate/endDate in Banner), scraped 2026-10-20 — written to src/data/meta.json for the term badge, footer, and .ics export.
+
 **Variable-unit / grouping / leaf-resolution warnings from this run:**
 - CS178A: found a parenthesized group with 2 leaf terms (expected exactly 1) — the flat and/or grouping assumption may not hold here. Group text: "Course or Test: Computer Science 141 
  Minimum Grade of D-
