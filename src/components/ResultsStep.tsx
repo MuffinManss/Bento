@@ -1,7 +1,6 @@
 // Step 3 — up to 4 ranked schedules per page: tabs, weekly calendar, online
 // components, per-course details, Regenerate, and the no-results explanation.
 
-import { useState } from "react";
 import { displayCode } from "../lib/catalog";
 import { courseDetails } from "../lib/scheduleView";
 import type { SolverState } from "../lib/useSolver";
@@ -15,6 +14,9 @@ type Props = {
   page: number;
   geUnits: number;
   blocked: boolean;
+  /** Selected Option tab on this page (owned by App so Step 1 can highlight its courses). */
+  tab: number;
+  onTabChange: (tab: number) => void;
   /** No courses or placement ticked yet. */
   needsCourses: boolean;
   onRegenerate: () => void;
@@ -101,8 +103,7 @@ function ScheduleView({ schedule, geUnits }: { schedule: Schedule; geUnits: numb
   );
 }
 
-function ScheduleTabs({ schedules, page, geUnits }: { schedules: Schedule[]; page: number; geUnits: number }) {
-  const [tab, setTab] = useState(0);
+function ScheduleTabs({ schedules, page, geUnits, tab, onTabChange }: { schedules: Schedule[]; page: number; geUnits: number; tab: number; onTabChange: (tab: number) => void }) {
   const active = schedules[Math.min(tab, schedules.length - 1)];
   return (
     <div className="space-y-4">
@@ -113,7 +114,7 @@ function ScheduleTabs({ schedules, page, geUnits }: { schedules: Schedule[]; pag
             role="tab"
             type="button"
             aria-selected={index === tab}
-            onClick={() => setTab(index)}
+            onClick={() => onTabChange(index)}
             className={`rounded-lg px-2 py-1.5 text-sm font-medium transition ${index === tab ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
           >
             Option {page * 4 + index + 1}
@@ -164,7 +165,7 @@ function GetStarted() {
   );
 }
 
-export function ResultsStep({ state, page, geUnits, blocked, needsCourses, onRegenerate, onStartOver, onApply }: Props) {
+export function ResultsStep({ state, page, geUnits, blocked, tab, onTabChange, needsCourses, onRegenerate, onStartOver, onApply }: Props) {
   if (needsCourses) {
     return (
       <Section id="results" step={3} title="Your schedules" subtitle="Ranked by requirement priority, fewer campus days, and fewer gaps">
@@ -175,7 +176,6 @@ export function ResultsStep({ state, page, geUnits, blocked, needsCourses, onReg
 
   const { result, explanation, loading, error } = state;
   const schedules = result?.schedules ?? [];
-  const resultKey = schedules.map((schedule) => schedule.courses.map((course) => `${course.course}${course.lectureId}${course.activityIds.join("")}`).join()).join("|");
 
   const actions = result && result.totalFound > 0 && (
     <div className="flex items-center gap-2">
@@ -211,7 +211,7 @@ export function ResultsStep({ state, page, geUnits, blocked, needsCourses, onReg
           {!blocked && !error && result && result.truncated && result.totalFound > 0 && (
             <p className="mb-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200">The search was capped to keep things fast — these are the best options found, not necessarily every possible one.</p>
           )}
-          {!blocked && result && schedules.length > 0 && <ScheduleTabs key={resultKey} schedules={schedules} page={result.page} geUnits={geUnits} />}
+          {!blocked && result && schedules.length > 0 && <ScheduleTabs schedules={schedules} page={result.page} geUnits={geUnits} tab={tab} onTabChange={onTabChange} />}
           {!blocked && !result && !error && <div className="h-64" />}
         </div>
       </div>

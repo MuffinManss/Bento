@@ -38,20 +38,25 @@ export default function App() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [geUnits, setGeUnits] = useState(0);
   const [page, setPage] = useState(0);
+  const [tab, setTab] = useState(0);
 
   // Any input change starts over at the best options.
+  const goToPage = (next: number) => {
+    setPage(next);
+    setTab(0);
+  };
   const updateCompleted = (next: Set<string>) => {
     setCompleted(next);
-    setPage(0);
+    goToPage(0);
   };
   const updateFilters = (next: Filters) => {
     setFilters(next);
-    setPage(0);
+    goToPage(0);
   };
   const loadSample = (student: SampleStudent) => {
     setCompleted(new Set(student.completed));
     setFilters(student.filters);
-    setPage(0);
+    goToPage(0);
   };
 
   const problems = filterProblems(filters);
@@ -59,6 +64,12 @@ export default function App() {
   // Nothing ticked yet: prompt instead of showing a "no schedule fits" for an empty profile.
   const needsCourses = completed.size === 0;
   const solver = useSolver(completedList, filters, page, problems.length === 0 && !needsCourses);
+
+  // The selected option's courses, keyed to the requirement each one fills — Step 1 highlights them.
+  const shown = needsCourses || problems.length > 0 ? [] : (solver.result?.schedules ?? []);
+  const activeTab = Math.min(tab, shown.length - 1);
+  const planned = useMemo(() => new Map((shown[activeTab]?.courses ?? []).map((course) => [course.course, course.requirementId])), [shown, activeTab]);
+  const plannedLabel = solver.result && activeTab >= 0 ? `Option ${solver.result.page * 4 + activeTab + 1}` : "";
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -77,7 +88,7 @@ export default function App() {
 
       <main className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start">
         <div className="space-y-6">
-          <CoursesStep completed={completed} onChange={updateCompleted} onLoadSample={loadSample} />
+          <CoursesStep completed={completed} onChange={updateCompleted} onLoadSample={loadSample} planned={planned} plannedLabel={plannedLabel} />
           <PreferencesStep filters={filters} onChange={updateFilters} geUnits={geUnits} onGeUnitsChange={setGeUnits} completed={completed} problems={problems} />
         </div>
         <div className="lg:sticky lg:top-6">
@@ -87,8 +98,10 @@ export default function App() {
             geUnits={geUnits}
             blocked={problems.length > 0}
             needsCourses={needsCourses}
-            onRegenerate={() => setPage((current) => current + 1)}
-            onStartOver={() => setPage(0)}
+            tab={tab}
+            onTabChange={setTab}
+            onRegenerate={() => goToPage(page + 1)}
+            onStartOver={() => goToPage(0)}
             onApply={updateFilters}
           />
         </div>
