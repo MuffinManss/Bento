@@ -63,11 +63,13 @@ describe("parseDegreeWorksText", () => {
     expect(cs61?.units).toBe(4);
   });
 
-  it("maps CS 179 E-Z variants (e.g. CS179N) to CS179G", () => {
+  it("keeps CS179N as-is (not remapped to CS179G) and marks it inCatalog via variantPrefix", () => {
     const { completed } = parseDegreeWorksText(FIXTURE, catalogCodes);
     const codes = completed.map((c) => c.code);
-    expect(codes).toContain("CS179G");
-    expect(codes).not.toContain("CS179N");
+    expect(codes).toContain("CS179N"); // actual code preserved
+    expect(codes).not.toContain("CS179G"); // no remapping
+    const cs179n = completed.find((c) => c.code === "CS179N");
+    expect(cs179n?.inCatalog).toBe(true); // recognized via variantPrefix, not in the unmatched list
   });
 
   it("deduplicates courses that appear multiple times (e.g. after Satisfied-by)", () => {

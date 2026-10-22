@@ -2,6 +2,8 @@
 // `parsePdfAudit` lazy-loads pdfjs-dist so it doesn't slow the first paint.
 // Nothing about the file or its text is sent to any server.
 
+import { isRecognizedCode } from "./catalog";
+
 export type ParsedCourse = {
   /** Normalized Bento catalog code, e.g. "CS010A". Best-guess if not in catalog. */
   code: string;
@@ -75,10 +77,7 @@ function normCode(rawSubj: string, rawNum: string, catalogCodes: ReadonlySet<str
   const [, digits, suffix] = m;
   const opts = spellings(subj, digits, suffix);
   const hit = opts.find((c) => catalogCodes.has(c));
-  if (hit) return hit;
-  // CS 179 variant fix: any CS179[A-Z] (e.g. CS179N) counts as CS179G for the project seminar group.
-  if (subj === "CS" && digits === "179" && suffix.length === 1 && catalogCodes.has("CS179G")) return "CS179G";
-  return opts[0] ?? `${subj}${num}`;
+  return hit ?? opts[0] ?? `${subj}${num}`;
 }
 
 /**
@@ -148,7 +147,8 @@ export function parseDegreeWorksText(
     if (seen.has(code)) continue;
     seen.add(code);
 
-    const inCatalog = catalogCodes.has(code);
+    // A code is "in catalog" if it's a known course OR a recognized variant prefix match.
+    const inCatalog = isRecognizedCode(code, catalogCodes);
     if (!inCatalog && !unmatched.includes(code)) unmatched.push(code);
 
     const course: ParsedCourse = {

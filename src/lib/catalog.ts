@@ -12,6 +12,19 @@ export const catalogCodes: ReadonlySet<string> = new Set(courses.filter((course)
 
 export const placementItems: Course[] = courses.filter((course) => course.placement);
 
+/**
+ * True if `code` is in Bento's catalog OR matches a requirement group's
+ * `variantPrefix` (e.g. "CS179N" for the CS 179 project seminar group).
+ * Use this instead of `catalogCodes.has` when checking audit-parsed codes that
+ * may be topic-section variants not individually listed in courses.json.
+ */
+export function isRecognizedCode(code: string, codes: ReadonlySet<string> = catalogCodes): boolean {
+  if (codes.has(code)) return true;
+  return requirements.some(
+    (g) => g.variantPrefix !== undefined && code.startsWith(g.variantPrefix) && !g.courses.includes(code),
+  );
+}
+
 /** "SOFTWARE CONSTRUCTION" -> "Software Construction" (Banner titles are all caps). */
 export function titleCase(title: string): string {
   return title.toLowerCase().replace(/\b([a-z])/g, (letter) => letter.toUpperCase());

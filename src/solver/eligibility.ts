@@ -22,7 +22,14 @@ export function completedUnits(courseCodes: string[], completed: ReadonlySet<str
 export function isGroupSatisfied(group: RequirementGroup, completed: ReadonlySet<string>, units: ReadonlyMap<string, number>): boolean {
   const rule = group.rule;
   if (rule.type === "all") return group.courses.every((code) => completed.has(code));
-  if (rule.type === "chooseN") return group.courses.filter((code) => completed.has(code)).length >= rule.n;
+  if (rule.type === "chooseN") {
+    let n = group.courses.filter((code) => completed.has(code)).length;
+    if (n < rule.n && group.variantPrefix !== undefined) {
+      const prefix = group.variantPrefix;
+      n += [...completed].filter((c) => c.startsWith(prefix) && !group.courses.includes(c)).length;
+    }
+    return n >= rule.n;
+  }
   if (rule.type === "chooseUnits") return completedUnits(group.courses, completed, units) >= rule.units;
   return rule.tracks.some((track) => track.every((code) => completed.has(code))); // oneOfTracks
 }

@@ -53,6 +53,19 @@ describe("groupProgress", () => {
     expect(groupProgress(electives, withOption, units)).toMatchObject({ met: false, done: 6, needed: 8 });
   });
 
+  it("chooseN with variantPrefix: variant completions count toward done and met", () => {
+    const seminar: RequirementGroup = {
+      id: "sem", name: "CS 179 Project", rule: { type: "chooseN", n: 1 },
+      courses: ["CS179G", "CS179M"], variantPrefix: "CS179",
+    };
+    const noUnits = new Map<string, number>();
+    expect(groupProgress(seminar, done(), noUnits)).toMatchObject({ met: false, done: 0, needed: 1 });
+    expect(groupProgress(seminar, done("CS179G"), noUnits)).toMatchObject({ met: true, done: 1, needed: 1 });
+    expect(groupProgress(seminar, done("CS179N"), noUnits)).toMatchObject({ met: true, done: 1, needed: 1 });
+    // Both explicit + variant: capped at needed (1)
+    expect(groupProgress(seminar, done("CS179G", "CS179N"), noUnits)).toMatchObject({ met: true, done: 1, needed: 1 });
+  });
+
   it("always agrees with the solver's isGroupSatisfied", () => {
     const sets = [done(), done("A"), done("A", "B"), done("A", "B", "C"), done("D", "C"), done("M9A", "M9B", "M9C"), done("M5A", "M9B")];
     for (const group of [all, chooseOne, electives, calculus]) {

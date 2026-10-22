@@ -25,7 +25,14 @@ export function groupProgress(group: RequirementGroup, completed: ReadonlySet<st
   const count = (codes: string[]) => codes.filter((code) => completed.has(code)).length;
 
   if (rule.type === "all") return { met, unit: "courses", done: capped(count(group.courses), group.courses.length), needed: group.courses.length };
-  if (rule.type === "chooseN") return { met, unit: "count", done: capped(count(group.courses), rule.n), needed: rule.n };
+  if (rule.type === "chooseN") {
+    let done = count(group.courses);
+    if (group.variantPrefix !== undefined) {
+      const prefix = group.variantPrefix;
+      done += [...completed].filter((c) => c.startsWith(prefix) && !group.courses.includes(c)).length;
+    }
+    return { met, unit: "count", done: capped(done, rule.n), needed: rule.n };
+  }
   if (rule.type === "chooseUnits") return { met, unit: "units", done: capped(completedUnits(group.courses, completed, units), rule.units), needed: rule.units };
 
   // oneOfTracks: the started track is the one with the most completed courses (ties -> listed order).

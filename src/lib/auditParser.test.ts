@@ -23,10 +23,11 @@ describe("parseAudit", () => {
     expect(parseAudit("Fall 2026 term, 12:30 PM, GPA 3.85, grade B+, unit total 180.0", catalogCodes)).toEqual({ matched: [], unmatched: [] });
   });
 
-  it("maps CS 179 E-Z variants to CS179G", () => {
+  it("keeps CS 179 variant codes as-is (CS179N stays CS179N, not remapped to CS179G)", () => {
     const { matched, unmatched } = parseAudit("CS 179N CS 179G", catalogCodes);
-    expect(matched).toEqual(["CS179G"]); // CS179N maps to CS179G; CS179G is already canonical (deduped)
-    expect(unmatched).toEqual([]);
+    expect(matched).toContain("CS179N"); // variant kept as actual code
+    expect(matched).toContain("CS179G"); // canonical code also kept
+    expect(unmatched).toEqual([]);       // neither is unknown
   });
 
   it("parses a realistic multi-line audit block", () => {

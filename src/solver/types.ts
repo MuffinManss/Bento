@@ -76,6 +76,13 @@ export type RequirementGroup = {
   courses: string[];
   /** Subjects the solver should prefer when picking courses to satisfy this group (e.g. ["CS"]). */
   preferSubjects?: string[];
+  /**
+   * Code prefix that counts as satisfying one slot in this group.
+   * Used for CS 179 project variants (CS179N, CS179E, …) where the catalog
+   * only lists canonical codes (CS179G, CS179M) but UCR issues topic-specific
+   * section numbers that all count for the same requirement.
+   */
+  variantPrefix?: string;
 };
 
 export type Filters = {

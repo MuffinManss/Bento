@@ -109,6 +109,17 @@ describe("eligibleCourses", () => {
 });
 
 describe("isGroupSatisfied / unmetRequirementGroups", () => {
+  it("variantPrefix: a completed code matching the prefix satisfies a chooseN group", () => {
+    const seminar: RequirementGroup = {
+      id: "sem", name: "CS 179 Project", rule: { type: "chooseN", n: 1 },
+      courses: ["CS179G", "CS179M"], variantPrefix: "CS179",
+    };
+    expect(isGroupSatisfied(seminar, new Set(["CS179N"]), new Map())).toBe(true);  // variant
+    expect(isGroupSatisfied(seminar, new Set(["CS179G"]), new Map())).toBe(true);  // explicit
+    expect(isGroupSatisfied(seminar, new Set(["CS178B"]), new Map())).toBe(false); // unrelated
+    expect(isGroupSatisfied(seminar, new Set(), new Map())).toBe(false);           // nothing
+  });
+
   it("'all' is satisfied only once every listed course is completed", () => {
     const group: RequirementGroup = { id: "g1", name: "All", rule: { type: "all" }, courses: ["A", "B"] };
     expect(isGroupSatisfied(group, new Set(["A"]), new Map())).toBe(false);

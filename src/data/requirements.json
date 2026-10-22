@@ -245,7 +245,8 @@
     "courses": [
       "CS179G",
       "CS179M"
-    ]
+    ],
+    "variantPrefix": "CS179"
   },
   {
     "id": "cs-bs-ud-writing",
