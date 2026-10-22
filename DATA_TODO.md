@@ -67,3 +67,13 @@ with a grade of C- or better; or equivalent"
 
 **Not found in catalog text** (known script limitations, not data problems — verified by hand): CS009C, CS042, CS122A. CS042's title is literally the word "A" ("A Hitchhiker's Guide to...") and CS009C's title starts with "C++" — both defeat the heading-detection heuristic (which requires an uppercase letter then a lowercase one right after the course number) since neither looks like the start of an ordinary word. CS122A has no standalone course-description entry in the catalog at all — it's likely only described under its cross-listed pair EE128.
 <!-- END check-prereqs.ts -->
+
+<!-- BEGIN solver -->
+## solver
+
+**TODO — sections.json only has CS sections.** The scheduler treats "has an offering in sections.json" as "offered this term", so every non-CS requirement course (MATH 009B/C, MATH 010A, MATH 031, PHYS 040A-C, ENGR 001I/180W, EE electives, STAT 155, ...) can never appear in a generated schedule, even when the student is eligible for it. Real schedules for freshmen/sophomores will therefore look lighter than they should. Fix: scrape MATH/PHYS/ENGR/EE/STAT sections into sections.json. `npm run samples` prints the affected courses per student.
+
+**TODO — non-CS prerequisite trees are missing.** Only CS courses had prerequisites fetched, so e.g. PHYS040C / MATH009C show up as "eligible" for a student who hasn't taken PHYS040A / MATH009B. Harmless today (no non-CS sections exist), but it must be filled in alongside the section data above.
+
+**Data-model limitation:** some lectures link both a DIS and a LAB (e.g. CS100). Per CLAUDE.md the solver picks exactly ONE linked activity per lecture; if UCR actually requires one DIS *and* one LAB for those courses, the Activity model needs a per-type choice.
+<!-- END solver -->

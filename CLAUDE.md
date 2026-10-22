@@ -103,3 +103,4 @@ Cap search work (e.g. max ~50k nodes) so the UI never hangs.
 - Write/extend Vitest tests for every solver change and run `npm test` before saying a task is done.
 - Don't invent course data. If data is missing, leave a TODO and tell me.
 - Commit after each working phase with a clear message.
+- After a phase passes tests and build, commit and push to origin automatically — don't ask.

@@ -7,7 +7,8 @@
 
 import type { Meeting } from "./types";
 
-function toMinutes(time: string): number {
+/** Minutes since midnight for a 24h "HH:MM" time. */
+export function toMinutes(time: string): number {
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
 }
