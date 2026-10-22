@@ -3,5 +3,19 @@
   "termLabel": "Fall 2026",
   "termStart": "2026-09-24",
   "termEnd": "2026-12-04",
-  "scrapedOn": "2026-10-20"
+  "scrapedOn": "2026-10-20",
+  "holidays": [
+    {
+      "date": "2026-11-11",
+      "name": "Veterans Day"
+    },
+    {
+      "date": "2026-11-26",
+      "name": "Thanksgiving"
+    },
+    {
+      "date": "2026-11-27",
+      "name": "Thanksgiving"
+    }
+  ]
 }

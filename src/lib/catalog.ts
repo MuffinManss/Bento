@@ -1,10 +1,13 @@
 // UI-side lookups over the static data (src/data/index.ts), built once.
 
 import { courses, offerings, requirements } from "../data/index";
+import { unitsByCode } from "../solver/eligibility";
 import type { Activity, Course, Lecture, RequirementGroup, ScheduledCourse } from "../solver/types";
 
 export const courseByCode = new Map(courses.map((course) => [course.code, course]));
 export const groupById = new Map(requirements.map((group) => [group.id, group]));
+/** Course code -> units, built with the solver's own helper. */
+export const unitsMap: ReadonlyMap<string, number> = unitsByCode(courses);
 export const catalogCodes: ReadonlySet<string> = new Set(courses.filter((course) => !course.placement).map((course) => course.code));
 
 export const placementItems: Course[] = courses.filter((course) => course.placement);

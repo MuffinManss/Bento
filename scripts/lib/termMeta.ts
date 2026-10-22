@@ -2,7 +2,7 @@
 // dates (from Banner's per-meeting startDate/endDate), and when the data was
 // scraped. The UI reads it for the term badge, footer, and .ics export.
 
-import { statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import type { BannerSection } from "./bannerTypes.ts";
 import type { TermMeta } from "../../src/data/index.ts";
 
@@ -22,7 +22,7 @@ function localDate(date: Date): string {
  * actually scheduled. Rows whose dates differ (short sessions, late starts)
  * are returned as warnings since the solver/export assume one date range.
  */
-export function buildTermMeta(term: string, termDescription: string, rows: BannerSection[], scrapeCacheFile: string): { meta: TermMeta; warnings: string[] } {
+export function buildTermMeta(term: string, termDescription: string, rows: BannerSection[], scrapeCacheFile: string, previousMetaFile: string): { meta: TermMeta; warnings: string[] } {
   const counts = new Map<string, number>();
   for (const row of rows) {
     for (const { meetingTime } of row.meetingsFaculty) {
@@ -34,6 +34,9 @@ export function buildTermMeta(term: string, termDescription: string, rows: Banne
   const ranked = [...counts].sort((a, b) => b[1] - a[1]);
   if (ranked.length === 0) throw new Error(`No meeting start/end dates found for term ${term} — can't derive term dates.`);
   const [start, end] = ranked[0][0].split("|");
+  // Holidays aren't in Banner; they're hand-entered from UCR's academic calendar and kept for the same term.
+  const previous = existsSync(previousMetaFile) ? (JSON.parse(readFileSync(previousMetaFile, "utf8")) as Partial<TermMeta>) : undefined;
+  const holidays = previous?.term === term ? (previous.holidays ?? []) : [];
   const warnings = ranked.slice(1).map(([key, count]) => `${count} meeting row(s) run ${key.replace("|", " to ")} instead of the term's ${start} to ${end} — calendar export uses the term dates for these.`);
 
   const meta: TermMeta = {
@@ -43,6 +46,8 @@ export function buildTermMeta(term: string, termDescription: string, rows: Banne
     termEnd: isoDate(end),
     // The cache file's mtime is when Banner was actually queried (re-runs reuse the cache).
     scrapedOn: localDate(statSync(scrapeCacheFile).mtime),
+    holidays,
   };
+  if (holidays.length === 0) warnings.push(`TODO: no holidays set for term ${term} — add them to src/data/meta.json "holidays" from UCR's academic calendar, or the .ics export will include classes on holidays.`);
   return { meta, warnings };
 }

@@ -7,7 +7,9 @@ import { sampleStudents } from "../data/sampleStudents";
 import type { SampleStudent } from "../data/sampleStudents";
 import { parseAudit } from "../lib/auditParser";
 import type { AuditMatch } from "../lib/auditParser";
-import { catalogCodes, checklistGroups, displayCode, placementItems, titleCase } from "../lib/catalog";
+import { catalogCodes, checklistGroups, displayCode, groupById, placementItems, titleCase, unitsMap } from "../lib/catalog";
+import { progressFraction, progressLabel } from "../lib/progressLabel";
+import { groupProgress } from "../solver/progress";
 import type { Course } from "../solver/types";
 import { Chip, Section, SubHeading, inputClass, secondaryButton } from "./ui";
 
@@ -37,10 +39,12 @@ function StatusBox({ status }: { status: RowStatus }) {
   );
 }
 
-function CourseCheckbox({ course, checked, onToggle, plannedLabel }: { course: Course; checked: boolean; onToggle: () => void; plannedLabel?: string }) {
+/** `notNeeded`: the group is already met, so this unticked option is dimmed (but still tickable). */
+function CourseCheckbox({ course, checked, onToggle, plannedLabel, notNeeded = false }: { course: Course; checked: boolean; onToggle: () => void; plannedLabel?: string; notNeeded?: boolean }) {
   const status: RowStatus = checked ? "completed" : plannedLabel ? "planned" : "none";
+  const dimmed = notNeeded && status === "none";
   return (
-    <label className={`flex cursor-pointer items-start gap-3 rounded-lg px-2 py-1.5 ${status === "planned" ? "bg-blue-50 ring-1 ring-inset ring-blue-200 hover:bg-blue-100/60" : "hover:bg-slate-50"}`}>
+    <label className={`flex cursor-pointer items-start gap-3 rounded-lg px-2 py-1.5 ${status === "planned" ? "bg-blue-50 ring-1 ring-inset ring-blue-200 hover:bg-blue-100/60" : "hover:bg-slate-50"} ${dimmed ? "opacity-60 hover:opacity-100" : ""}`}>
       <input type="checkbox" checked={checked} onChange={onToggle} className="peer sr-only" />
       <StatusBox status={status} />
       <span className="min-w-0 flex-1 text-sm">
@@ -48,6 +52,7 @@ function CourseCheckbox({ course, checked, onToggle, plannedLabel }: { course: C
         {!course.placement && <span className="text-slate-500"> · {titleCase(course.title)}</span>}
       </span>
       {status === "planned" && <span className="shrink-0 text-xs font-medium text-blue-700">{plannedLabel}</span>}
+      {dimmed && <span className="shrink-0 text-xs text-slate-600">Not needed</span>}
     </label>
   );
 }
@@ -185,20 +190,32 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
           <input id="course-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search, e.g. CS 100 or calculus" className={`${inputClass} mb-2`} />
           <div className="divide-y divide-slate-100 rounded-xl ring-1 ring-slate-200">
             {groups.map((group) => {
-              const done = group.courses.filter((course) => completed.has(course.code)).length;
-              const plannedHere = group.courses.filter((course) => planned.get(course.code) === group.id && !completed.has(course.code)).length;
+              // Progress follows the real requirement rule (not the search-filtered list), via the solver's own logic.
+              const requirement = groupById.get(group.id);
+              const plannedHere = [...planned].filter(([code, groupId]) => groupId === group.id && !completed.has(code)).map(([code]) => code);
+              const progress = requirement && groupProgress(requirement, completed, unitsMap);
+              const preview = requirement && plannedHere.length > 0 ? groupProgress(requirement, new Set([...completed, ...plannedHere]), unitsMap) : undefined;
+              const ticked = group.courses.filter((course) => completed.has(course.code)).length;
               return (
-                <details key={group.id} open={needle || plannedHere > 0 ? true : undefined} className="group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2.5 text-sm hover:bg-slate-50">
+                <details key={group.id} open={needle || plannedHere.length > 0 ? true : undefined} className="group">
+                  <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-x-2 gap-y-1 px-3 py-2.5 text-sm hover:bg-slate-50">
                     <span className="flex items-center gap-2 font-medium text-slate-800">
                       <span aria-hidden className="text-slate-500 transition group-open:rotate-90">›</span>
                       {group.name}
                     </span>
-                    <span className="flex shrink-0 items-center gap-1.5 text-xs">
-                      {plannedHere > 0 && <span className="rounded-full bg-blue-600 px-1.5 py-0.5 font-semibold text-white">+{plannedHere}</span>}
-                      <span className={done > 0 ? "font-medium text-rose-700" : "text-slate-500"}>
-                        {done}/{group.courses.length}
-                      </span>
+                    <span className="ml-auto flex items-center gap-1.5 text-xs">
+                      {!progress && <span className="text-slate-600">{ticked} ticked</span>}
+                      {progress?.met && <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-200">✓ Met</span>}
+                      {progress && !progress.met && (
+                        <span className="text-slate-600">
+                          {progressLabel(progress)}
+                          {preview && (
+                            <span className="font-medium text-blue-700">
+                              {" "}→ {preview.met ? "✓ Met" : progressFraction(preview)} with {plannedLabel}
+                            </span>
+                          )}
+                        </span>
+                      )}
                     </span>
                   </summary>
                   <div className="px-1 pb-2">
@@ -209,6 +226,7 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
                         checked={completed.has(course.code)}
                         onToggle={() => toggle(course.code)}
                         plannedLabel={planned.get(course.code) === group.id ? plannedLabel : undefined}
+                        notNeeded={progress?.met}
                       />
                     ))}
                   </div>

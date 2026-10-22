@@ -16,6 +16,11 @@ export type TermMeta = {
   termEnd: string;
   /** Date the schedule data was fetched from Banner, YYYY-MM-DD. */
   scrapedOn: string;
+  /**
+   * Weekdays with no classes (UCR academic calendar), YYYY-MM-DD. Hand-entered —
+   * Banner doesn't publish them; scrape-ucr.ts keeps them across re-scrapes of the same term.
+   */
+  holidays: { date: string; name: string }[];
 };
 
 export const courses = coursesJson as Course[];

@@ -5,20 +5,21 @@
 import { prereqSatisfied } from "./prereqs";
 import type { Course, RequirementGroup } from "./types";
 
-function unitsByCode(courses: Course[]): Map<string, number> {
+export function unitsByCode(courses: Course[]): Map<string, number> {
   const units = new Map<string, number>();
   for (const course of courses) units.set(course.code, course.units);
   return units;
 }
 
-function completedUnits(courseCodes: string[], completed: ReadonlySet<string>, units: Map<string, number>): number {
+/** Total units of the listed courses that are in `completed`. */
+export function completedUnits(courseCodes: string[], completed: ReadonlySet<string>, units: ReadonlyMap<string, number>): number {
   let total = 0;
   for (const code of courseCodes) if (completed.has(code)) total += units.get(code) ?? 0;
   return total;
 }
 
 /** True if a requirement group is already fully satisfied by completed courses. */
-export function isGroupSatisfied(group: RequirementGroup, completed: ReadonlySet<string>, units: Map<string, number>): boolean {
+export function isGroupSatisfied(group: RequirementGroup, completed: ReadonlySet<string>, units: ReadonlyMap<string, number>): boolean {
   const rule = group.rule;
   if (rule.type === "all") return group.courses.every((code) => completed.has(code));
   if (rule.type === "chooseN") return group.courses.filter((code) => completed.has(code)).length >= rule.n;
@@ -27,7 +28,7 @@ export function isGroupSatisfied(group: RequirementGroup, completed: ReadonlySet
 }
 
 /** Requirement groups not yet fully satisfied by completed courses. */
-export function unmetRequirementGroups(requirements: RequirementGroup[], completed: ReadonlySet<string>, units: Map<string, number>): RequirementGroup[] {
+export function unmetRequirementGroups(requirements: RequirementGroup[], completed: ReadonlySet<string>, units: ReadonlyMap<string, number>): RequirementGroup[] {
   return requirements.filter((group) => !isGroupSatisfied(group, completed, units));
 }
 

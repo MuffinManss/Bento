@@ -1,10 +1,21 @@
 import { describe, expect, it } from "vitest";
 import type { TermMeta } from "../data/index";
 import type { Schedule } from "../solver/types";
-import { byDay, escapeText, firstOccurrence, foldLine, icsFilename, pacificToUtcStamp, scheduleToIcs } from "./ics";
+import { byDay, escapeText, firstOccurrence, foldLine, holidayDates, icsFilename, pacificToUtcStamp, scheduleToIcs } from "./ics";
 
 // Fall 2026: classes 2026-09-24 (a Thursday) through 2026-12-04.
-const TERM: TermMeta = { term: "202640", termLabel: "Fall 2026", termStart: "2026-09-24", termEnd: "2026-12-04", scrapedOn: "2026-10-20" };
+const TERM: TermMeta = {
+  term: "202640",
+  termLabel: "Fall 2026",
+  termStart: "2026-09-24",
+  termEnd: "2026-12-04",
+  scrapedOn: "2026-10-20",
+  holidays: [
+    { date: "2026-11-11", name: "Veterans Day" }, // Wednesday
+    { date: "2026-11-26", name: "Thanksgiving" }, // Thursday
+    { date: "2026-11-27", name: "Thanksgiving" }, // Friday
+  ],
+};
 const NOW = new Date(Date.UTC(2026, 9, 21, 12, 0, 0));
 
 /** Unfolds continuation lines and splits a calendar into content lines. */
@@ -26,6 +37,15 @@ describe("RRULE pieces", () => {
   it("converts the last day of classes to a UTC UNTIL across the DST change", () => {
     expect(pacificToUtcStamp("2026-12-04", "23:59:59")).toBe("20261205T075959Z"); // PST, UTC-8
     expect(pacificToUtcStamp("2026-09-24", "10:00")).toBe("20260924T170000Z"); // PDT, UTC-7
+  });
+});
+
+describe("holidays", () => {
+  it("only skips holidays that fall on the meeting's days", () => {
+    expect(holidayDates(TERM, ["W"])).toEqual(["2026-11-11"]);
+    expect(holidayDates(TERM, ["M", "W", "F"])).toEqual(["2026-11-11", "2026-11-27"]);
+    expect(holidayDates(TERM, ["T", "R"])).toEqual(["2026-11-26"]);
+    expect(holidayDates(TERM, ["M"])).toEqual([]);
   });
 });
 
@@ -68,6 +88,17 @@ describe("scheduleToIcs", () => {
     expect(lecture).toContain("RRULE:FREQ=WEEKLY;BYDAY=TU,TH;UNTIL=20261205T075959Z");
     const lab = events.find((event) => event.includes("SUMMARY:CS 100 LAB")) ?? "";
     expect(lab).toContain("DTSTART;TZID=America/Los_Angeles:20260925T160000"); // first Friday
+  });
+
+  it("a Wednesday class has no Nov 11 (Veterans Day) occurrence; Thanksgiving is skipped for TR and F", () => {
+    const dis = contentLines(events.find((event) => event.includes("SUMMARY:CS 100 DIS")) ?? ""); // W 10:00
+    expect(dis).toContain("EXDATE;TZID=America/Los_Angeles:20261111T100000");
+    const lecture = contentLines(events.find((event) => event.includes("SUMMARY:CS 100 LEC")) ?? ""); // TR 14:00
+    expect(lecture).toContain("EXDATE;TZID=America/Los_Angeles:20261126T140000");
+    const lab = contentLines(events.find((event) => event.includes("SUMMARY:CS 100 LAB")) ?? ""); // F 16:00
+    expect(lab).toContain("EXDATE;TZID=America/Los_Angeles:20261127T160000");
+    const mwf = contentLines(events.find((event) => event.includes("SUMMARY:CS 005 LEC")) ?? ""); // MWF 10:00
+    expect(mwf).toContain("EXDATE;TZID=America/Los_Angeles:20261111T100000,20261127T100000");
   });
 
   it("titles events 'CS 100 LEC' with location and an escaped description", () => {

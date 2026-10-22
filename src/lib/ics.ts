@@ -4,7 +4,8 @@
 // One weekly recurring event per meeting (lecture and every linked
 // activity), from the first matching weekday on/after the term's first day
 // of classes until its last day. Times are local to America/Los_Angeles
-// (TZID + an embedded VTIMEZONE). Online/async components have no meeting
+// (TZID + an embedded VTIMEZONE). Term holidays (meta.json "holidays") are
+// removed with EXDATE. Online/async components have no meeting
 // time, so they're skipped and returned for the UI to mention instead.
 
 import type { TermMeta } from "../data/index";
@@ -110,6 +111,19 @@ function localStamp(date: string, time: string): string {
   return `${date.replace(/-/g, "")}T${time.replace(":", "")}00`;
 }
 
+/** Holidays (YYYY-MM-DD) that fall on one of the meeting's days between its first occurrence and the term end. */
+export function holidayDates(term: TermMeta, days: Day[]): string[] {
+  const first = firstOccurrence(term.termStart, days);
+  const weekdays = new Set(days.map((day) => WEEKDAY_INDEX[day]));
+  return term.holidays
+    .map((holiday) => holiday.date)
+    .filter((date) => {
+      const [year, month, day] = date.split("-").map(Number);
+      return date >= first && date <= term.termEnd && weekdays.has(new Date(Date.UTC(year, month - 1, day)).getUTCDay());
+    })
+    .sort();
+}
+
 type EventInput = {
   course: string;
   kind: ComponentKind;
@@ -123,6 +137,8 @@ type EventInput = {
 export function meetingEvent(input: EventInput, term: TermMeta, now: Date): string[] {
   const { course, kind, crn, title, requirement, meeting } = input;
   const first = firstOccurrence(term.termStart, meeting.days);
+  // EXDATE must match an occurrence exactly: same TZID and the meeting's start time.
+  const skipped = holidayDates(term, meeting.days).map((date) => localStamp(date, meeting.start));
   const lines = [
     "BEGIN:VEVENT",
     `UID:${term.term}-${crn}-${meeting.days.join("")}-${meeting.start.replace(":", "")}@bento`,
@@ -131,6 +147,7 @@ export function meetingEvent(input: EventInput, term: TermMeta, now: Date): stri
     `DTEND;TZID=${TIMEZONE}:${localStamp(first, meeting.end)}`,
     // UNTIL must be UTC when DTSTART has a TZID; end of the last day of classes.
     `RRULE:FREQ=WEEKLY;BYDAY=${byDay(meeting.days)};UNTIL=${pacificToUtcStamp(term.termEnd, "23:59:59")}`,
+    ...(skipped.length > 0 ? [`EXDATE;TZID=${TIMEZONE}:${skipped.join(",")}`] : []),
     `SUMMARY:${escapeText(`${displayCode(course)} ${kind}`)}`,
     ...(meeting.location ? [`LOCATION:${escapeText(meeting.location)}`] : []),
     `DESCRIPTION:${escapeText(`${titleCase(title)}\nCRN ${crn} (${kind})\nFills: ${requirement}\nFrom Bento — confirm in R'Web before registering.`)}`,

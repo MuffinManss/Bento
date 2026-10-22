@@ -164,7 +164,7 @@ async function main(): Promise<void> {
   writeJson("src/data/courses.json", courses);
   writeJson("src/data/sections.json", offerings satisfies Offering[]);
 
-  const { meta, warnings: termWarnings } = buildTermMeta(term, requested?.description ?? term, [...csRows, ...sectionRows], `${RAW_DIR}/searchResults/${SCHEDULED_SUBJECT}_${term}_offset0.json`);
+  const { meta, warnings: termWarnings } = buildTermMeta(term, requested?.description ?? term, [...csRows, ...sectionRows], `${RAW_DIR}/searchResults/${SCHEDULED_SUBJECT}_${term}_offset0.json`, "src/data/meta.json");
   warnings.push(...termWarnings);
   writeJson("src/data/meta.json", meta);
 
