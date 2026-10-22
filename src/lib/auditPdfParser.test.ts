@@ -162,9 +162,10 @@ describe("itemsToLines", () => {
     expect(lines).toHaveLength(2);
   });
 
-  it("filters label-column items (x < 150) when course-column items (x ≥ 150) are present", () => {
-    // Simulates the real Degree Works bug: requirement label at x≈40 merged with
-    // course code at x≈224 because their Y values differ by only 0.2pt.
+  it("includes label-column items so all items on a row are preserved (label text may prefix the line)", () => {
+    // The requirement label (x≈40) and course code (x≈224) share nearly the same Y.
+    // itemsToLines keeps all items — the unanchored regex in parseDegreeWorksText
+    // finds the course code even when label text precedes it.
     const items = [
       item("Intro to Computer Science for Sci, Math, and Engr I", 40.0, 510.2),
       item("CS", 224.7, 510.0),
@@ -177,30 +178,48 @@ describe("itemsToLines", () => {
     ];
     const lines = itemsToLines(items);
     expect(lines).toHaveLength(1);
-    // Must start with the course code, not the requirement label.
-    expect(lines[0]).toMatch(/^CS\s+010A/);
-    expect(lines[0]).not.toContain("Intro to Computer Science");
+    // Label text IS in the line; course code appears somewhere within it.
+    expect(lines[0]).toContain("Intro to Computer Science");
+    expect(lines[0]).toContain("CS");
+    expect(lines[0]).toContain("010A");
   });
 
-  it("preserves label-column-only rows (section headers, catalog year, major)", () => {
-    // These lines have no content items at x ≥ 150 — they must be kept intact.
+  it("preserves section-header rows intact", () => {
     const items = [
       item("LOWER-DIVISION", 40.0, 700.0),
       item("REQUIREMENTS", 120.0, 700.0),
     ];
     const lines = itemsToLines(items);
-    // Both items have x < 150 (well, 120 < 150) — but LOWER-DIVISION is at 40.
-    // All items are below LABEL_X_THRESHOLD so hasContent = false → keep all.
     expect(lines).toHaveLength(1);
     expect(lines[0]).toContain("LOWER-DIVISION");
     expect(lines[0]).toContain("REQUIREMENTS");
   });
 
+  it("keeps left-margin course codes (x ≈ 40) — Additional Units / In-progress tables", () => {
+    // Some Degree Works tables put the course code at the left margin (x≈40),
+    // not in the standard course-code column (x≈224). All items must be kept.
+    const items = [
+      item("HIST", 40.0, 400.0),
+      item("017A", 65.0, 400.0),
+      item("AMERICAN CIVILIZATION", 130.0, 400.0),
+      item("TP", 464.0, 400.0),
+      item("4", 501.0, 400.0),
+      item("Spring", 519.0, 400.0),
+      item("2021", 545.0, 400.0),
+    ];
+    const lines = itemsToLines(items);
+    expect(lines).toHaveLength(1);
+    expect(lines[0]).toMatch(/HIST\s+017A/);
+    expect(lines[0]).toContain("TP");
+  });
+
   it("end-to-end: label-merged PDF items produce correctly parsed courses", () => {
     // Reproduces the exact failure mode: label at x≈40 is 0.2pt away from
     // the course code items and merges into the same Y bucket.
+    // The label text IS included in the reconstructed line, but the unanchored
+    // regex in parseDegreeWorksText finds the course code anyway.
     const pageItems = [
-      // Catalog year line (no course column items)
+      // Catalog year line
       item("Catalog", 40.0, 750.0),
       item("Year:", 80.0, 750.0),
       item("2026-2027", 110.0, 750.0),
@@ -234,5 +253,23 @@ describe("itemsToLines", () => {
     const codes = completed.map((c) => c.code);
     expect(codes).toContain("CS010A");
     expect(codes).toContain("CS010B");
+  });
+
+  it("end-to-end: left-margin course code (Additional Units table) is found", () => {
+    // In Additional Units / In-progress tables, the course code sits at x≈40
+    // with no separate label column to its left.
+    const pageItems = [
+      item("HIST", 40.0, 400.0),
+      item("017A", 65.0, 400.0),
+      item("AMERICAN CIVILIZATION", 130.0, 400.0),
+      item("TP", 464.0, 400.0),
+      item("4", 501.0, 400.0),
+      item("Spring", 519.0, 400.0),
+      item("2021", 545.0, 400.0),
+    ];
+    const text = itemsToLines(pageItems).join("\n");
+    const catalog = new Set(["HIST017A"]);
+    const { completed } = parseDegreeWorksText(text, catalog);
+    expect(completed.map((c) => c.code)).toContain("HIST017A");
   });
 });

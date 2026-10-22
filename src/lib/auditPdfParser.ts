@@ -59,7 +59,9 @@ const CATALOG_YEAR_RE = /Catalog\s+Year[\s:]*(\d{4}-\d{4})/i;
 const MAJOR_RE = /^Major\s*:\s*(.+)/i;
 // Line whose content resets the "Insufficient" skip state (new section header).
 const SECTION_RESET_RE = /\bREQUIREMENT/i;
-const STOP_RE = /^(EXCEPTIONS?|LEGEND|DISCLAIMER)\b/i;
+// "Exceptions" (plural) is the section heading; "Exception by:" is an inline
+// note after individual courses and must NOT trigger a stop.
+const STOP_RE = /^(EXCEPTIONS|LEGEND|DISCLAIMER)\b/i;
 const INSUFFICIENT_RE = /^INSUFFICIENT\b/i;
 const SATISFIED_BY_RE = /^Satisfied\s+by[\s:]/i;
 const UCRV_RE = /^UCRV\s/i;
@@ -90,10 +92,13 @@ function normCode(rawSubj: string, rawNum: string, catalogCodes: ReadonlySet<str
  * Key behaviour:
  * - Groups items into visual rows using ±3pt Y tolerance (items on the same
  *   printed row can have slightly different Y values due to sub-pixel rendering).
- * - Degree Works audit PDFs have a requirement label column at x ≈ 40 and course
- *   data columns starting at x ≈ 224. When both appear on the same visual row,
- *   the label items are dropped so the reconstructed line starts with the course
- *   code (subject + number) rather than the label text.
+ * - All items in each row are kept, sorted left-to-right by X position.
+ *   This means requirement label text (x ≈ 40) may prefix the course code when
+ *   they share a visual row, but `parseDegreeWorksText` uses an unanchored regex
+ *   so it finds the course code at any position in the line.
+ *   Keeping all items is necessary because some Degree Works tables (Additional
+ *   Units, In-progress) place the course code at the left margin (x ≈ 40–80),
+ *   not in the standard course-code column (x ≈ 224).
  */
 export function itemsToLines(rawItems: { str: string; transform: number[] }[]): string[] {
   // Filter empty strings.
@@ -115,14 +120,10 @@ export function itemsToLines(rawItems: { str: string; transform: number[] }[]): 
     }
   }
 
-  // For each row: if course-column items (x ≥ 150) are present alongside
-  // label-column items (x < 150), drop the label-column items.
-  const LABEL_X_THRESHOLD = 150;
-  return rows.map(({ words }) => {
-    const hasContent = words.some((w) => w.x >= LABEL_X_THRESHOLD);
-    const relevant = hasContent ? words.filter((w) => w.x >= LABEL_X_THRESHOLD) : words;
-    return relevant.sort((a, b) => a.x - b.x).map((w) => w.str).join(" ");
-  });
+  // Sort each row left-to-right and join.
+  return rows.map(({ words }) =>
+    words.sort((a, b) => a.x - b.x).map((w) => w.str).join(" "),
+  );
 }
 
 /**
