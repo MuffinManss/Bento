@@ -25,6 +25,8 @@ type Props = {
   onTabChange: (tab: number) => void;
   /** No courses or placement ticked yet. */
   needsCourses: boolean;
+  /** All CS B.S. requirement groups are satisfied — show completion state instead of no-results. */
+  allRequirementsMet?: boolean;
   onRegenerate: () => void;
   onStartOver: () => void;
   onApply: (filters: Filters) => void;
@@ -273,16 +275,17 @@ function Skeleton() {
 }
 
 /** Text for the screen-reader status region. */
-function statusMessage({ needsCourses, blocked, state }: { needsCourses: boolean; blocked: boolean; state: SolverState }): string {
+function statusMessage({ needsCourses, blocked, state, allRequirementsMet }: { needsCourses: boolean; blocked: boolean; state: SolverState; allRequirementsMet?: boolean }): string {
   if (needsCourses) return "";
   if (blocked) return "Fix your preferences to see schedules.";
   if (state.loading) return "Finding schedules…";
   if (state.error) return "Something went wrong finding schedules.";
   if (!state.result) return "";
+  if (state.result.totalFound === 0 && allRequirementsMet) return "All major requirements are complete.";
   return state.result.totalFound === 0 ? "No schedule fits your filters." : `Found ${state.result.totalFound}${state.result.truncated ? " or more" : ""} schedules.`;
 }
 
-export function ResultsStep({ state, page, geUnits, blocked, tab, onTabChange, needsCourses, onRegenerate, onStartOver, onApply }: Props) {
+export function ResultsStep({ state, page, geUnits, blocked, tab, onTabChange, needsCourses, allRequirementsMet, onRegenerate, onStartOver, onApply }: Props) {
   const { result, explanation, loading, error } = state;
   const schedules = result?.schedules ?? [];
   const showResults = !needsCourses && !blocked && !error;
@@ -316,6 +319,14 @@ export function ResultsStep({ state, page, geUnits, blocked, tab, onTabChange, n
     body = <StateCard tone="error" title={`Something went wrong: ${error}`} />;
   } else if (!result) {
     body = <Skeleton />;
+  } else if (result.totalFound === 0 && allRequirementsMet) {
+    body = (
+      <StateCard tone="neutral" title="You've completed your major requirements">
+        <p className="mt-1 text-sm text-slate-600">
+          All CS B.S. requirement groups are satisfied — nothing left for Bento to schedule. Confirm with your advisor before submitting your final plan.
+        </p>
+      </StateCard>
+    );
   } else if (result.totalFound === 0) {
     body = <NoResults explanation={explanation} onApply={onApply} />;
   } else {
@@ -325,7 +336,7 @@ export function ResultsStep({ state, page, geUnits, blocked, tab, onTabChange, n
   return (
     <Section id="results" step={3} title="Your schedules" subtitle={showResults && result && result.totalFound > 0 ? `${result.totalFound}${result.truncated ? "+" : ""} conflict-free options, best first` : SUBTITLE} action={actions || undefined}>
       <p className="sr-only" role="status" aria-live="polite">
-        {statusMessage({ needsCourses, blocked, state })}
+        {statusMessage({ needsCourses, blocked, state, allRequirementsMet })}
       </p>
       <div className="relative">
         {loading && showResults && result && (

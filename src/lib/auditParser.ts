@@ -31,8 +31,11 @@ export function parseAudit(text: string, catalogCodes: ReadonlySet<string>): Aud
     if (TERM_RE.test(`${subject}${digits}${suffix}`)) continue;
     const options = spellings(subject, digits, suffix);
     const hit = options.find((code) => catalogCodes.has(code));
-    const list = hit ? matched : unmatched;
-    const code = hit ?? options[0];
+    const bestGuess = hit ?? options[0];
+    // CS 179 variant fix: any CS179[A-Z] (e.g. CS179N) counts toward the project seminar group.
+    const cs179fix = !hit && /^CS179[A-Z]$/.test(bestGuess) && catalogCodes.has("CS179G");
+    const code = cs179fix ? "CS179G" : bestGuess;
+    const list = cs179fix || hit ? matched : unmatched;
     if (!list.includes(code)) list.push(code);
   }
   return { matched, unmatched };

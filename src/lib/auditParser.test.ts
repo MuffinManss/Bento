@@ -23,6 +23,12 @@ describe("parseAudit", () => {
     expect(parseAudit("Fall 2026 term, 12:30 PM, GPA 3.85, grade B+, unit total 180.0", catalogCodes)).toEqual({ matched: [], unmatched: [] });
   });
 
+  it("maps CS 179 E-Z variants to CS179G", () => {
+    const { matched, unmatched } = parseAudit("CS 179N CS 179G", catalogCodes);
+    expect(matched).toEqual(["CS179G"]); // CS179N maps to CS179G; CS179G is already canonical (deduped)
+    expect(unmatched).toEqual([]);
+  });
+
   it("parses a realistic multi-line audit block", () => {
     const audit = `
       LOWER-DIVISION REQUIREMENTS                 Status: IN PROGRESS

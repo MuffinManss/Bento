@@ -2,8 +2,10 @@ import { useMemo, useState } from "react";
 import { CoursesStep } from "./components/CoursesStep";
 import { PreferencesStep } from "./components/PreferencesStep";
 import { ResultsStep } from "./components/ResultsStep";
-import { meta } from "./data/index";
+import { meta, requirements } from "./data/index";
 import type { SampleStudent } from "./data/sampleStudents";
+import { unitsMap } from "./lib/catalog";
+import { unmetRequirementGroups } from "./solver/eligibility";
 import { useSolver } from "./lib/useSolver";
 import type { Filters } from "./solver/types";
 
@@ -71,6 +73,10 @@ export default function App() {
   // Nothing ticked yet: prompt instead of showing a "no schedule fits" for an empty profile.
   const needsCourses = completed.size === 0;
   const solver = useSolver(completedList, filters, page, problems.length === 0 && !needsCourses);
+  const allRequirementsMet = useMemo(
+    () => !needsCourses && unmetRequirementGroups(requirements, completed, unitsMap).length === 0,
+    [completed, needsCourses],
+  );
 
   // The selected option's courses, keyed to the requirement each one fills — Step 1 highlights them.
   const shown = needsCourses || problems.length > 0 ? [] : (solver.result?.schedules ?? []);
@@ -105,6 +111,7 @@ export default function App() {
             geUnits={geUnits}
             blocked={problems.length > 0}
             needsCourses={needsCourses}
+            allRequirementsMet={allRequirementsMet}
             tab={tab}
             onTabChange={setTab}
             onRegenerate={() => goToPage(page + 1)}
