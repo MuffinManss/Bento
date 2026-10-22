@@ -2,7 +2,7 @@ import { searchSubject } from "./searchSubject.ts";
 import type { BannerClient } from "./bannerClient.ts";
 import type { BannerSection } from "./bannerTypes.ts";
 
-export const METADATA_SUBJECTS = ["MATH", "PHYS", "EE", "ENGR", "STAT", "CHEM", "ME", "PHIL", "LING", "ECON", "ENSC", "BIEN"];
+export const METADATA_SUBJECTS = ["MATH", "PHYS", "EE", "ENGR", "STAT", "CHEM", "ME", "PHIL", "LING", "ECON", "ENSC", "BIEN", "WRIT"];
 
 // CS isn't a "metadata subject" (scrape-ucr.ts fetches it in full for its own
 // sections.json pass), but it still needs this lookup's primary-term +

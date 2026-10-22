@@ -13,6 +13,8 @@ const firstYear = [...freshmanFall, "CS010B", "CS011", "CS061", "MATH009B", "MAT
 const secondYear = [...firstYear, "CS100", "CS111", "CS120A", "CS105", "MATH010A", "MATH031", "PHYS040B", "PHYS040C"];
 
 export const sampleStudents: SampleStudent[] = [
+  // Only ~9 units of major courses are open to a first-quarter student; GE courses (not modeled) fill the rest.
+  { name: "Incoming freshman, placed into MATH 009A (nothing completed yet), 8+ major units", completed: ["PLACE:MATH009A"], filters: { ...defaultFilters, minUnits: 8 } },
   { name: "Freshman after first quarter", completed: freshmanFall, filters: defaultFilters },
   { name: "2nd year (finished first year)", completed: firstYear, filters: defaultFilters },
   { name: "3rd year (finished second year), Fridays off, nothing before 9:00", completed: secondYear, filters: { ...defaultFilters, daysOff: ["F"], earliestStart: "09:00" } },

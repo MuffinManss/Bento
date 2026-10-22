@@ -57,9 +57,14 @@ type Meeting = { days: Day[]; start: string; end: string; location?: string }; /
 type Prereq =
   | { course: string; concurrentOk?: boolean }
   | { and: Prereq[] }
-  | { or: Prereq[] };
+  | { or: Prereq[] }
+  | { pick: number; of: Prereq[] }; // at least `pick` children satisfied (Banner "Rule: PICKn")
 
-type Course = { code: string; title: string; units: number; prereq?: Prereq };
+type Course = {
+  code: string; title: string; units: number; prereq?: Prereq;
+  offered?: boolean;    // false = checklist-only (never scheduled)
+  placement?: boolean;  // placement-exam item, code "PLACE:<course>", 0 units, offered: false
+};
 
 type ActivityType = "LAB" | "DIS" | "LCA" | "WRK" | "ACT" | "TUT" | "SEM"; // Banner meeting-type codes
 type Activity = { id: string; type: ActivityType; meetings: Meeting[]; online?: boolean };

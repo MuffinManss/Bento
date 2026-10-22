@@ -82,4 +82,27 @@ describe("prereqSatisfied", () => {
       expect(prereqSatisfied(prereq, new Set(), new Set())).toBe(false);
     });
   });
+
+  describe("pick N of M", () => {
+    // EE030LA-style: pick 2 of 5.
+    const prereq: Prereq = { pick: 2, of: [{ course: "EE020" }, { course: "EE020A", concurrentOk: true }, { course: "EE020B" }, { course: "MATH045" }, { course: "MATH046" }] };
+
+    it("is satisfied by exactly N completed children", () => {
+      expect(prereqSatisfied(prereq, new Set(["EE020B", "MATH046"]))).toBe(true);
+    });
+
+    it("is not satisfied by fewer than N", () => {
+      expect(prereqSatisfied(prereq, new Set(["MATH045"]))).toBe(false);
+    });
+
+    it("counts a concurrentOk child that's being taken this term", () => {
+      expect(prereqSatisfied(prereq, new Set(["MATH045"]), new Set(["EE020A"]))).toBe(true);
+    });
+
+    it("nests inside and/or like any other node", () => {
+      const tree: Prereq = { and: [prereq, { or: [{ course: "PHYS040C" }, { course: "PHYS040HC" }] }] };
+      expect(prereqSatisfied(tree, new Set(["EE020B", "MATH046", "PHYS040HC"]))).toBe(true);
+      expect(prereqSatisfied(tree, new Set(["EE020B", "MATH046"]))).toBe(false);
+    });
+  });
 });

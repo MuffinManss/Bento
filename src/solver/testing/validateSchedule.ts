@@ -21,6 +21,7 @@ function prereqMet(prereq: Prereq | undefined, completed: Set<string>, sameTerm:
   if (!prereq) return true;
   if ("course" in prereq) return completed.has(prereq.course) || (prereq.concurrentOk === true && sameTerm.has(prereq.course));
   if ("and" in prereq) return prereq.and.every((child) => prereqMet(child, completed, sameTerm));
+  if ("pick" in prereq) return prereq.of.filter((child) => prereqMet(child, completed, sameTerm)).length >= prereq.pick;
   return prereq.or.some((child) => prereqMet(child, completed, sameTerm));
 }
 

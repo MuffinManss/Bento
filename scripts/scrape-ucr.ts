@@ -94,7 +94,7 @@ async function main(): Promise<void> {
   }
 
   console.log(`Fetching prerequisites for every ${SCHEDULED_SUBJECT} course (${csPrereqRows.size}, including ${csPrereqRows.size - csFirstRow.size} not offered this term)...`);
-  const { trees, warnings: prereqWarnings } = await fetchPrereqs(client, csPrereqRows, RAW_DIR, descToCode);
+  const { trees, warnings: prereqWarnings, placements: csPlacements } = await fetchPrereqs(client, csPrereqRows, RAW_DIR, descToCode);
   warnings.push(...prereqWarnings);
 
   // CS prereq leaves are computed from CS trees only — non-CS prereq trees
@@ -121,7 +121,7 @@ async function main(): Promise<void> {
     if (SECTION_SUBJECTS.includes(row.subject) && wanted(code) && isInScopeCourse(row.subject, code) && !sectionPrereqRows.has(code)) sectionPrereqRows.set(code, row);
   }
   console.log(`Fetching prerequisites for ${sectionPrereqRows.size} wanted ${SECTION_SUBJECTS.join("/")} courses...`);
-  const { trees: sectionTrees, warnings: sectionPrereqWarnings } = await fetchPrereqs(client, sectionPrereqRows, RAW_DIR, descToCode);
+  const { trees: sectionTrees, warnings: sectionPrereqWarnings, placements: sectionPlacements } = await fetchPrereqs(client, sectionPrereqRows, RAW_DIR, descToCode);
   warnings.push(...sectionPrereqWarnings);
 
   console.log(`Fetching linked lecture/activity sections and building offerings...`);
@@ -135,11 +135,15 @@ async function main(): Promise<void> {
   for (const [code, row] of sectionPrereqRows) {
     courses.push(buildCourse(row, sectionTrees.get(code), warnings, row.term === term));
   }
+  // Placement-exam results ("PLACE:MATH009A") are checklist-only items a student
+  // can tick, so a freshman who placed in can be offered the course.
+  const placements = [...csPlacements.values(), ...sectionPlacements.values()];
+  for (const placement of placements) courses.push({ code: placement.code, title: placement.title, units: 0, offered: false, placement: true });
 
   const missingLeaves: string[] = [];
   for (const leaf of referencedLeaves) {
     if (csFirstRow.has(leaf) || sectionPrereqRows.has(leaf)) continue; // already added above
-    if (leaf.startsWith("TEST:") || leaf.startsWith("UNRESOLVED:")) continue; // already flagged by the parser
+    if (leaf.startsWith("TEST:") || leaf.startsWith("UNRESOLVED:") || leaf.startsWith("PLACE:")) continue; // flagged by the parser / added above
     const row = metadataRows.get(leaf);
     if (row) {
       courses.push(buildCourse(row, trees.get(leaf), warnings, row.term === term));
@@ -149,7 +153,7 @@ async function main(): Promise<void> {
   }
   if (missingLeaves.length > 0) {
     warnings.push(
-      `Referenced in a CS prerequisite but no title/units available (not offered in any searched term, or its subject wasn't scraped — only CS/${METADATA_SUBJECTS.join("/")} were): ${[...new Set(missingLeaves)].sort().join(", ")}`,
+      `Referenced in a CS prerequisite but no Banner title/units (not offered in any searched term, or its subject wasn't scraped — only CS/${METADATA_SUBJECTS.join("/")} were); parse-catalog.ts fills these from the catalog text where it can — see its section: ${[...new Set(missingLeaves)].sort().join(", ")}`,
     );
   }
 
@@ -172,6 +176,8 @@ async function main(): Promise<void> {
     `**Scope:** ${outOfScopeCount} CS section rows were excluded before any processing — grad-level courses (200+), research/individual-study/internship/colloquium numbers (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302), and research/thesis/internship/individual-study schedule types. ${SECTION_SUBJECTS.join("/")} use the same rule (200+ and 190-199 excluded) and are further limited to courses in requirements.json or a CS prereq. None of the excluded rows can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see \`scripts/lib/scopeFilter.ts\`).`,
     "",
     "**Linked sections:** Banner's `fetchLinkedSections` returns every valid lecture+activities combination. These are grouped by activity type into `Lecture.linked` (one `ActivityGroup` per type); the solver takes one activity from EACH group. Every lecture's combinations are checked to be the exact cross product of its groups — any that aren't are listed in the warnings below.",
+    "",
+    `**Placement exams:** prereq lines like "Math: Score for Prereq 612 to 613" are OR-alternatives to a course (Banner's "Course or Test:"). Each course that accepts one gets a checklist-only \`PLACE:<course>\` item. The score codes are Banner's own and their meaning isn't published; which codes unlock which course: ${placements.map((p) => `${p.code} (${p.scoreRanges.join(", ")})`).join("; ") || "(none)"}.`,
     "",
     "**Variable-unit / grouping / leaf-resolution warnings from this run:**",
     ...(warnings.length > 0 ? warnings.map((w) => `- ${w}`) : ["- (none)"]),

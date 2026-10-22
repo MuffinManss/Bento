@@ -298,3 +298,44 @@ describe("real data: sample students", () => {
     });
   }
 });
+
+describe("real data: placement items, pick-N prereqs, checklist-only alternates", () => {
+  const input = (completed: string[]): SolverInput => ({
+    courses: realCourses,
+    requirements: realRequirements,
+    offerings: realOfferings,
+    completed,
+    filters: { minUnits: 4, maxUnits: 20, daysOff: [], mustInclude: [], exclude: [] },
+  });
+
+  it("offers MATH009A to an incoming freshman only once their placement is ticked", () => {
+    expect(courseBlocker(input([]), "MATH009A")).toBe("prereqs");
+    expect(courseBlocker(input(["PLACE:MATH009A"]), "MATH009A")).toBeUndefined();
+    expect(findAllSchedules(input(["PLACE:MATH009A"])).ranked.some((schedule) => codesOf(schedule).includes("MATH009A"))).toBe(true);
+  });
+
+  it("placement items are checklist-only and never scheduled", () => {
+    const placements = realCourses.filter((course) => course.placement);
+    expect(placements.length).toBeGreaterThan(0);
+    for (const course of placements) expect([course.offered, course.units]).toEqual([false, 0]);
+  });
+
+  it("EE030LA unlocks with any 2 of its pick-2 courses plus PHYS 040C (or honors)", () => {
+    // (MATH045 + MATH046 together would already fill the 8-unit engineering elective, so mix in EE020B.)
+    // Force it in (a 1-unit elective ranks too low to reliably appear within the node cap otherwise).
+    const inSomeSchedule = (completed: string[]) => {
+      const forced = input(completed);
+      return findAllSchedules({ ...forced, filters: { ...forced.filters, mustInclude: ["EE030LA"] } }).ranked.length > 0;
+    };
+    expect(inSomeSchedule(["EE020B", "MATH045", "PHYS040C"])).toBe(true);
+    expect(inSomeSchedule(["EE020B", "MATH046", "PHYS040HC"])).toBe(true);
+    // Only 1 of the pick-2 done and no PHYS 040C (which isn't takeable yet): never scheduled.
+    expect(inSomeSchedule(["EE020B"])).toBe(false);
+  });
+
+  it("ENGR180W can be unlocked by ticking WRIT020", () => {
+    expect(realCourses.find((course) => course.code === "WRIT020")?.offered).toBe(false);
+    expect(courseBlocker(input([]), "ENGR180W")).toBe("prereqs");
+    expect(courseBlocker(input(["WRIT020"]), "ENGR180W")).toBeUndefined();
+  });
+});

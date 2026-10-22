@@ -40,18 +40,6 @@
     ]
   },
   {
-    "id": "cs-bs-ld-diffeq-or-circuits",
-    "name": "Differential Equations or Circuit Analysis",
-    "rule": {
-      "type": "chooseN",
-      "n": 1
-    },
-    "courses": [
-      "MATH031",
-      "EE020B"
-    ]
-  },
-  {
     "id": "cs-bs-ld-discrete-math",
     "name": "Introduction to Discrete Structures",
     "rule": {
@@ -101,7 +89,19 @@
   },
   {
     "id": "cs-bs-ld-linear-algebra",
-    "name": "Linear Algebra",
+    "name": "Linear Algebra (MATH 031 or EE 020B)",
+    "rule": {
+      "type": "chooseN",
+      "n": 1
+    },
+    "courses": [
+      "MATH031",
+      "EE020B"
+    ]
+  },
+  {
+    "id": "cs-bs-ld-multivariable-calculus",
+    "name": "Multivariable Calculus",
     "rule": {
       "type": "all"
     },
@@ -148,7 +148,7 @@
   },
   {
     "id": "cs-bs-ud-engr-intro",
-    "name": "Engineering Introduction Seminar II",
+    "name": "Professional Development and Mentoring (ENGR 101-I)",
     "rule": {
       "type": "all"
     },
@@ -237,7 +237,7 @@
   },
   {
     "id": "cs-bs-ud-topics-seminar",
-    "name": "CS 179 Topics Seminar",
+    "name": "CS 179 Project in Computer Science",
     "rule": {
       "type": "chooseN",
       "n": 1

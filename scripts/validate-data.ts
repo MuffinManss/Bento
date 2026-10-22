@@ -17,6 +17,8 @@ function isPlaceholderCode(code: string): boolean {
   return code.startsWith("TEST:") || code.startsWith("UNRESOLVED:");
 }
 
+const PLACEMENT_CODE_RE = /^PLACE:[A-Z]{2,4}\d{2,3}[A-Z]{0,3}$/;
+
 function validatePrereq(prereq: unknown, courseCode: string, path: string): void {
   if (typeof prereq !== "object" || prereq === null) {
     errors.push(`${courseCode}: prereq node at ${path} is not an object.`);
@@ -26,11 +28,18 @@ function validatePrereq(prereq: unknown, courseCode: string, path: string): void
   if ("course" in node) {
     if (typeof node.course !== "string" || node.course.length === 0) {
       errors.push(`${courseCode}: prereq leaf at ${path} has a non-string/empty "course".`);
-    } else if (!isPlaceholderCode(node.course) && !COURSE_CODE_RE.test(node.course)) {
+    } else if (!isPlaceholderCode(node.course) && !PLACEMENT_CODE_RE.test(node.course) && !COURSE_CODE_RE.test(node.course)) {
       warnings.push(`${courseCode}: prereq leaf "${node.course}" at ${path} doesn't look like a course code.`);
     }
     if ("concurrentOk" in node && typeof node.concurrentOk !== "boolean") {
       errors.push(`${courseCode}: prereq leaf at ${path} has a non-boolean "concurrentOk".`);
+    }
+  } else if ("pick" in node) {
+    if (!Array.isArray(node.of) || node.of.length === 0) {
+      errors.push(`${courseCode}: "pick" at ${path} needs a non-empty "of" array.`);
+    } else {
+      if (typeof node.pick !== "number" || !Number.isInteger(node.pick) || node.pick < 1 || node.pick > node.of.length) errors.push(`${courseCode}: "pick" at ${path} must be an integer in 1..${node.of.length}.`);
+      node.of.forEach((child, i) => validatePrereq(child, courseCode, `${path}.of[${i}]`));
     }
   } else if ("and" in node) {
     if (!Array.isArray(node.and) || node.and.length === 0) {
@@ -45,7 +54,7 @@ function validatePrereq(prereq: unknown, courseCode: string, path: string): void
       node.or.forEach((child, i) => validatePrereq(child, courseCode, `${path}.or[${i}]`));
     }
   } else {
-    errors.push(`${courseCode}: prereq node at ${path} is none of course/and/or.`);
+    errors.push(`${courseCode}: prereq node at ${path} is none of course/and/or/pick.`);
   }
 }
 
@@ -59,9 +68,15 @@ function validateCourses(courses: Course[]): Set<string> {
     if (codes.has(course.code)) errors.push(`Duplicate course code "${course.code}" in courses.json.`);
     codes.add(course.code);
 
-    if (!COURSE_CODE_RE.test(course.code)) warnings.push(`${course.code}: code doesn't match the expected SUBJ### pattern.`);
     if (typeof course.title !== "string" || course.title.length === 0) errors.push(`${course.code}: missing "title".`);
-    if (typeof course.units !== "number" || course.units <= 0) errors.push(`${course.code}: "units" must be a positive number, got ${JSON.stringify(course.units)}.`);
+    if (course.placement) {
+      if (!PLACEMENT_CODE_RE.test(course.code)) errors.push(`${course.code}: placement items must use a "PLACE:<course code>" code.`);
+      if (course.units !== 0) errors.push(`${course.code}: placement items must have 0 units.`);
+      if (course.offered !== false) errors.push(`${course.code}: placement items are checklist-only and must be offered: false.`);
+    } else {
+      if (!COURSE_CODE_RE.test(course.code)) warnings.push(`${course.code}: code doesn't match the expected SUBJ### pattern.`);
+      if (typeof course.units !== "number" || course.units <= 0) errors.push(`${course.code}: "units" must be a positive number, got ${JSON.stringify(course.units)}.`);
+    }
     if (course.prereq !== undefined) validatePrereq(course.prereq, course.code, "prereq");
   }
   return codes;

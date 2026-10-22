@@ -95,3 +95,25 @@ export const CATALOG_ONLY_COURSES: Course[] = [
   // standing/major restriction isn't a course prereq; dropped.
   { code: "ENGR101I", title: "PROFESSIONAL DEVELOPMENT AND MENTORING", units: 1, offered: false },
 ];
+
+// Checklist-only prereq alternates: courses that are never degree
+// requirements but appear as OR-alternatives in a requirement course's
+// prerequisites, so a student must be able to tick them as completed (e.g.
+// ENGR180W needs WRIT020 or WRIT020S). parse-catalog.ts adds each one to
+// courses.json as `offered: false`, preferring live Banner metadata; codes
+// with no Banner row in any searched term fall back to CHECKLIST_ONLY_CATALOG
+// below. No prereq trees — they're never scheduled, only checked off.
+export const CHECKLIST_ONLY_CODES = ["WRIT020", "WRIT020S", "MATH09HA", "MATH09HB", "MATH09HC", "PHYS040HA", "PHYS040HB", "PHYS040HC"];
+
+export const CHECKLIST_ONLY_CATALOG: Course[] = [
+  // "MATH 09HA/09HB/09HC First-Year Honors Calculus 4 Discussion, 1 hour;
+  //  lecture, 3 hours. ... Honors course corresponding to MATH 009A/B/C."
+  { code: "MATH09HA", title: "FIRST-YEAR HONORS CALCULUS", units: 4, offered: false },
+  { code: "MATH09HB", title: "FIRST-YEAR HONORS CALCULUS", units: 4, offered: false },
+  { code: "MATH09HC", title: "FIRST-YEAR HONORS CALCULUS", units: 4, offered: false },
+  // "PHYS 040HA/040HB/040HC Honors General Physics 5 Lecture, 3 hours;
+  //  discussion, 1 hour; laboratory, 3 hours."
+  { code: "PHYS040HA", title: "HONORS GENERAL PHYSICS", units: 5, offered: false },
+  { code: "PHYS040HB", title: "HONORS GENERAL PHYSICS", units: 5, offered: false },
+  { code: "PHYS040HC", title: "HONORS GENERAL PHYSICS", units: 5, offered: false },
+];

@@ -199,6 +199,7 @@ function sectionOptions(offering: Offering, filters: Filters): SectionOption[] {
 function prereqCourses(prereq: Prereq | undefined): string[] {
   if (!prereq) return [];
   if ("course" in prereq) return [prereq.course];
+  if ("pick" in prereq) return prereq.of.flatMap(prereqCourses);
   return ("and" in prereq ? prereq.and : prereq.or).flatMap(prereqCourses);
 }
 

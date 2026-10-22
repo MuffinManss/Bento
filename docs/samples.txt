@@ -1,4 +1,41 @@
 ====================================================================================================
+Incoming freshman, placed into MATH 009A (nothing completed yet), 8+ major units
+Completed: PLACE:MATH009A
+Filters: 8-16 units
+Eligible but NO SECTION DATA this term (can't be scheduled): BIEN010, ENSC001, ME018A, ME018B, ME009, ME010
+Found 40 schedules; showing top 4.
+
+Option 1: 9 units | score 890 | 4 campus days, 0 gaps >2h, 0 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+CS010A    INTRODUCTION TO COMPUTER SCIENCE  LEC   30919  MW  15:30-16:50  CHUNG 138  Lower-Division CS Core
+                                            LAB   32356  T   12:00-13:50  UTLF 0204
+MATH009A  FIRST-YEAR CALCULUS               LEC   33491  MWF 14:00-14:50  SSC 329    Calculus Sequence (choose one track)
+                                            DIS   33495  T   15:00-15:50  SPR 2339
+ENGR001I  COMPUTER SCIENCE                  LEC   14580  T   17:00-17:50  SSC 229    Engineering Introduction Seminar
+
+Option 2: 8 units | score 590 | 4 campus days, 0 gaps >2h, 0 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+CS010A    INTRODUCTION TO COMPUTER SCIENCE  LEC   30919  MW  15:30-16:50  CHUNG 138  Lower-Division CS Core
+                                            LAB   32356  T   12:00-13:50  UTLF 0204
+MATH009A  FIRST-YEAR CALCULUS               LEC   33491  MWF 14:00-14:50  SSC 329    Calculus Sequence (choose one track)
+                                            DIS   33494  T   14:00-14:50  SPR 2339
+
+Option 3: 9 units | score 890 | 4 campus days, 0 gaps >2h, 0 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+CS010A    INTRODUCTION TO COMPUTER SCIENCE  LEC   39917  MW  12:30-13:50  OLMH 1208  Lower-Division CS Core
+                                            LAB   34843  T   18:00-19:50  UTLF 0206
+MATH009A  FIRST-YEAR CALCULUS               LEC   33491  MWF 14:00-14:50  SSC 329    Calculus Sequence (choose one track)
+                                            DIS   33495  T   15:00-15:50  SPR 2339
+ENGR001I  COMPUTER SCIENCE                  LEC   14580  T   17:00-17:50  SSC 229    Engineering Introduction Seminar
+
+Option 4: 8 units | score 590 | 4 campus days, 0 gaps >2h, 0 early days | validator OK
+Course    Title                             Part  CRN    Days/time                   Requirement
+CS010A    INTRODUCTION TO COMPUTER SCIENCE  LEC   30919  MW  15:30-16:50  CHUNG 138  Lower-Division CS Core
+                                            LAB   32356  T   12:00-13:50  UTLF 0204
+MATH009A  FIRST-YEAR CALCULUS               LEC   33491  MWF 14:00-14:50  SSC 329    Calculus Sequence (choose one track)
+                                            DIS   33495  T   15:00-15:50  SPR 2339
+
+====================================================================================================
 Freshman after first quarter
 Completed: CS010A, MATH009A, ENGR001I
 Filters: 12-16 units
@@ -11,7 +48,7 @@ CS010B    INTRODUCTION TO COMPUTER SCIENCE  LEC   30948  MWF 13:00-13:50  UTLF 0
                                             LAB   32708  R   08:00-09:50  UTLF 0204
 CS061     MACHINE ORGANIZATION AND ASSEMBL  LEC   13049  TR  11:00-12:20  SSC 235    Lower-Division CS Core
                                             LAB   32714  W   10:00-11:50  UTLF 0203
-EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Linear Algebra (MATH 031 or EE 020B)
                                             DIS   34884  W   09:00-09:50  SKYE 171
 MATH009B  FIRST YEAR CALCULUS               LEC   33520  TR  12:30-13:50  UTLF 0107  Calculus Sequence (choose one track)
                                             DIS   33523  F   15:00-15:50  SPR 2360
@@ -46,7 +83,7 @@ CS011   INTRODUCTION TO DISCRETE STRUCTU  LEC   23198  MW  08:00-09:20  BRNHL A1
                                           DIS   30105  F   15:00-15:50  INTS 2136
 CS061   MACHINE ORGANIZATION AND ASSEMBL  LEC   13048  TR  09:30-10:50  SSC 235     Lower-Division CS Core
                                           LAB   32714  W   10:00-11:50  UTLF 0203
-EE020B  LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107   Differential Equations or Circuit Analysis
+EE020B  LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107   Linear Algebra (MATH 031 or EE 020B)
                                           DIS   34883  T   18:30-19:20  CHUNG 141
 
 ====================================================================================================
@@ -58,9 +95,9 @@ Found 4048 schedules; showing top 4.
 
 Option 1: 15 units | score 915 | 5 campus days, 1 gaps >2h, 0 early days | validator OK
 Course    Title                             Part  CRN    Days/time                   Requirement
-EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Linear Algebra (MATH 031 or EE 020B)
                                             DIS   34884  W   09:00-09:50  SKYE 171
-MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Linear Algebra
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Multivariable Calculus
                                             DIS   36924  T   12:00-12:50  WAT 2240
 CS100     SOFTWARE CONSTRUCTION             LEC   35393  TR  14:00-15:20  SPR 1102   Upper-Division CS Core
                                             DIS   35406  W   10:00-10:50  SOM2 205
@@ -69,9 +106,9 @@ CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   40466  W   17:00-19:50  UTLF 0
 
 Option 2: 15 units | score 900 | 4 campus days, 2 gaps >2h, 1 early days | validator OK
 Course    Title                             Part  CRN    Days/time                   Requirement
-EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Linear Algebra (MATH 031 or EE 020B)
                                             DIS   34883  T   18:30-19:20  CHUNG 141
-MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Linear Algebra
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Multivariable Calculus
                                             DIS   24081  T   09:00-09:50  MSE 003
 CS120A    LOGIC DESIGN                      LEC   13063  MWF 13:00-13:50  UTLF 0103  Logic Design
                                             LAB   13069  F   08:00-10:50  CHUNG 128
@@ -79,9 +116,9 @@ CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   40466  W   17:00-19:50  UTLF 0
 
 Option 3: 15 units | score 900 | 4 campus days, 2 gaps >2h, 1 early days | validator OK
 Course    Title                             Part  CRN    Days/time                   Requirement
-EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Differential Equations or Circuit Analysis
+EE020B    LINEAR METHODS FOR ENGINEERING A  LEC   34882  MWF 14:00-14:50  UTLF 0107  Linear Algebra (MATH 031 or EE 020B)
                                             DIS   34883  T   18:30-19:20  CHUNG 141
-MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Linear Algebra
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   23412  MWF 12:00-12:50  SSC 329    Multivariable Calculus
                                             DIS   24081  T   09:00-09:50  MSE 003
 EE120A    LOGIC DESIGN                      LEC   13908  MWF 13:00-13:50  UTLF 0103  Logic Design
                                             LAB   13914  F   08:00-10:50  CHUNG 128
@@ -89,9 +126,9 @@ CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   40466  W   17:00-19:50  UTLF 0
 
 Option 4: 16 units | score 865 | 5 campus days, 3 gaps >2h, 2 early days | validator OK
 Course    Title                             Part  CRN    Days/time                   Requirement
-MATH031   APPLIED LINEAR ALGEBRA            LEC   27351  MW  12:30-13:50  SSC 335    Differential Equations or Circuit Analysis
+MATH031   APPLIED LINEAR ALGEBRA            LEC   27351  MW  12:30-13:50  SSC 335    Linear Algebra (MATH 031 or EE 020B)
                                             DIS   27352  TR  12:00-12:50  MSE 113
-MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   37721  TR  08:00-09:20  UTLF 0107  Linear Algebra
+MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   37721  TR  08:00-09:20  UTLF 0107  Multivariable Calculus
                                             DIS   37722  M   14:00-14:50  SPR 2360
 CS100     SOFTWARE CONSTRUCTION             LEC   35393  TR  14:00-15:20  SPR 1102   Upper-Division CS Core
                                             DIS   35406  W   10:00-10:50  SOM2 205

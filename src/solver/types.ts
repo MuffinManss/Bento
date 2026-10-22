@@ -13,7 +13,9 @@ export type Meeting = {
 export type Prereq =
   | { course: string; concurrentOk?: boolean }
   | { and: Prereq[] }
-  | { or: Prereq[] };
+  | { or: Prereq[] }
+  /** At least `pick` of the `of` children must be satisfied (Banner "Rule: PICKn" blocks). */
+  | { pick: number; of: Prereq[] };
 
 export type Course = {
   code: string;
@@ -22,6 +24,8 @@ export type Course = {
   prereq?: Prereq;
   /** False if the course isn't offered this term — shown in the completed-courses checklist, never scheduled. Omitted (not false) means it is offered. */
   offered?: boolean;
+  /** A placement-exam result (code "PLACE:<course>", 0 units), not a course — checklist-only, always offered: false. */
+  placement?: boolean;
 };
 
 /** Banner meeting-type codes for linked components: lab, discussion, additional lecture, workshop, activity, tutorial, seminar. */

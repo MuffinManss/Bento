@@ -28,7 +28,7 @@ import { buildMetadataLookup } from "./lib/metadataLookup.ts";
 import { loadSubjects, bySubjectDescription } from "./lib/subjects.ts";
 import { fetchPrereqs } from "./lib/fetchPrereqs.ts";
 import { buildCourse } from "./lib/courses.ts";
-import { CATALOG_ONLY_COURSES } from "./lib/catalogOnlyCourses.ts";
+import { CATALOG_ONLY_COURSES, CHECKLIST_ONLY_CATALOG, CHECKLIST_ONLY_CODES } from "./lib/catalogOnlyCourses.ts";
 import type { BannerSection } from "./lib/bannerTypes.ts";
 import type { Course, RequirementGroup } from "../src/solver/types.ts";
 
@@ -71,8 +71,11 @@ const LOWER_DIVISION: RequirementGroup[] = [
     rule: { type: "oneOfTracks", tracks: [["MATH005A", "MATH005B", "MATH005C"], ["MATH009A", "MATH009B", "MATH009C"]] },
     courses: ["MATH005A", "MATH005B", "MATH005C", "MATH009A", "MATH009B", "MATH009C"],
   },
-  { id: "cs-bs-ld-linear-algebra", name: "Linear Algebra", rule: { type: "all" }, courses: ["MATH010A"] },
-  { id: "cs-bs-ld-diffeq-or-circuits", name: "Differential Equations or Circuit Analysis", rule: { type: "chooseN", n: 1 }, courses: ["MATH031", "EE020B"] },
+  // Catalog 1.d continues "MATH 010A; and either MATH 031 or EE 020B" (no names given). Names follow
+  // the course titles: MATH 010A "Calculus of Several Variables"; MATH 031 "Applied Linear Algebra" /
+  // EE 020B "Linear Methods for Engineering Analysis and Design Using Matlab".
+  { id: "cs-bs-ld-multivariable-calculus", name: "Multivariable Calculus", rule: { type: "all" }, courses: ["MATH010A"] },
+  { id: "cs-bs-ld-linear-algebra", name: "Linear Algebra (MATH 031 or EE 020B)", rule: { type: "chooseN", n: 1 }, courses: ["MATH031", "EE020B"] },
   { id: "cs-bs-ld-physics", name: "Physics Sequence", rule: { type: "all" }, courses: ["PHYS040A", "PHYS040B", "PHYS040C"] },
   {
     id: "cs-bs-ld-engineering-elective",
@@ -84,11 +87,11 @@ const LOWER_DIVISION: RequirementGroup[] = [
 
 // --- Computer Science Major (B.S.), Upper-division requirements (79 units min) ---
 const UPPER_DIVISION: RequirementGroup[] = [
-  { id: "cs-bs-ud-engr-intro", name: "Engineering Introduction Seminar II", rule: { type: "all" }, courses: ["ENGR101I"] },
+  { id: "cs-bs-ud-engr-intro", name: "Professional Development and Mentoring (ENGR 101-I)", rule: { type: "all" }, courses: ["ENGR101I"] },
   { id: "cs-bs-ud-core", name: "Upper-Division CS Core", rule: { type: "all" }, courses: ["CS100", "CS141", "CS150", "CS152", "CS153", "CS161"] },
-  // Catalog: "CS 179 (E-Z)" — a lettered topics-seminar course; only variants actually
+  // Catalog: "CS 179 (E-Z) Project in Computer Science" — a lettered senior-project course; only variants actually
   // offered/known from scraped section data are listed. See DATA_TODO.md.
-  { id: "cs-bs-ud-topics-seminar", name: "CS 179 Topics Seminar", rule: { type: "chooseN", n: 1 }, courses: ["CS179G", "CS179M"] },
+  { id: "cs-bs-ud-topics-seminar", name: "CS 179 Project in Computer Science", rule: { type: "chooseN", n: 1 }, courses: ["CS179G", "CS179M"] },
   { id: "cs-bs-ud-logic-design", name: "Logic Design", rule: { type: "chooseN", n: 1 }, courses: ["CS120A", "EE120A"] },
   { id: "cs-bs-ud-discrete-structures", name: "Discrete Structures", rule: { type: "all" }, courses: ["CS111"] },
   { id: "cs-bs-ud-writing", name: "Technical Writing", rule: { type: "all" }, courses: ["ENGR180W"] },
@@ -153,6 +156,20 @@ async function main(): Promise<void> {
       courseCodes.add(code);
     } else if (catalogOnly.has(code)) {
       courses.push(catalogOnly.get(code)!);
+      courseCodes.add(code);
+    } else {
+      missing.push(code);
+    }
+  }
+
+  // Checklist-only prereq alternates (never scheduled, so always offered: false).
+  const checklistCatalog = new Map(CHECKLIST_ONLY_CATALOG.map((c) => [c.code, c]));
+  for (const code of CHECKLIST_ONLY_CODES) {
+    if (courseCodes.has(code)) continue;
+    const row = lookup.get(code);
+    const course = row ? buildCourse(row, undefined, reconcileWarnings, false) : checklistCatalog.get(code);
+    if (course) {
+      courses.push(course);
       courseCodes.add(code);
     } else {
       missing.push(code);

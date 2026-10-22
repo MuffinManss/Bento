@@ -1218,12 +1218,41 @@
     "prereq": {
       "and": [
         {
-          "course": "PHYS040C",
-          "concurrentOk": true
+          "pick": 2,
+          "of": [
+            {
+              "course": "EE020",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE020A",
+              "concurrentOk": true
+            },
+            {
+              "course": "EE020B",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH045",
+              "concurrentOk": true
+            },
+            {
+              "course": "MATH046",
+              "concurrentOk": true
+            }
+          ]
         },
         {
-          "course": "PHYS040HC",
-          "concurrentOk": true
+          "or": [
+            {
+              "course": "PHYS040C",
+              "concurrentOk": true
+            },
+            {
+              "course": "PHYS040HC",
+              "concurrentOk": true
+            }
+          ]
         }
       ]
     }
@@ -1356,14 +1385,24 @@
     "title": "INTRODUCTION TO COLLEGE MATHEMATICS FOR BUSINESS AND THE SOCIAL SCIENCES",
     "units": 5,
     "prereq": {
-      "course": "MATH003",
-      "concurrentOk": false
+      "or": [
+        {
+          "course": "PLACE:MATH004"
+        },
+        {
+          "course": "MATH003",
+          "concurrentOk": false
+        }
+      ]
     }
   },
   {
     "code": "MATH005A",
     "title": "THE PRINCIPLES OF CALCULUS 1",
-    "units": 5
+    "units": 5,
+    "prereq": {
+      "course": "PLACE:MATH005A"
+    }
   },
   {
     "code": "MATH005B",
@@ -1390,8 +1429,15 @@
     "title": "PRECALCULUS: AN INTRODUCTION TO FUNCTIONS 1",
     "units": 4,
     "prereq": {
-      "course": "MATH003",
-      "concurrentOk": false
+      "or": [
+        {
+          "course": "PLACE:MATH006A"
+        },
+        {
+          "course": "MATH003",
+          "concurrentOk": false
+        }
+      ]
     }
   },
   {
@@ -1436,6 +1482,9 @@
         {
           "course": "MATH006B",
           "concurrentOk": false
+        },
+        {
+          "course": "PLACE:MATH007A"
         }
       ]
     }
@@ -1478,6 +1527,9 @@
         {
           "course": "MATH005A",
           "concurrentOk": false
+        },
+        {
+          "course": "PLACE:MATH009A"
         },
         {
           "course": "MATH006B",
@@ -1612,6 +1664,9 @@
         {
           "course": "MATH005A",
           "concurrentOk": false
+        },
+        {
+          "course": "PLACE:MATH022"
         }
       ]
     }
@@ -1694,6 +1749,24 @@
         }
       ]
     }
+  },
+  {
+    "code": "MATH09HA",
+    "title": "FIRST-YEAR HONORS CALCULUS",
+    "units": 4,
+    "offered": false
+  },
+  {
+    "code": "MATH09HB",
+    "title": "FIRST-YEAR HONORS CALCULUS",
+    "units": 4,
+    "offered": false
+  },
+  {
+    "code": "MATH09HC",
+    "title": "FIRST-YEAR HONORS CALCULUS",
+    "units": 4,
+    "offered": false
   },
   {
     "code": "MATH120",
@@ -1989,6 +2062,66 @@
     }
   },
   {
+    "code": "PHYS040HA",
+    "title": "HONORS GENERAL PHYSICS",
+    "units": 5,
+    "offered": false
+  },
+  {
+    "code": "PHYS040HB",
+    "title": "HONORS GENERAL PHYSICS",
+    "units": 5,
+    "offered": false
+  },
+  {
+    "code": "PHYS040HC",
+    "title": "HONORS GENERAL PHYSICS",
+    "units": 5,
+    "offered": false
+  },
+  {
+    "code": "PLACE:MATH004",
+    "title": "Math placement: ready for MATH 004",
+    "units": 0,
+    "offered": false,
+    "placement": true
+  },
+  {
+    "code": "PLACE:MATH005A",
+    "title": "Math placement: ready for MATH 005A",
+    "units": 0,
+    "offered": false,
+    "placement": true
+  },
+  {
+    "code": "PLACE:MATH006A",
+    "title": "Math placement: ready for MATH 006A",
+    "units": 0,
+    "offered": false,
+    "placement": true
+  },
+  {
+    "code": "PLACE:MATH007A",
+    "title": "Math placement: ready for MATH 007A",
+    "units": 0,
+    "offered": false,
+    "placement": true
+  },
+  {
+    "code": "PLACE:MATH009A",
+    "title": "Math placement: ready for MATH 009A",
+    "units": 0,
+    "offered": false,
+    "placement": true
+  },
+  {
+    "code": "PLACE:MATH022",
+    "title": "Math placement: ready for MATH 022",
+    "units": 0,
+    "offered": false,
+    "placement": true
+  },
+  {
     "code": "STAT107",
     "title": "INTRODUCTION TO STATISTICAL COMPUTING WITH R",
     "units": 4,
@@ -2068,5 +2201,17 @@
         }
       ]
     }
+  },
+  {
+    "code": "WRIT020",
+    "title": "PERSUASIVE WRITING",
+    "units": 4,
+    "offered": false
+  },
+  {
+    "code": "WRIT020S",
+    "title": "PERSUASIVE WRITING",
+    "units": 5,
+    "offered": false
   }
 ]
