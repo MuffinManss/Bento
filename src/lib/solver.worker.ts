@@ -9,10 +9,10 @@ import type { SolveRequest, SolveResponse } from "./solverProtocol";
 const scope = self as unknown as Worker;
 
 scope.onmessage = (event: MessageEvent<SolveRequest>) => {
-  const { id, completed, filters, page } = event.data;
+  const { id, completed, metGroups, filters, page } = event.data;
   let response: SolveResponse;
   try {
-    const input = { courses, requirements, offerings, completed, filters };
+    const input = { courses, requirements, offerings, completed, metGroups, filters };
     const result = generateSchedules(input, { page });
     // Only an empty first page needs explaining; later pages just ran out.
     const explanation = result.totalFound === 0 ? explainInfeasibility(input) : undefined;

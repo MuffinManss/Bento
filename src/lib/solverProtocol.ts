@@ -4,7 +4,7 @@ import type { Explanation } from "../solver/explain";
 import type { GenerateResult } from "../solver/generate";
 import type { Filters } from "../solver/types";
 
-export type SolveRequest = { id: number; completed: string[]; filters: Filters; page: number };
+export type SolveRequest = { id: number; completed: string[]; metGroups: string[]; filters: Filters; page: number };
 
 export type SolveResponse =
   | { id: number; ok: true; result: GenerateResult; explanation?: Explanation }

@@ -4,6 +4,7 @@ import { PreferencesStep } from "./components/PreferencesStep";
 import { ResultsStep } from "./components/ResultsStep";
 import { meta, requirements } from "./data/index";
 import type { SampleStudent } from "./data/sampleStudents";
+import type { MetSource } from "./lib/auditBlocks";
 import { unitsMap } from "./lib/catalog";
 import { unmetRequirementGroups } from "./solver/eligibility";
 import { useSolver } from "./lib/useSolver";
@@ -44,6 +45,8 @@ function Logo() {
 
 export default function App() {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
+  // Requirement groups met without their courses: block COMPLETE on the audit, or marked by the student.
+  const [metOverrides, setMetOverrides] = useState<Map<string, MetSource>>(new Map());
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [geUnits, setGeUnits] = useState(0);
   const [page, setPage] = useState(0);
@@ -58,24 +61,30 @@ export default function App() {
     setCompleted(next);
     goToPage(0);
   };
+  const updateMetOverrides = (next: Map<string, MetSource>) => {
+    setMetOverrides(next);
+    goToPage(0);
+  };
   const updateFilters = (next: Filters) => {
     setFilters(next);
     goToPage(0);
   };
   const loadSample = (student: SampleStudent) => {
     setCompleted(new Set(student.completed));
+    setMetOverrides(new Map());
     setFilters(student.filters);
     goToPage(0);
   };
 
   const problems = filterProblems(filters);
   const completedList = useMemo(() => [...completed].sort(), [completed]);
+  const metGroups = useMemo(() => [...metOverrides.keys()].sort(), [metOverrides]);
   // Nothing ticked yet: prompt instead of showing a "no schedule fits" for an empty profile.
-  const needsCourses = completed.size === 0;
-  const solver = useSolver(completedList, filters, page, problems.length === 0 && !needsCourses);
+  const needsCourses = completed.size === 0 && metOverrides.size === 0;
+  const solver = useSolver(completedList, metGroups, filters, page, problems.length === 0 && !needsCourses);
   const allRequirementsMet = useMemo(
-    () => !needsCourses && unmetRequirementGroups(requirements, completed, unitsMap).length === 0,
-    [completed, needsCourses],
+    () => !needsCourses && unmetRequirementGroups(requirements, completed, unitsMap, new Set(metGroups)).length === 0,
+    [completed, metGroups, needsCourses],
   );
 
   // The selected option's courses, keyed to the requirement each one fills — Step 1 highlights them.
@@ -101,7 +110,15 @@ export default function App() {
 
       <main className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start">
         <div className="space-y-6">
-          <CoursesStep completed={completed} onChange={updateCompleted} onLoadSample={loadSample} planned={planned} plannedLabel={plannedLabel} />
+          <CoursesStep
+            completed={completed}
+            onChange={updateCompleted}
+            metOverrides={metOverrides}
+            onMetOverridesChange={updateMetOverrides}
+            onLoadSample={loadSample}
+            planned={planned}
+            plannedLabel={plannedLabel}
+          />
           <PreferencesStep filters={filters} onChange={updateFilters} geUnits={geUnits} onGeUnitsChange={setGeUnits} completed={completed} problems={problems} />
         </div>
         <div className="lg:sticky lg:top-6">

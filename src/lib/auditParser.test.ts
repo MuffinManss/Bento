@@ -5,7 +5,7 @@ import { catalogCodes } from "./catalog";
 describe("parseAudit", () => {
   it("normalizes spaced, unpadded codes to catalog format", () => {
     const text = "Completed: CS 10A (A-), CS 010B, CS061, MATH 9A, MATH 009B";
-    expect(parseAudit(text, catalogCodes)).toEqual({ matched: ["CS010A", "CS010B", "CS061", "MATH009A", "MATH009B"], unmatched: [] });
+    expect(parseAudit(text, catalogCodes)).toEqual({ matched: ["CS010A", "CS010B", "CS061", "MATH009A", "MATH009B"], unmatched: [], blocks: {} });
   });
 
   it("handles honors 2-digit codes, hyphenated letter suffixes, and lowercase", () => {
@@ -20,7 +20,7 @@ describe("parseAudit", () => {
   });
 
   it("ignores things that only look like codes: years, times, and grades", () => {
-    expect(parseAudit("Fall 2026 term, 12:30 PM, GPA 3.85, grade B+, unit total 180.0", catalogCodes)).toEqual({ matched: [], unmatched: [] });
+    expect(parseAudit("Fall 2026 term, 12:30 PM, GPA 3.85, grade B+, unit total 180.0", catalogCodes)).toEqual({ matched: [], unmatched: [], blocks: {} });
   });
 
   it("keeps CS 179 variant codes as-is (CS179N stays CS179N, not remapped to CS179G)", () => {
@@ -39,6 +39,6 @@ describe("parseAudit", () => {
         FA25  ENGR 001I PROFESSIONAL DEVELOPMENT     1.0  S
     `;
     // Term labels (FA25, WI26) are not reported as unknown courses.
-    expect(parseAudit(audit, catalogCodes)).toEqual({ matched: ["CS010A", "MATH009A", "CS010B", "ENGR001I"], unmatched: [] });
+    expect(parseAudit(audit, catalogCodes)).toEqual({ matched: ["CS010A", "MATH009A", "CS010B", "ENGR001I"], unmatched: [], blocks: {} });
   });
 });

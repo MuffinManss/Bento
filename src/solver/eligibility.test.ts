@@ -134,4 +134,14 @@ describe("isGroupSatisfied / unmetRequirementGroups", () => {
     const result = unmetRequirementGroups(groups, new Set(["A"]), new Map());
     expect(result.map((g) => g.id)).toEqual(["unmet"]);
   });
+
+  it("metGroups (audit block COMPLETE / marked met by hand) count as satisfied with no courses completed", () => {
+    const groups: RequirementGroup[] = [
+      { id: "elect", name: "Elective", rule: { type: "chooseUnits", units: 8 }, courses: ["A", "B"] },
+      { id: "core", name: "Core", rule: { type: "all" }, courses: ["C"] },
+    ];
+    expect(unmetRequirementGroups(groups, new Set(["A"]), new Map([["A", 4]]), new Set(["elect"])).map((g) => g.id)).toEqual(["core"]);
+    const courses = [course("A"), course("B"), course("C")];
+    expect(eligibleCourses(courses, groups, { completed: new Set(["A"]), metGroups: new Set(["elect"]) }).map((c) => c.code)).toEqual(["C"]);
+  });
 });

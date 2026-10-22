@@ -3,8 +3,11 @@
 // (primary) or paste (fallback), and demo sample students.
 
 import { useMemo, useState } from "react";
+import { requirements } from "../data/index";
 import { sampleStudents } from "../data/sampleStudents";
 import type { SampleStudent } from "../data/sampleStudents";
+import { metGroupsFromBlocks } from "../lib/auditBlocks";
+import type { AuditBlock, AuditBlocks, MetSource } from "../lib/auditBlocks";
 import { parseAudit } from "../lib/auditParser";
 import type { AuditMatch } from "../lib/auditParser";
 import { parsePdfAudit } from "../lib/auditPdfParser";
@@ -18,6 +21,9 @@ import { Chip, Section, SubHeading, inputClass, primaryButton, secondaryButton }
 type Props = {
   completed: ReadonlySet<string>;
   onChange: (next: Set<string>) => void;
+  /** Requirement groups met without their courses -> why (audit block status or the student's toggle). */
+  metOverrides: ReadonlyMap<string, MetSource>;
+  onMetOverridesChange: (next: Map<string, MetSource>) => void;
   onLoadSample: (student: SampleStudent) => void;
   /** Courses in the selected results option -> the requirement group each one fills. */
   planned: ReadonlyMap<string, string>;
@@ -59,6 +65,25 @@ function CourseCheckbox({ course, checked, onToggle, plannedLabel, notNeeded = f
   );
 }
 
+const BLOCK_LABEL: Record<AuditBlock, string> = { lowerDivision: "Lower-division CS", upperDivision: "Upper-division CS" };
+const STATUS_LABEL = { COMPLETE: "complete", "IN-PROGRESS": "in progress", INCOMPLETE: "incomplete" } as const;
+
+/** The audit's own block statuses, and how many requirement groups they mark met. */
+function BlockStatusNote({ blocks }: { blocks: AuditBlocks }) {
+  const found = (Object.keys(BLOCK_LABEL) as AuditBlock[]).flatMap((block) => {
+    const status = blocks[block];
+    return status ? [`${BLOCK_LABEL[block]}: ${STATUS_LABEL[status]}`] : [];
+  });
+  if (found.length === 0) return null;
+  const metCount = metGroupsFromBlocks(blocks, requirements).length;
+  return (
+    <div className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-900 ring-1 ring-emerald-200">
+      <p className="font-medium">Your audit: {found.join(" · ")}</p>
+      {metCount > 0 && <p className="mt-0.5">Bento will mark {metCount} requirement group{metCount === 1 ? "" : "s"} as met, per your audit.</p>}
+    </div>
+  );
+}
+
 /** Review panel shown after a PDF is parsed — user can check before applying. */
 function ReviewPanel({
   review,
@@ -96,9 +121,12 @@ function ReviewPanel({
 
       {review.catalogYearMismatch && review.catalogYear && (
         <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900 ring-1 ring-amber-200">
-          Bento uses 2026–27 requirements; your audit is from {review.catalogYear} — small differences are possible, check with your advisor.
+          Bento's course lists are from the 2026–27 catalog; your audit is from {review.catalogYear}. Bento follows your audit's block statuses — for any
+          other difference (or an advisor exception), use "Mark as met" on that requirement below.
         </p>
       )}
+
+      <BlockStatusNote blocks={review.blocks} />
 
       {review.inProgress.length > 0 && (
         <label className="flex cursor-pointer items-center gap-2 text-sm">
@@ -131,7 +159,7 @@ function ReviewPanel({
       {review.unmatched.length > 0 && (
         <div className="rounded-lg bg-slate-100 p-2.5">
           <p className="mb-1.5 text-xs font-medium text-slate-600">
-            Not in Bento's catalog ({review.unmatched.length}):
+            GE &amp; other courses (not needed for scheduling) ({review.unmatched.length}):
           </p>
           <div className="flex flex-wrap gap-1">
             {review.unmatched.map((code) => (
@@ -153,8 +181,8 @@ function ReviewPanel({
   );
 }
 
-/** PDF upload zone + paste text fallback, with a review step before applying. */
-function AuditImport({ onFound }: { onFound: (codes: string[]) => void }) {
+/** PDF upload zone + paste text fallback, with a review step before applying. `metGroupIds`: groups the audit's COMPLETE blocks cover. */
+function AuditImport({ onFound }: { onFound: (codes: string[], metGroupIds: string[]) => void }) {
   const [mode, setMode] = useState<"pdf" | "paste">("pdf");
   // PDF state
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -190,14 +218,14 @@ function AuditImport({ onFound }: { onFound: (codes: string[]) => void }) {
     ]
       .filter((c) => c.inCatalog)
       .map((c) => c.code);
-    onFound(codes);
+    onFound(codes, metGroupsFromBlocks(review.blocks, requirements));
     setReview(null);
   };
 
   const runPaste = () => {
     const parsed = parseAudit(pasteText, catalogCodes);
     setPasteResult(parsed);
-    onFound(parsed.matched);
+    onFound(parsed.matched, metGroupsFromBlocks(parsed.blocks, requirements));
   };
 
   return (
@@ -286,9 +314,10 @@ function AuditImport({ onFound }: { onFound: (codes: string[]) => void }) {
               )}
             </span>
           </div>
+          {pasteResult && <BlockStatusNote blocks={pasteResult.blocks} />}
           {pasteResult && pasteResult.unmatched.length > 0 && (
-            <div className="rounded-lg bg-amber-50 p-3 text-xs text-amber-900 ring-1 ring-amber-200">
-              <p className="mb-1.5 font-medium">Not in Bento's CS B.S. catalog (ignored):</p>
+            <div className="rounded-lg bg-slate-100 p-2.5 text-xs text-slate-600">
+              <p className="mb-1.5 font-medium">GE &amp; other courses (not needed for scheduling):</p>
               <div className="flex flex-wrap gap-1">
                 {pasteResult.unmatched.map((code) => (
                   <Chip key={code}>{displayCode(code)}</Chip>
@@ -313,13 +342,47 @@ function AuditImport({ onFound }: { onFound: (codes: string[]) => void }) {
   );
 }
 
-export function CoursesStep({ completed, onChange, onLoadSample, planned, plannedLabel }: Props) {
+/** "Mark as met" for a group its courses don't satisfy, or the reason it's met plus an undo. */
+function MetOverrideRow({ override, onSet }: { override: MetSource | undefined; onSet: (source: MetSource | undefined) => void }) {
+  const linkButton = "shrink-0 rounded-md px-2 py-1 font-medium ring-1 ring-inset";
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 px-2 pb-1.5 text-xs text-slate-600">
+      {override ? (
+        <>
+          <span>{override === "audit" ? "Your degree audit marks this block complete — Bento won't schedule courses for it." : "You marked this as met — Bento won't schedule courses for it."}</span>
+          <button type="button" onClick={() => onSet(undefined)} className={`${linkButton} text-rose-700 ring-rose-200 hover:bg-rose-50`}>
+            Undo
+          </button>
+        </>
+      ) : (
+        <>
+          <span>Advisor exception or different catalog year?</span>
+          <button type="button" onClick={() => onSet("manual")} className={`${linkButton} text-slate-700 ring-slate-300 hover:bg-slate-50`}>
+            Mark as met
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+export function CoursesStep({ completed, onChange, metOverrides, onMetOverridesChange, onLoadSample, planned, plannedLabel }: Props) {
   const [query, setQuery] = useState("");
   const toggle = (code: string) => {
     const next = new Set(completed);
     if (next.has(code)) next.delete(code);
     else next.add(code);
     onChange(next);
+  };
+  const setOverride = (groupId: string, source: MetSource | undefined) => {
+    const next = new Map(metOverrides);
+    if (source) next.set(groupId, source);
+    else next.delete(groupId);
+    onMetOverridesChange(next);
+  };
+  const importAudit = (codes: string[], metGroupIds: string[]) => {
+    onChange(new Set([...completed, ...codes]));
+    if (metGroupIds.length > 0) onMetOverridesChange(new Map([...metOverrides, ...metGroupIds.map((id): [string, MetSource] => [id, "audit"])]));
   };
 
   const needle = query.trim().toLowerCase().replace(/\s+/g, "");
@@ -367,7 +430,7 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
 
         <div>
           <SubHeading>Import degree audit</SubHeading>
-          <AuditImport onFound={(codes) => onChange(new Set([...completed, ...codes]))} />
+          <AuditImport onFound={importAudit} />
         </div>
 
         <div>
@@ -375,8 +438,15 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
             hint={
               <span className="flex items-center gap-2">
                 {completedCourses} completed
-                {completed.size > 0 && (
-                  <button type="button" onClick={() => onChange(new Set())} className="text-rose-600 hover:underline">
+                {(completed.size > 0 || metOverrides.size > 0) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onChange(new Set());
+                      onMetOverridesChange(new Map());
+                    }}
+                    className="text-rose-600 hover:underline"
+                  >
                     Clear
                   </button>
                 )}
@@ -404,6 +474,9 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
               const progress = requirement && groupProgress(requirement, completed, unitsMap);
               const preview = requirement && plannedHere.length > 0 ? groupProgress(requirement, new Set([...completed, ...plannedHere]), unitsMap) : undefined;
               const ticked = group.courses.filter((course) => completed.has(course.code)).length;
+              // Met by its courses wins; otherwise the audit's block status or the student's toggle can mark it met.
+              const override = progress && !progress.met ? metOverrides.get(group.id) : undefined;
+              const met = progress?.met === true || override !== undefined;
               return (
                 <details key={group.id} open={needle || plannedHere.length > 0 ? true : undefined} className="group">
                   <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-x-2 gap-y-1 px-3 py-2.5 text-sm hover:bg-slate-50">
@@ -413,8 +486,12 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
                     </span>
                     <span className="ml-auto flex items-center gap-1.5 text-xs">
                       {!progress && <span className="text-slate-600">{ticked} ticked</span>}
-                      {progress?.met && <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-200">✓ Met</span>}
-                      {progress && !progress.met && (
+                      {met && (
+                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-200">
+                          ✓ Met{override === "audit" ? " (per your audit)" : override === "manual" ? " (marked by you)" : ""}
+                        </span>
+                      )}
+                      {progress && !met && (
                         <span className="text-slate-600">
                           {progressLabel(progress)}
                           {preview && (
@@ -427,6 +504,7 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
                     </span>
                   </summary>
                   <div className="px-1 pb-2">
+                    {progress && !progress.met && <MetOverrideRow override={override} onSet={(source) => setOverride(group.id, source)} />}
                     {group.courses.map((course) => (
                       <CourseCheckbox
                         key={course.code}
@@ -434,7 +512,7 @@ export function CoursesStep({ completed, onChange, onLoadSample, planned, planne
                         checked={completed.has(course.code)}
                         onToggle={() => toggle(course.code)}
                         plannedLabel={planned.get(course.code) === group.id ? plannedLabel : undefined}
-                        notNeeded={progress?.met}
+                        notNeeded={met}
                       />
                     ))}
                   </div>

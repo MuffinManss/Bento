@@ -2,6 +2,8 @@
 // "MATH 9A", "ENGR 001-I") and matches them against Bento's catalog codes
 // (e.g. "CS010A", "MATH009A", "MATH09HA", "ENGR001I").
 
+import { parseBlockStatuses } from "./auditBlocks";
+import type { AuditBlocks } from "./auditBlocks";
 import { isRecognizedCode } from "./catalog";
 
 /** SUBJ + optional space + 1-3 digit number + optional hyphen + up to 2 suffix letters, as whole words (not "GPA 3.85"). */
@@ -14,6 +16,8 @@ export type AuditMatch = {
   matched: string[];
   /** Codes found in the text that aren't in the catalog (normalized, e.g. "ENGL001A"). */
   unmatched: string[];
+  /** Lower-/upper-division block statuses, when the pasted text includes them. */
+  blocks: AuditBlocks;
 };
 
 /**
@@ -38,5 +42,5 @@ export function parseAudit(text: string, catalogCodes: ReadonlySet<string>): Aud
     const list = hit ? matched : unmatched;
     if (!list.includes(code)) list.push(code);
   }
-  return { matched, unmatched };
+  return { matched, unmatched, blocks: parseBlockStatuses(text) };
 }

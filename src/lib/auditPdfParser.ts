@@ -2,6 +2,8 @@
 // `parsePdfAudit` lazy-loads pdfjs-dist so it doesn't slow the first paint.
 // Nothing about the file or its text is sent to any server.
 
+import { parseBlockStatuses } from "./auditBlocks";
+import type { AuditBlocks } from "./auditBlocks";
 import { isRecognizedCode } from "./catalog";
 
 export type ParsedCourse = {
@@ -31,6 +33,8 @@ export type ParsedPdfAudit = {
   major: string | undefined;
   /** True when `catalogYear` was read and doesn't match "2026-2027". */
   catalogYearMismatch: boolean;
+  /** Lower-/upper-division block statuses as printed by Degree Works. */
+  blocks: AuditBlocks;
 };
 
 const EXPECTED_YEAR = "2026-2027";
@@ -220,6 +224,7 @@ export function parseDegreeWorksText(
     catalogYear,
     major,
     catalogYearMismatch: !!catalogYear && catalogYear !== EXPECTED_YEAR,
+    blocks: parseBlockStatuses(text),
   };
 }
 

@@ -128,6 +128,25 @@ describe("generateSchedules: feasible case", () => {
 });
 
 describe("generateSchedules: rules", () => {
+  it("a group marked met (manual override or audit block) is never scheduled for", () => {
+    const electives = ["BIEN100", "CS004"];
+    expect(allPages(world()).some((schedule) => codesOf(schedule).some((code) => electives.includes(code)))).toBe(true);
+
+    const marked = { ...world(), metGroups: ["elect"] };
+    const schedules = allPages(marked);
+    expect(schedules.length).toBeGreaterThan(0);
+    for (const schedule of schedules) {
+      expect(codesOf(schedule)).not.toContain("BIEN100");
+      expect(codesOf(schedule)).not.toContain("CS004");
+      expect(schedule.courses.map((entry) => entry.requirementId)).not.toContain("elect");
+    }
+    expect(courseBlocker(marked, "CS004")).toBe("noRequirement");
+  });
+
+  it("every group marked met leaves nothing to schedule", () => {
+    expect(generateSchedules({ ...world(), metGroups: ["calc", "core", "elect"] }).totalFound).toBe(0);
+  });
+
   it("never schedules a course whose prereq isn't completed", () => {
     for (const schedule of allPages(world())) expect(codesOf(schedule)).not.toContain("CS003");
     expect(allPages(world(["CS001"])).some((schedule) => codesOf(schedule).includes("CS003"))).toBe(true);

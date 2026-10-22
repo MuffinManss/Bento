@@ -7,7 +7,7 @@
 // by a node budget so the UI never hangs.
 
 import { hasConflict, toMinutes } from "./conflicts";
-import { isGroupSatisfied } from "./eligibility";
+import { unmetRequirementGroups } from "./eligibility";
 import { prereqSatisfied } from "./prereqs";
 import type { Course, Day, Filters, Meeting, Offering, Prereq, RequirementGroup, Schedule, ScheduledCourse } from "./types";
 
@@ -17,6 +17,8 @@ export type SolverInput = {
   offerings: Offering[];
   completed: string[];
   filters: Filters;
+  /** Requirement group ids already satisfied per the student's audit or marked met by hand — never scheduled for. */
+  metGroups?: string[];
 };
 
 export type GenerateOptions = {
@@ -74,7 +76,7 @@ function buildContext(input: SolverInput): Context {
   const completed = new Set(input.completed);
   const offerings = new Map(input.offerings.filter((offering) => offering.lectures.length > 0).map((offering) => [offering.course, offering]));
   // Array.prototype.sort is stable, so groups keep their data order within each tier.
-  const groups = input.requirements.filter((group) => !isGroupSatisfied(group, completed, units)).sort((a, b) => Number(isElective(a)) - Number(isElective(b)));
+  const groups = unmetRequirementGroups(input.requirements, completed, units, new Set(input.metGroups)).sort((a, b) => Number(isElective(a)) - Number(isElective(b)));
   const concurrentPool = new Set(input.courses.filter((course) => !completed.has(course.code) && course.offered !== false && offerings.has(course.code)).map((course) => course.code));
   return { catalog, completed, units, groups, offerings, filters: input.filters, concurrentPool };
 }

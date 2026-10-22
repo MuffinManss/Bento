@@ -34,9 +34,13 @@ export function isGroupSatisfied(group: RequirementGroup, completed: ReadonlySet
   return rule.tracks.some((track) => track.every((code) => completed.has(code))); // oneOfTracks
 }
 
-/** Requirement groups not yet fully satisfied by completed courses. */
-export function unmetRequirementGroups(requirements: RequirementGroup[], completed: ReadonlySet<string>, units: ReadonlyMap<string, number>): RequirementGroup[] {
-  return requirements.filter((group) => !isGroupSatisfied(group, completed, units));
+/**
+ * Requirement groups not yet fully satisfied by completed courses. Groups in
+ * `metGroups` count as satisfied regardless of courses (block COMPLETE on the
+ * student's audit, or marked met by hand for an advisor exception).
+ */
+export function unmetRequirementGroups(requirements: RequirementGroup[], completed: ReadonlySet<string>, units: ReadonlyMap<string, number>, metGroups: ReadonlySet<string> = new Set()): RequirementGroup[] {
+  return requirements.filter((group) => !metGroups.has(group.id) && !isGroupSatisfied(group, completed, units));
 }
 
 export type EligibilityOptions = {
@@ -45,6 +49,8 @@ export type EligibilityOptions = {
   concurrent?: ReadonlySet<string>;
   /** Courses the student has filtered out and never wants scheduled. */
   exclude?: ReadonlySet<string>;
+  /** Requirement group ids to treat as satisfied (see unmetRequirementGroups). */
+  metGroups?: ReadonlySet<string>;
 };
 
 /**
@@ -54,9 +60,9 @@ export type EligibilityOptions = {
  * already fully satisfied.
  */
 export function eligibleCourses(courses: Course[], requirements: RequirementGroup[], options: EligibilityOptions): Course[] {
-  const { completed, concurrent = new Set<string>(), exclude = new Set<string>() } = options;
+  const { completed, concurrent = new Set<string>(), exclude = new Set<string>(), metGroups } = options;
   const units = unitsByCode(courses);
-  const unmetCourseCodes = new Set(unmetRequirementGroups(requirements, completed, units).flatMap((group) => group.courses));
+  const unmetCourseCodes = new Set(unmetRequirementGroups(requirements, completed, units, metGroups).flatMap((group) => group.courses));
 
   return courses.filter((course) => {
     if (completed.has(course.code)) return false;

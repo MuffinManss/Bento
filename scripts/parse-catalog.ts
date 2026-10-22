@@ -79,7 +79,7 @@ const LOWER_DIVISION: RequirementGroup[] = [
   { id: "cs-bs-ld-physics", name: "Physics Sequence", rule: { type: "all" }, courses: ["PHYS040A", "PHYS040B", "PHYS040C"] },
   {
     id: "cs-bs-ld-engineering-elective",
-    name: "Engineering Depth Elective",
+    name: "Engineering Course Outside CS",
     rule: { type: "chooseUnits", units: 8 },
     courses: ENGINEERING_DEPTH_ELECTIVES,
   },
