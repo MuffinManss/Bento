@@ -72,7 +72,7 @@
   {
     "code": "CS009C",
     "title": "C++ FOR PROGRAMMERS",
-    "units": 2,
+    "units": 4,
     "prereq": {
       "and": [
         {
@@ -108,8 +108,7 @@
           ]
         }
       ]
-    },
-    "offered": false
+    }
   },
   {
     "code": "CS010A",
@@ -252,6 +251,35 @@
     }
   },
   {
+    "code": "CS106",
+    "title": "INTRODUCTION TO COMPUTER SECURITY",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "CS011",
+              "concurrentOk": false
+            },
+            {
+              "course": "MATH011",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "course": "CS061",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS010C",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
     "code": "CS108",
     "title": "DATA SCIENCE ETHICS",
     "units": 4,
@@ -270,7 +298,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS110",
@@ -388,7 +417,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS122A",
@@ -544,7 +574,8 @@
     "prereq": {
       "course": "CS141",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS145",
@@ -569,8 +600,7 @@
           ]
         }
       ]
-    },
-    "offered": false
+    }
   },
   {
     "code": "CS147",
@@ -688,7 +718,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS161",
@@ -708,6 +739,31 @@
     }
   },
   {
+    "code": "CS161L",
+    "title": "LABORATORY IN DESIGN AND ARCHITECTURE OF COMPUTER SYSTEMS",
+    "units": 2,
+    "prereq": {
+      "and": [
+        {
+          "or": [
+            {
+              "course": "EE120A",
+              "concurrentOk": false
+            },
+            {
+              "course": "CS120A",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "course": "CS161",
+          "concurrentOk": true
+        }
+      ]
+    }
+  },
+  {
     "code": "CS162",
     "title": "COMPUTER ARCHITECTURE",
     "units": 4,
@@ -716,6 +772,15 @@
       "concurrentOk": false
     },
     "offered": false
+  },
+  {
+    "code": "CS163",
+    "title": "INTRODUCTION TO PRIVACY TECHNOLOGIES",
+    "units": 4,
+    "prereq": {
+      "course": "CS100",
+      "concurrentOk": false
+    }
   },
   {
     "code": "CS164",
@@ -736,7 +801,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS165",
@@ -803,7 +869,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS169",
@@ -830,7 +897,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS171",
@@ -962,8 +1030,7 @@
           ]
         }
       ]
-    },
-    "offered": false
+    }
   },
   {
     "code": "CS175",
@@ -972,7 +1039,8 @@
     "prereq": {
       "course": "CS100",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS177",
@@ -1005,7 +1073,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS178B",
@@ -1014,8 +1083,7 @@
     "prereq": {
       "course": "CS178A",
       "concurrentOk": false
-    },
-    "offered": false
+    }
   },
   {
     "code": "CS179G",
@@ -1038,6 +1106,65 @@
               "concurrentOk": false
             }
           ]
+        },
+        {
+          "course": "ENGR180W",
+          "concurrentOk": false
+        }
+      ]
+    },
+    "offered": false
+  },
+  {
+    "code": "CS179I",
+    "title": "PROJECT IN COMPUTER SCIENCE: NETWORKS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS164",
+          "concurrentOk": false
+        },
+        {
+          "course": "ENGR180W",
+          "concurrentOk": false
+        }
+      ]
+    }
+  },
+  {
+    "code": "CS179J",
+    "title": "PROJECT IN COMPUTER SCIENCE: COMPUTER ARCHITECTURE AND EMBEDDED SYSTEMS",
+    "units": 4,
+    "prereq": {
+      "and": [
+        {
+          "course": "CS100",
+          "concurrentOk": false
+        },
+        {
+          "course": "CS111",
+          "concurrentOk": false
+        },
+        {
+          "or": [
+            {
+              "course": "CS120B",
+              "concurrentOk": false
+            },
+            {
+              "course": "EE120B",
+              "concurrentOk": false
+            }
+          ]
+        },
+        {
+          "course": "CS161",
+          "concurrentOk": false
         },
         {
           "course": "ENGR180W",
@@ -1078,7 +1205,8 @@
     "prereq": {
       "course": "CS100",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS181",
@@ -1099,8 +1227,7 @@
           "concurrentOk": false
         }
       ]
-    },
-    "offered": false
+    }
   },
   {
     "code": "CS182",
@@ -1109,7 +1236,8 @@
     "prereq": {
       "course": "CS100",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "CS183",
@@ -1120,11 +1248,6 @@
       "concurrentOk": false
     },
     "offered": false
-  },
-  {
-    "code": "CS189",
-    "title": "APPRENTICE TUTORING",
-    "units": 1
   },
   {
     "code": "CS193",
@@ -1159,7 +1282,8 @@
     "prereq": {
       "course": "CS010B",
       "concurrentOk": false
-    }
+    },
+    "offered": false
   },
   {
     "code": "EE020A",
@@ -1259,7 +1383,7 @@
   },
   {
     "code": "EE114",
-    "title": "PROBABILITY, RANDOM VARIABLES, AND RANDOM PROCESSES IN ELECTRICAL ENGINEERING",
+    "title": "PROBABILITY, RANDOM VARIABLES, AND RANDOM PROCESSES IN ENGINEERING",
     "units": 4,
     "prereq": {
       "or": [
@@ -1318,7 +1442,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "EE168",
@@ -1335,18 +1460,19 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "ENGR001I",
     "title": "COMPUTER SCIENCE",
-    "units": 1
+    "units": 1,
+    "offered": false
   },
   {
     "code": "ENGR101I",
     "title": "PROFESSIONAL DEVELOPMENT AND MENTORING",
-    "units": 1,
-    "offered": false
+    "units": 1
   },
   {
     "code": "ENGR180W",
@@ -1377,8 +1503,7 @@
   {
     "code": "ENSC002",
     "title": "INTRODUCTION TO ENVIRONMENTAL SCIENCE: ENVIRONMENTAL QUALITY",
-    "units": 4,
-    "offered": false
+    "units": 4
   },
   {
     "code": "MATH004",
@@ -1411,8 +1536,7 @@
     "prereq": {
       "course": "MATH005A",
       "concurrentOk": false
-    },
-    "offered": false
+    }
   },
   {
     "code": "MATH005C",
@@ -1783,7 +1907,8 @@
           "concurrentOk": false
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "MATH126",
@@ -1843,7 +1968,8 @@
           "concurrentOk": true
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "MATH135B",
@@ -1852,33 +1978,12 @@
     "prereq": {
       "course": "MATH135A",
       "concurrentOk": false
-    },
-    "offered": false
+    }
   },
   {
     "code": "ME002",
     "title": "INTRODUCTION TO MECHANICAL ENGINEERING",
-    "units": 4,
-    "offered": false,
-    "prereq": {
-      "or": [
-        {
-          "course": "PHYS040A"
-        },
-        {
-          "course": "PHYS002A"
-        },
-        {
-          "course": "PHYS02HA"
-        },
-        {
-          "course": "PHYS040HA"
-        },
-        {
-          "course": "PHYS041A"
-        }
-      ]
-    }
+    "units": 4
   },
   {
     "code": "ME005",
@@ -1909,33 +2014,7 @@
   {
     "code": "PHIL124",
     "title": "FORMAL LOGIC",
-    "units": 4,
-    "offered": false,
-    "prereq": {
-      "or": [
-        {
-          "course": "CS011"
-        },
-        {
-          "course": "MATH011"
-        },
-        {
-          "course": "CS120A"
-        },
-        {
-          "course": "EE120A"
-        },
-        {
-          "course": "CS150"
-        },
-        {
-          "course": "PHIL008"
-        },
-        {
-          "course": "PHIL008H"
-        }
-      ]
-    }
+    "units": 4
   },
   {
     "code": "PHYS040A",
@@ -2021,8 +2100,7 @@
           ]
         }
       ]
-    },
-    "offered": false
+    }
   },
   {
     "code": "PHYS040C",
@@ -2059,7 +2137,8 @@
           ]
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "PHYS040HA",
@@ -2142,7 +2221,6 @@
     "code": "STAT155",
     "title": "PROBABILITY AND STATISTICS FOR SCIENCE AND ENGINEERING",
     "units": 4,
-    "offered": false,
     "prereq": {
       "or": [
         {
@@ -2179,7 +2257,8 @@
           "concurrentOk": true
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "STAT160A",
@@ -2200,7 +2279,8 @@
           "concurrentOk": true
         }
       ]
-    }
+    },
+    "offered": false
   },
   {
     "code": "WRIT020",

@@ -5,21 +5,21 @@ Ambiguities, gaps, and assumptions found while scraping/parsing UCR data. Never 
 <!-- BEGIN scrape-ucr.ts -->
 ## scrape-ucr.ts
 
-Last run: term 202640, 39 CS courses offered this term, 60 CS courses total had their prerequisites fetched (including 21 not offered this term but still real prereq leaves/electives), 55 of those had a parsed prerequisite tree. Plus 40 MATH/PHYS/ENGR/EE/STAT courses that appear in requirements.json or a CS prereq (35 with sections this term), 39 with a parsed prerequisite tree. 74 offerings, 86 total courses.json entries.
+Last run: term 202710, 36 CS courses offered this term, 60 CS courses total had their prerequisites fetched (including 24 not offered this term but still real prereq leaves/electives), 55 of those had a parsed prerequisite tree. Plus 42 MATH/PHYS/ENGR/EE/STAT courses that appear in requirements.json or a CS prereq (31 with sections this term), 40 with a parsed prerequisite tree. 67 offerings, 88 total courses.json entries.
 
-**Term used:** Requested term 202640 ("Fall 2026 (View Only)") is the newest term Banner currently publishes.
+**Term used:** Requested term 202710 ("Winter 2027") is the newest term Banner currently publishes.
 
 **Banner session quirk (adaptation):** changing the search subject on a second `searchResults` call within the same session is silently ignored by the server — it returns the first search's cached results. Fixed by re-POSTing `term/search` + `classSearch/resetDataForm` before every subject's search (see `scripts/lib/bannerClient.ts`).
 
 **AND/OR grouping assumption:** prerequisite HTML wraps every single leaf term in its own parentheses, so parens carry no real nesting information. The tree is built by treating "or" as binding adjacent leaf terms (equivalent/alternate courses) and "and" as chaining those groups — this matched every multi-term example seen, but is an inference, not something the HTML states directly. Cross-checked against the catalog's own course-description text with `npm run check-prereqs` (see its DATA_TODO section below for results).
 
-**Scope:** 250 CS section rows were excluded before any processing — grad-level courses (200+), research/individual-study/internship/colloquium numbers (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302), and research/thesis/internship/individual-study schedule types. MATH/PHYS/ENGR/EE/STAT use the same rule (200+ and 190-199 excluded) and are further limited to courses in requirements.json or a CS prereq. None of the excluded rows can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see `scripts/lib/scopeFilter.ts`).
+**Scope:** 208 CS section rows were excluded before any processing — grad-level courses (200+), research/individual-study/internship/colloquium numbers (190, 193, 197, 198I, 287, 290, 297, 298I, 299, 302), and research/thesis/internship/individual-study schedule types. MATH/PHYS/ENGR/EE/STAT use the same rule (200+ and 190-199 excluded) and are further limited to courses in requirements.json or a CS prereq. None of the excluded rows can ever be a degree requirement for the B.S., so they're not in sections.json/courses.json and don't generate warnings (see `scripts/lib/scopeFilter.ts`).
 
 **Linked sections:** Banner's `fetchLinkedSections` returns every valid lecture+activities combination. These are grouped by activity type into `Lecture.linked` (one `ActivityGroup` per type); the solver takes one activity from EACH group. Every lecture's combinations are checked to be the exact cross product of its groups — any that aren't are listed in the warnings below.
 
 **Placement exams:** prereq lines like "Math: Score for Prereq 612 to 613" are OR-alternatives to a course (Banner's "Course or Test:"). Each course that accepts one gets a checklist-only `PLACE:<course>` item. The score codes are Banner's own and their meaning isn't published; which codes unlock which course: PLACE:MATH004 (622-623, 630-631, 624-625, 626-627); PLACE:MATH005A (626-627, 624-625, 620-621); PLACE:MATH006A (614-615, 628-629); PLACE:MATH007A (616-617); PLACE:MATH009A (612-613); PLACE:MATH022 (610-611).
 
-**Term dates:** 2026-09-24 to 2026-12-04 (most common meeting startDate/endDate in Banner), scraped 2026-10-20 — written to src/data/meta.json for the term badge, footer, and .ics export.
+**Term dates:** 2027-01-04 to 2027-03-12 (most common meeting startDate/endDate in Banner), scraped 2026-11-20 — written to src/data/meta.json for the term badge, footer, and .ics export.
 
 **Variable-unit / grouping / leaf-resolution warnings from this run:**
 - CS178A: found a parenthesized group with 2 leaf terms (expected exactly 1) — the flat and/or grouping assumption may not hold here. Group text: "Course or Test: Computer Science 141 
@@ -36,10 +36,10 @@ and
  Course or Test: Mathematics 06LB 
  May be taken concurrently."
 - CS119L: no "Lecture" type section found; treating each of its 1 section(s) (Laboratory) as a standalone Lecture with no linked activity.
-- CS189: no "Lecture" type section found; treating each of its 1 section(s) (Activity) as a standalone Lecture with no linked activity.
-- ENGR001I: no "Lecture" type section found; treating each of its 1 section(s) (Activity) as a standalone Lecture with no linked activity.
-- EE030LA: no "Lecture" type section found; treating each of its 4 section(s) (Laboratory) as a standalone Lecture with no linked activity.
-- Referenced in a CS prerequisite but no Banner title/units (not offered in any searched term, or its subject wasn't scraped — only CS/MATH/PHYS/EE/ENGR/STAT/CHEM/ME/PHIL/LING/ECON/ENSC/BIEN/WRIT were); parse-catalog.ts fills these from the catalog text where it can — see its section: CS167, MATH09HA, MATH09HB, MATH09HC, STAT155
+- PHYS040B: lecture CRN 43859's 62 linked combination(s) aren't the full cross product of its per-type groups (13 DIS x 8 LAB) — modeled as one-of-each-type anyway, so the solver may offer a combination Banner doesn't allow.
+- ENGR101I: no "Lecture" type section found; treating each of its 1 section(s) (Activity) as a standalone Lecture with no linked activity.
+- EE030LA: no "Lecture" type section found; treating each of its 3 section(s) (Laboratory) as a standalone Lecture with no linked activity.
+- Referenced in a CS prerequisite but no Banner title/units (not offered in any searched term, or its subject wasn't scraped — only CS/MATH/PHYS/EE/ENGR/STAT/CHEM/ME/PHIL/LING/ECON/ENSC/BIEN/WRIT were); parse-catalog.ts fills these from the catalog text where it can — see its section: CS167, MATH09HA, MATH09HB, MATH09HC
 <!-- END scrape-ucr.ts -->
 
 <!-- BEGIN parse-catalog.ts -->
@@ -57,9 +57,11 @@ Source: UCR 2026-27 General Catalog (`raw/catalog-cs.pdf`), Department of Comput
 - `ENGR001I`, `ENGR101I`, and `MATH046` (catalog: "ENGR 001-I", "ENGR 101-I", "MATH 46") were originally guessed code formats, not verified live. Now confirmed correct against live Banner data once ENGR/MATH were added to the metadata scrape: ENGR001I = "Computer Science" (there's also an ENGR001G for Computer Engineering and ENGR001M for CS+Business — 001I is the right one), ENGR101I likewise, and MATH046 = "Introduction to Ordinary Differential Equations" (distinct from MATH045, the physical-sciences/engineering variant).
 - The catalog's engineering-elective depth list has what reads like a literal duplicate: "EE 020A & 30LA" and, later in the same sentence, "EE 20A" — transcribed as EE020A + EE030LA (once) rather than twice.
 
-**Courses with no live Banner section in any scraped term** (`scripts/lib/catalogOnlyCourses.ts`): CS133, CS142, CS167, CS177, ENSC002, ME002, ME005, PHIL124, STAT155, and ENGR101I were all hand-transcribed from this catalog's own course-description text instead, each marked `offered: false` since there's no evidence any of them ran in Fall/Winter/Spring 2025-26. Dropped non-course restrictions that can't be a Prereq leaf: CS167's online-section enrollment restriction, CS177's "C++ programming proficiency", PHIL124's "consent of instructor", STAT155's university-GE-style "or equivalent" disclaimers, and ENGR101I's class-standing/major restriction (confirmed via "ENGR 001 (E-Z)"'s letter key that I = Computer Science, matching live ENGR001I data).
+**Courses with no live Banner section in term 202710 or its fallback terms (202640, 202620, 202610)** (`scripts/lib/catalogOnlyCourses.ts`): CS133, CS142, CS167, CS177, ME005 were hand-transcribed from this catalog's own course-description text instead, each marked `offered: false` so a student can still tick them off as completed while the solver never schedules them. Dropped non-course restrictions that can't be a Prereq leaf: CS167's online-section enrollment restriction, CS177's "C++ programming proficiency", PHIL124's "consent of instructor", STAT155's university-GE-style "or equivalent" disclaimers, and ENGR101I's class-standing/major restriction (confirmed via "ENGR 001 (E-Z)"'s letter key that I = Computer Science, matching live ENGR001I data).
 
-**CS122B could not be resolved at all** — no live Banner section in term 202640 or its CS fallback terms (202620, 202610), AND no standalone course-description entry anywhere in the catalog text (only appears inside other courses' technical-elective lists, e.g. "CS 110, CS 122A, CS 122B, CS 130..."). It's likely only described under a cross-listed pair in a different catalog section (CS122A's own catalog entry couldn't be found either, for the same reason — see check-prereqs.ts's "not found" list). Left out of courses.json rather than guessed; still listed in `cs-bs-ud-tech-electives`'s `courses` array as a known elective option.
+**Catalog-only entries superseded by live Banner data this term:** ENSC002, ME002, PHIL124. Their hand-transcribed entries in `catalogOnlyCourses.ts` are kept for terms that don't offer them, but real section data wins whenever Banner has it.
+
+**CS122B could not be resolved at all** — no live Banner section in term 202710 or its fallback terms (202640, 202620, 202610), AND no standalone course-description entry anywhere in the catalog text (only appears inside other courses' technical-elective lists, e.g. "CS 110, CS 122A, CS 122B, CS 130..."). It's likely only described under a cross-listed pair in a different catalog section (CS122A's own catalog entry couldn't be found either, for the same reason — see check-prereqs.ts's "not found" list). Left out of courses.json rather than guessed; still listed in `cs-bs-ud-tech-electives`'s `courses` array as a known elective option.
 
 **Course codes referenced by requirements.json with no courses.json entry** (subject never scraped, or not offered in any searched term, and no catalog description found): CS122B
 <!-- END parse-catalog.ts -->
@@ -67,7 +69,7 @@ Source: UCR 2026-27 General Catalog (`raw/catalog-cs.pdf`), Department of Comput
 <!-- BEGIN check-prereqs.ts -->
 ## check-prereqs.ts
 
-Cross-checked every in-scope CS course's Banner-sourced Prereq tree against the catalog's own "Prerequisite(s):" text (`raw/catalog-text/full-raw.txt`, see the file header comment in `scripts/check-prereqs.ts` for why `-raw` mode specifically). Last run: 54 match, 1 mismatch, 3 not found in catalog text, 0 ambiguous heading(s).
+Cross-checked every in-scope CS course's Banner-sourced Prereq tree against the catalog's own "Prerequisite(s):" text (`raw/catalog-text/full-raw.txt`, see the file header comment in `scripts/check-prereqs.ts` for why `-raw` mode specifically). Last run: 56 match, 3 mismatch, 3 not found in catalog text, 0 ambiguous heading(s).
 
 **CS178A was previously flagged as a grouping anomaly (see scrape-ucr.ts section) but is confirmed CORRECT**: the catalog says "Prerequisite(s): CS 141, ENGR 180W" (comma = AND), matching the parsed tree `{and: [CS141, ENGR180W]}` exactly. No fix needed.
 
@@ -78,6 +80,20 @@ with a grade of C- or better; or equivalent"
   catalog leaves: [CS009A, CS09HA]
   parsed leaves:  [CS009A]
   catalog has, parsed is missing: CS09HA
+MISMATCH CS161L
+  catalog text: "CS 161 (may be
+taken concurrently)"
+  catalog leaves: [CS161]
+  parsed leaves:  [CS120A, CS161, EE120A]
+  parsed has, catalog doesn't mention: CS120A, EE120A
+MISMATCH CS163
+  catalog text: "CS 100; CS 165 is
+recommended; restricted to class level
+standing of junior, or senior; or consent of
+instructor"
+  catalog leaves: [CS100, CS165]
+  parsed leaves:  [CS100]
+  catalog has, parsed is missing: CS165
 
 **Not found in catalog text** (known script limitations, not data problems — verified by hand): CS009C, CS042, CS122A. CS042's title is literally the word "A" ("A Hitchhiker's Guide to...") and CS009C's title starts with "C++" — both defeat the heading-detection heuristic (which requires an uppercase letter then a lowercase one right after the course number) since neither looks like the start of an ordinary word. CS122A has no standalone course-description entry in the catalog at all — it's likely only described under its cross-listed pair EE128.
 <!-- END check-prereqs.ts -->

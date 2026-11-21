@@ -1,21 +1,17 @@
 {
-  "term": "202640",
-  "termLabel": "Fall 2026",
-  "termStart": "2026-09-24",
-  "termEnd": "2026-12-04",
-  "scrapedOn": "2026-10-20",
+  "term": "202710",
+  "termLabel": "Winter 2027",
+  "termStart": "2027-01-04",
+  "termEnd": "2027-03-12",
+  "scrapedOn": "2026-11-20",
   "holidays": [
     {
-      "date": "2026-11-11",
-      "name": "Veterans Day"
+      "date": "2027-01-18",
+      "name": "Martin Luther King Jr. Day"
     },
     {
-      "date": "2026-11-26",
-      "name": "Thanksgiving"
-    },
-    {
-      "date": "2026-11-27",
-      "name": "Thanksgiving"
+      "date": "2027-02-15",
+      "name": "Presidents' Day"
     }
   ]
 }

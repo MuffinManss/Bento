@@ -1,4 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// Formatting is asserted against a fixed catalog, not whichever term was
+// last scraped into src/data (see testing/fixtureCatalog.ts).
+vi.mock("../data/index", async () => await import("./testing/fixtureCatalog"));
 import type { Schedule } from "../solver/types";
 import { formatAdvisorText } from "./advisorText";
 

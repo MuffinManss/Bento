@@ -24,7 +24,7 @@ import { existsSync, mkdirSync } from "node:fs";
 import { readJson, writeJson } from "./lib/cache.ts";
 import { upsertDataTodoSection } from "./lib/dataTodo.ts";
 import { BannerClient } from "./lib/bannerClient.ts";
-import { buildMetadataLookup } from "./lib/metadataLookup.ts";
+import { buildMetadataLookup, loadFallbackTerms } from "./lib/metadataLookup.ts";
 import { loadSubjects, bySubjectDescription } from "./lib/subjects.ts";
 import { fetchPrereqs } from "./lib/fetchPrereqs.ts";
 import { buildCourse } from "./lib/courses.ts";
@@ -146,16 +146,22 @@ async function main(): Promise<void> {
 
   const reconcileWarnings: string[] = [];
   const missing: string[] = [];
+  // Which hand-transcribed catalog entries were actually needed, vs. which
+  // Banner now has real section data for (live data always wins).
+  const catalogOnlyUsed: string[] = [];
+  const catalogOnlySuperseded: string[] = [];
   const newCsRows = new Map<string, BannerSection>();
   for (const code of allReferencedCourses(REQUIREMENTS)) {
     if (courseCodes.has(code)) continue;
     const row = lookup.get(code);
     if (row) {
+      if (catalogOnly.has(code)) catalogOnlySuperseded.push(code);
       if (row.subject === "CS") newCsRows.set(code, row);
       else courses.push(buildCourse(row, undefined, reconcileWarnings, row.term === term));
       courseCodes.add(code);
     } else if (catalogOnly.has(code)) {
       courses.push(catalogOnly.get(code)!);
+      catalogOnlyUsed.push(code);
       courseCodes.add(code);
     } else {
       missing.push(code);
@@ -183,6 +189,9 @@ async function main(): Promise<void> {
   reconcileWarnings.push(...newCsWarnings);
   for (const [code, row] of newCsRows) courses.push(buildCourse(row, newCsTrees.get(code), reconcileWarnings, row.term === term));
 
+  const fallbacks = await loadFallbackTerms(client, term, "raw");
+  const searchedTerms = `term ${term}${fallbacks.length > 0 ? ` or its fallback terms (${fallbacks.join(", ")})` : ""}`;
+
   courses.sort((a, b) => a.code.localeCompare(b.code));
   writeJson("src/data/courses.json", courses);
   writeJson(
@@ -203,9 +212,11 @@ async function main(): Promise<void> {
     "- `ENGR001I`, `ENGR101I`, and `MATH046` (catalog: \"ENGR 001-I\", \"ENGR 101-I\", \"MATH 46\") were originally guessed code formats, not verified live. Now confirmed correct against live Banner data once ENGR/MATH were added to the metadata scrape: ENGR001I = \"Computer Science\" (there's also an ENGR001G for Computer Engineering and ENGR001M for CS+Business — 001I is the right one), ENGR101I likewise, and MATH046 = \"Introduction to Ordinary Differential Equations\" (distinct from MATH045, the physical-sciences/engineering variant).",
     "- The catalog's engineering-elective depth list has what reads like a literal duplicate: \"EE 020A & 30LA\" and, later in the same sentence, \"EE 20A\" — transcribed as EE020A + EE030LA (once) rather than twice.",
     "",
-    "**Courses with no live Banner section in any scraped term** (`scripts/lib/catalogOnlyCourses.ts`): CS133, CS142, CS167, CS177, ENSC002, ME002, ME005, PHIL124, STAT155, and ENGR101I were all hand-transcribed from this catalog's own course-description text instead, each marked `offered: false` since there's no evidence any of them ran in Fall/Winter/Spring 2025-26. Dropped non-course restrictions that can't be a Prereq leaf: CS167's online-section enrollment restriction, CS177's \"C++ programming proficiency\", PHIL124's \"consent of instructor\", STAT155's university-GE-style \"or equivalent\" disclaimers, and ENGR101I's class-standing/major restriction (confirmed via \"ENGR 001 (E-Z)\"'s letter key that I = Computer Science, matching live ENGR001I data).",
+    `**Courses with no live Banner section in ${searchedTerms}** (\`scripts/lib/catalogOnlyCourses.ts\`): ${catalogOnlyUsed.sort().join(", ") || "(none)"} were hand-transcribed from this catalog's own course-description text instead, each marked \`offered: false\` so a student can still tick them off as completed while the solver never schedules them. Dropped non-course restrictions that can't be a Prereq leaf: CS167's online-section enrollment restriction, CS177's "C++ programming proficiency", PHIL124's "consent of instructor", STAT155's university-GE-style "or equivalent" disclaimers, and ENGR101I's class-standing/major restriction (confirmed via "ENGR 001 (E-Z)"'s letter key that I = Computer Science, matching live ENGR001I data).`,
     "",
-    "**CS122B could not be resolved at all** — no live Banner section in term 202640 or its CS fallback terms (202620, 202610), AND no standalone course-description entry anywhere in the catalog text (only appears inside other courses' technical-elective lists, e.g. \"CS 110, CS 122A, CS 122B, CS 130...\"). It's likely only described under a cross-listed pair in a different catalog section (CS122A's own catalog entry couldn't be found either, for the same reason — see check-prereqs.ts's \"not found\" list). Left out of courses.json rather than guessed; still listed in `cs-bs-ud-tech-electives`'s `courses` array as a known elective option.",
+    `**Catalog-only entries superseded by live Banner data this term:** ${catalogOnlySuperseded.sort().join(", ") || "(none)"}. Their hand-transcribed entries in \`catalogOnlyCourses.ts\` are kept for terms that don't offer them, but real section data wins whenever Banner has it.`,
+    "",
+    `**CS122B could not be resolved at all** — no live Banner section in ${searchedTerms}, AND no standalone course-description entry anywhere in the catalog text (only appears inside other courses' technical-elective lists, e.g. \"CS 110, CS 122A, CS 122B, CS 130...\"). It's likely only described under a cross-listed pair in a different catalog section (CS122A's own catalog entry couldn't be found either, for the same reason — see check-prereqs.ts's \"not found\" list). Left out of courses.json rather than guessed; still listed in \`cs-bs-ud-tech-electives\`'s \`courses\` array as a known elective option.`,
     "",
     `**Course codes referenced by requirements.json with no courses.json entry** (subject never scraped, or not offered in any searched term, and no catalog description found): ${missing.length > 0 ? missing.sort().join(", ") : "(none)"}`,
   ]);

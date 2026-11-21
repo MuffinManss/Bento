@@ -46,6 +46,8 @@ npm test
 npm run samples > docs/samples.txt
 ```
 
+Two things need editing by hand, because neither is in Banner: the `holidays` in `meta.json` (from the registrar's [academic calendar](https://registrar.ucr.edu/calendar) — the term column's "Academic and Administrative Holidays and Closures", keeping only the dates inside the instruction window, or the `.ics` export will put classes on holidays), and the `<meta name="description">` term in `index.html` (static HTML can't read the JSON). `scrape` clears `holidays` whenever the term changes and warns in `DATA_TODO.md` until they're filled in; everything else term-specific comes from `meta.json`.
+
 Then review `DATA_TODO.md` — every ambiguity, gap, and assumption the scripts hit is written there rather than guessed. The term label, first/last day of classes (used by the `.ics` export), and scrape date all come from `src/data/meta.json`, which `scrape` regenerates from Banner's meeting dates. Delete files under `raw/` to force a fresh download.
 
 ## How the solver works
