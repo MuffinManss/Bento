@@ -51,6 +51,14 @@ export type Lecture = {
   meetings: Meeting[];
   /** One group per linked activity type (e.g. CS100: a DIS group and a LAB group); empty if none. */
   linked: ActivityGroup[];
+  /**
+   * The combinations Banner actually allows, one activity id per `linked`
+   * group in group order — set ONLY when they aren't the full cross product
+   * of those groups (e.g. PHYS040B, where 7 of 13 discussions pair with just
+   * 2 of the 8 labs). Absent, as it is for almost every lecture, means any
+   * one-from-each-group pick is valid.
+   */
+  combos?: string[][];
   /** Fully async/online component with no fixed meeting time — never conflicts with anything. */
   online?: boolean;
 };

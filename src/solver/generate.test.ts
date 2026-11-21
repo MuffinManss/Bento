@@ -245,6 +245,60 @@ describe("generateSchedules: rules", () => {
     });
   });
 
+  describe("lecture whose DIS/LAB pairings Banner restricts (like PHYS040B)", () => {
+    // 2 DIS x 2 LAB would be 4 pairings, but Banner allows only 3: DIS 9101 pairs
+    // with either lab, DIS 9102 only with LAB 9201. No meetings overlap, so
+    // anything missing from the results was excluded by `combos` alone.
+    const combos = [
+      ["9101", "9201"],
+      ["9101", "9202"],
+      ["9102", "9201"],
+    ];
+    const groups = [
+      [dis("9101", [meeting("W", "10:00", "10:50")]), dis("9102", [meeting("W", "11:00", "11:50")])],
+      [lab("9201", [meeting("F", "12:00", "13:50")]), lab("9202", [meeting("F", "14:00", "15:50")])],
+    ];
+    const build = (extra: Partial<Lecture>): SolverInput => ({
+      courses: [course("PHYS040B")],
+      requirements: [{ id: "core", name: "Core", rule: { type: "all" }, courses: ["PHYS040B"] }],
+      offerings: [{ course: "PHYS040B", lectures: [lecture("9100", [meeting("TR", "14:00", "15:20")], groups, extra)] }],
+      completed: [],
+      filters: filters(),
+    });
+
+    it("offers every pairing when the lecture has no combos", () => {
+      const pairs = allPages(build({})).map((schedule) => schedule.courses[0].activityIds.join("+"));
+      expect(new Set(pairs)).toEqual(new Set(["9101+9201", "9101+9202", "9102+9201", "9102+9202"]));
+    });
+
+    it("offers only the combinations Banner allows", () => {
+      const input = build({ combos });
+      const schedules = allPages(input);
+      const pairs = schedules.map((schedule) => schedule.courses[0].activityIds.join("+"));
+      expect(new Set(pairs)).toEqual(new Set(["9101+9201", "9101+9202", "9102+9201"]));
+      expect(pairs).not.toContain("9102+9202");
+      for (const schedule of schedules) expect(validateSchedule(schedule, input)).toEqual([]);
+    });
+
+    it("validator rejects a pairing Banner doesn't allow", () => {
+      const input = build({ combos });
+      const disallowed: Schedule = { courses: [{ course: "PHYS040B", lectureId: "9100", activityIds: ["9102", "9202"], requirementId: "core" }], units: 4, score: 0 };
+      expect(validateSchedule(disallowed, input).join()).toMatch(/aren't one of Banner's 3 allowed combinations/);
+    });
+
+    it("still applies filters within the allowed combinations", () => {
+      // Dropping Friday kills every lab, so no allowed combination survives.
+      const input = { ...build({ combos }), filters: filters({ daysOff: ["F"] }) };
+      expect(allPages(input)).toEqual([]);
+    });
+
+    it("skips a combo naming an activity that isn't in the group", () => {
+      const input = build({ combos: [["9101", "9999"], ["9102", "9201"]] });
+      const pairs = allPages(input).map((schedule) => schedule.courses[0].activityIds.join("+"));
+      expect(pairs).toEqual(["9102+9201"]);
+    });
+  });
+
   it("oneOfTracks: never mixes tracks in one schedule before a track is started", () => {
     for (const schedule of allPages(world([], { maxUnits: 16 }))) {
       const codes = codesOf(schedule);

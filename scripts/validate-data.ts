@@ -3,7 +3,7 @@
 // Run with: npm run validate-data
 
 import { readJson } from "./lib/cache.ts";
-import type { Activity, ActivityType, Course, Offering, RequirementGroup } from "../src/solver/types.ts";
+import type { Activity, ActivityType, Course, Lecture, Offering, RequirementGroup } from "../src/solver/types.ts";
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -134,7 +134,40 @@ function validateSections(offerings: Offering[], courseCodes: Set<string>): void
         }
         for (const activity of group.activities) validateActivity(activity, group.type, `${offering.course} lecture ${lecture.id}`);
       }
+
+      if (lecture.combos !== undefined) validateCombos(lecture, offering.course, errors, warnings);
     }
+  }
+}
+
+/**
+ * `combos` must name a real activity from each linked group, in group order,
+ * and only exist when it actually restricts something.
+ */
+function validateCombos(lecture: Lecture, course: string, errors: string[], warnings: string[]): void {
+  const combos = lecture.combos ?? [];
+  const context = `${course}: lecture ${lecture.id}`;
+  if (!Array.isArray(combos) || combos.length === 0) {
+    errors.push(`${context} has an empty "combos" — omit it when every combination is allowed.`);
+    return;
+  }
+  const ids = lecture.linked.map((group) => new Set(group.activities.map((activity) => activity.id)));
+  const seen = new Set<string>();
+  for (const combo of combos) {
+    if (combo.length !== lecture.linked.length) {
+      errors.push(`${context} has a combo with ${combo.length} id(s) but ${lecture.linked.length} linked group(s): ${combo.join("+")}.`);
+      continue;
+    }
+    combo.forEach((id, index) => {
+      if (!ids[index].has(id)) errors.push(`${context} combo ${combo.join("+")} names "${id}", which isn't in its ${lecture.linked[index].type} group.`);
+    });
+    const key = combo.join("+");
+    if (seen.has(key)) errors.push(`${context} lists the combo ${key} twice.`);
+    seen.add(key);
+  }
+  const crossProduct = lecture.linked.reduce((product, group) => product * group.activities.length, 1);
+  if (combos.length >= crossProduct) {
+    warnings.push(`${context} has "combos" listing all ${crossProduct} combinations — it restricts nothing and can be omitted.`);
   }
 }
 

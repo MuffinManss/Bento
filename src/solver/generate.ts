@@ -9,7 +9,7 @@
 import { hasConflict, toMinutes } from "./conflicts";
 import { unmetRequirementGroups } from "./eligibility";
 import { prereqSatisfied } from "./prereqs";
-import type { Course, Day, Filters, Meeting, Offering, Prereq, RequirementGroup, Schedule, ScheduledCourse } from "./types";
+import type { Activity, Course, Day, Filters, Lecture, Meeting, Offering, Prereq, RequirementGroup, Schedule, ScheduledCourse } from "./types";
 
 export type SolverInput = {
   courses: Course[];
@@ -170,8 +170,41 @@ export function meetingFitsFilters(meeting: Meeting, filters: Filters): boolean 
 }
 
 /**
+ * Adds one activity to a partial option, or drops it if the activity breaks a
+ * filter or overlaps what's already picked.
+ */
+function withActivity(partial: SectionOption, activity: Activity, fits: (meetings: Meeting[]) => boolean): SectionOption | undefined {
+  const activityMeetings = activeMeetings(activity);
+  if (!fits(activityMeetings) || hasConflict(partial.meetings, activityMeetings)) return undefined;
+  return { lectureId: partial.lectureId, activityIds: [...partial.activityIds, activity.id], meetings: [...partial.meetings, ...activityMeetings] };
+}
+
+/**
+ * Only the pairings Banner allows: one pass over `lecture.combos`, resolving
+ * each id against the group at the same position. A tuple naming an id that
+ * isn't in its group is skipped rather than guessed at.
+ */
+function combosToOptions(lecture: Lecture, base: SectionOption, fits: (meetings: Meeting[]) => boolean): SectionOption[] {
+  const byId = lecture.linked.map((group) => new Map(group.activities.map((activity) => [activity.id, activity])));
+  const options: SectionOption[] = [];
+  for (const combo of lecture.combos ?? []) {
+    if (combo.length !== lecture.linked.length) continue;
+    let option: SectionOption | undefined = base;
+    for (const [index, id] of combo.entries()) {
+      const activity = byId[index].get(id);
+      option = activity && option ? withActivity(option, activity, fits) : undefined;
+      if (!option) break;
+    }
+    if (option) options.push(option);
+  }
+  return options;
+}
+
+/**
  * Every (lecture, one activity from each linked group) combination of an
  * offering that fits the filters on its own and doesn't conflict with itself.
+ * A lecture with `combos` is restricted to those, since Banner won't accept
+ * any other pairing of its activities.
  */
 function sectionOptions(offering: Offering, filters: Filters): SectionOption[] {
   const fits = (meetings: Meeting[]) => meetings.every((meeting) => meetingFitsFilters(meeting, filters));
@@ -179,15 +212,17 @@ function sectionOptions(offering: Offering, filters: Filters): SectionOption[] {
   for (const lecture of offering.lectures) {
     const lectureMeetings = activeMeetings(lecture);
     if (!fits(lectureMeetings)) continue;
-    let partials: SectionOption[] = [{ lectureId: lecture.id, activityIds: [], meetings: lectureMeetings }];
+    const base: SectionOption = { lectureId: lecture.id, activityIds: [], meetings: lectureMeetings };
+    if (lecture.combos) {
+      options.push(...combosToOptions(lecture, base, fits));
+      continue;
+    }
+    let partials: SectionOption[] = [base];
     for (const group of lecture.linked) {
-      partials = partials.flatMap((partial) =>
-        group.activities.flatMap((activity) => {
-          const activityMeetings = activeMeetings(activity);
-          if (!fits(activityMeetings) || hasConflict(partial.meetings, activityMeetings)) return [];
-          return [{ lectureId: lecture.id, activityIds: [...partial.activityIds, activity.id], meetings: [...partial.meetings, ...activityMeetings] }];
-        }),
-      );
+      partials = partials.flatMap((partial) => {
+        const next = group.activities.map((activity) => withActivity(partial, activity, fits));
+        return next.filter((option): option is SectionOption => option !== undefined);
+      });
     }
     options.push(...partials);
   }

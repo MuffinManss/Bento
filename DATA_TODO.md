@@ -36,7 +36,7 @@ and
  Course or Test: Mathematics 06LB 
  May be taken concurrently."
 - CS119L: no "Lecture" type section found; treating each of its 1 section(s) (Laboratory) as a standalone Lecture with no linked activity.
-- PHYS040B: lecture CRN 43859's 62 linked combination(s) aren't the full cross product of its per-type groups (13 DIS x 8 LAB) — modeled as one-of-each-type anyway, so the solver may offer a combination Banner doesn't allow.
+- PHYS040B: lecture CRN 43859 allows only 62 of the 104 combinations its groups (13 DIS x 8 LAB) could form — the allowed list is kept in the lecture's "combos", so the solver only offers pairings Banner accepts.
 - ENGR101I: no "Lecture" type section found; treating each of its 1 section(s) (Activity) as a standalone Lecture with no linked activity.
 - EE030LA: no "Lecture" type section found; treating each of its 3 section(s) (Laboratory) as a standalone Lecture with no linked activity.
 - Referenced in a CS prerequisite but no Banner title/units (not offered in any searched term, or its subject wasn't scraped — only CS/MATH/PHYS/EE/ENGR/STAT/CHEM/ME/PHIL/LING/ECON/ENSC/BIEN/WRIT were); parse-catalog.ts fills these from the catalog text where it can — see its section: CS167, MATH09HA, MATH09HB, MATH09HC

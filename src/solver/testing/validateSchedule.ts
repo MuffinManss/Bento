@@ -75,6 +75,10 @@ export function validateSchedule(schedule: Schedule, input: ValidationInput): st
       if (!activity) problems.push(`${course.code}: needs one ${group.type} of lecture ${lecture.id}, got ${entry.activityIds[index] ?? "none"}`);
       else if (!activity.online) blocks.push(...blocksOf(activity.meetings, `${course.code} ${activity.type} ${activity.id}`));
     });
+    // Where Banner restricts which activities go together, the pick must be one it allows.
+    if (lecture.combos && !lecture.combos.some((combo) => combo.length === entry.activityIds.length && combo.every((id, index) => id === entry.activityIds[index]))) {
+      problems.push(`${course.code}: lecture ${lecture.id} activities ${entry.activityIds.join("+")} aren't one of Banner's ${lecture.combos.length} allowed combinations`);
+    }
   }
 
   if (schedule.courses.length === 0) problems.push("empty schedule");

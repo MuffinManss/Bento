@@ -69,9 +69,11 @@ type Course = {
 type ActivityType = "LAB" | "DIS" | "LCA" | "WRK" | "ACT" | "TUT" | "SEM"; // Banner meeting-type codes
 type Activity = { id: string; type: ActivityType; meetings: Meeting[]; online?: boolean };
 type ActivityGroup = { type: ActivityType; activities: Activity[] }; // one group per linked type
-type Lecture = { id: string; instructor?: string; meetings: Meeting[]; linked: ActivityGroup[]; online?: boolean };
+type Lecture = { id: string; instructor?: string; meetings: Meeting[]; linked: ActivityGroup[]; combos?: string[][]; online?: boolean };
 // UCR rule: a lecture is taken with exactly ONE activity from EACH of its linked groups
 // (e.g. CS100 = lecture + one DIS + one LAB).
+// `combos` = the pairings Banner actually allows (one id per group, in group order), set only
+// when they aren't the full cross product (e.g. PHYS040B: some DIS pair with only 2 of 8 LABs).
 type Offering = { course: string; lectures: Lecture[] };
 
 type RequirementGroup = {

@@ -54,7 +54,7 @@ Then review `DATA_TODO.md` — every ambiguity, gap, and assumption the scripts 
 
 1. **Eligibility** — a course is a candidate if it isn't completed, is offered this term, fills an unmet requirement group (respecting "choose N", unit totals, and one-calculus-track rules), and its prerequisite tree is satisfied (`and` / `or` / `pick N of`, concurrent-enrollment and placement-exam alternatives included).
 2. **Course sets** — candidates are ranked (lower-division and core first, then courses that unlock the most later courses; CS tech electives before non-CS) and combined into sets within your unit range, with must-include courses forced in.
-3. **Sections** — for each set, backtracking picks one lecture plus one linked activity from each group (e.g. CS 100 = lecture + one DIS + one LAB), pruning any time conflict, day off, or time-window violation. Online/async sections never conflict.
+3. **Sections** — for each set, backtracking picks one lecture plus one linked activity from each group (e.g. CS 100 = lecture + one DIS + one LAB), pruning any time conflict, day off, or time-window violation. Where Banner only allows certain pairings of those activities, the lecture carries a `combos` list and the solver picks from it instead of the cross product. Online/async sections never conflict.
 4. **Ranking** — schedules score higher for requirement priority and lower for campus days, gaps over 2 hours, and early classes. The top 4 show different course sets first; **Regenerate** pages through the rest.
 5. **Infeasible** — if nothing fits, the solver re-runs with each filter relaxed one at a time and offers the ones that work as one-click fixes.
 

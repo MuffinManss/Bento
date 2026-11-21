@@ -37,11 +37,14 @@ async function fetchLinkedCombos(client: BannerClient, term: string, rawDir: str
 
 /**
  * Groups a lecture's linked combinations by activity type (one group per
- * type, in first-seen order). The solver takes one activity from EACH
- * group, which is only faithful if Banner's combinations are exactly the
- * cross product of those groups — checked here, and flagged if not.
+ * type, in first-seen order). The solver takes one activity from EACH group,
+ * which is only faithful if Banner's combinations are exactly the cross
+ * product of those groups. When they aren't, the allowed tuples are returned
+ * as `combos` so the solver can follow Banner exactly instead of inventing
+ * pairings it would reject. A combination that isn't one-of-each-type can't
+ * be represented at all, and is still flagged.
  */
-function toActivityGroups(combos: BannerSection[][], course: string, lectureCrn: string, warnings: string[]): ActivityGroup[] {
+function toActivityGroups(combos: BannerSection[][], course: string, lectureCrn: string, warnings: string[]): { groups: ActivityGroup[]; allowed?: string[][] } {
   const byType = new Map<ActivityType, Map<string, Activity>>();
   for (const combo of combos) {
     for (const row of combo) {
@@ -53,14 +56,34 @@ function toActivityGroups(combos: BannerSection[][], course: string, lectureCrn:
     }
   }
 
+  const groups = [...byType].map(([type, group]) => ({ type, activities: [...group.values()] }));
   const crossProduct = [...byType.values()].reduce((product, group) => product * group.size, 1);
   const distinctCombos = new Set(combos.map((combo) => combo.map((row) => row.courseReferenceNumber).sort().join("+")));
   const oneOfEachType = combos.every((combo) => combo.length === byType.size && new Set(combo.map((row) => row.scheduleTypeDescription)).size === combo.length);
-  if (combos.length > 0 && (!oneOfEachType || crossProduct !== distinctCombos.size)) {
-    warnings.push(`${course}: lecture CRN ${lectureCrn}'s ${distinctCombos.size} linked combination(s) aren't the full cross product of its per-type groups (${[...byType].map(([type, group]) => `${group.size} ${type}`).join(" x ")}) — modeled as one-of-each-type anyway, so the solver may offer a combination Banner doesn't allow.`);
+  const shape = `${[...byType].map(([type, group]) => `${group.size} ${type}`).join(" x ")}`;
+
+  if (combos.length === 0 || crossProduct === distinctCombos.size) return { groups };
+
+  if (!oneOfEachType) {
+    warnings.push(`${course}: lecture CRN ${lectureCrn}'s ${distinctCombos.size} linked combination(s) aren't one-of-each-type (groups: ${shape}), which the Lecture type can't represent — modeled as one-of-each-type anyway, so the solver may offer a combination Banner doesn't allow.`);
+    return { groups };
   }
 
-  return [...byType].map(([type, group]) => ({ type, activities: [...group.values()] }));
+  // One of each type, but only some pairings allowed: keep Banner's own list.
+  const order = groups.map((group) => group.type);
+  const seen = new Set<string>();
+  const allowed: string[][] = [];
+  for (const combo of combos) {
+    const byTypeId = new Map(combo.map((row) => [ACTIVITY_TYPE[row.scheduleTypeDescription.trim()], row.courseReferenceNumber]));
+    const tuple = order.map((type) => byTypeId.get(type));
+    if (tuple.some((id) => id === undefined)) continue;
+    const key = (tuple as string[]).join("+");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    allowed.push(tuple as string[]);
+  }
+  warnings.push(`${course}: lecture CRN ${lectureCrn} allows only ${allowed.length} of the ${crossProduct} combinations its groups (${shape}) could form — the allowed list is kept in the lecture's "combos", so the solver only offers pairings Banner accepts.`);
+  return { groups, allowed };
 }
 
 function toActivity(row: BannerSection, warnings: string[]): Activity | undefined {
@@ -106,7 +129,9 @@ export async function buildOfferings(
     const lectures: Lecture[] = [];
 
     for (const row of sourceRows) {
-      const linked = row.isSectionLinked ? toActivityGroups(await fetchLinkedCombos(client, term, rawDir, row.courseReferenceNumber), course, row.courseReferenceNumber, warnings) : [];
+      const { groups: linked, allowed } = row.isSectionLinked
+        ? toActivityGroups(await fetchLinkedCombos(client, term, rawDir, row.courseReferenceNumber), course, row.courseReferenceNumber, warnings)
+        : { groups: [] as ActivityGroup[], allowed: undefined };
       const meetings = toMeetings(row.meetingsFaculty);
       const online = meetings.length === 0 && hasAsyncComponent(row.meetingsFaculty) && !INHERENTLY_UNSCHEDULED_TYPES.has(row.scheduleTypeDescription);
       lectures.push({
@@ -114,6 +139,7 @@ export async function buildOfferings(
         instructor: primaryInstructor(row),
         meetings,
         linked,
+        ...(allowed ? { combos: allowed } : {}),
         ...(online ? { online: true } : {}),
       });
     }
