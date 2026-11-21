@@ -127,7 +127,7 @@ MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   36733  TR  15:30-16:50  MSE 10
                                             DIS   36734  M   11:00-11:50  UTLF 0204
 ENGR101I  PROFESSIONAL DEVELOPMENT AND MEN  LEC   47527  M   17:00-17:50  UNLH 1000  Professional Development and Mentoring (ENGR 101-I)
 CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   56997  W   17:00-19:50  UTLF 0215  Technical Electives
-EE020A    INTRODUCTION TO ORDINARY DIFFERE  LEC   52859  MW  15:30-16:50  UTLF 0403  Engineering Depth Elective
+EE020A    INTRODUCTION TO ORDINARY DIFFERE  LEC   52859  MW  15:30-16:50  UTLF 0403  Engineering Course Outside CS
                                             DIS   52861  R   14:00-14:50  CHUNG 141
 
 Option 4: 16 units | score 975 | 4 campus days, 2 gaps >2h, 2 early days | validator OK
@@ -138,7 +138,7 @@ MATH010A  CALCULUS OF SEVERAL VARIABLES     LEC   36733  TR  15:30-16:50  MSE 10
                                             DIS   36734  M   11:00-11:50  UTLF 0204
 ENGR101I  PROFESSIONAL DEVELOPMENT AND MEN  LEC   47527  M   17:00-17:50  UNLH 1000  Professional Development and Mentoring (ENGR 101-I)
 CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   56997  W   17:00-19:50  UTLF 0215  Technical Electives
-MATH045   INTRODUCTION TO ORDINARY DIFFERE  LEC   52855  MW  15:30-16:50  UTLF 0403  Engineering Depth Elective
+MATH045   INTRODUCTION TO ORDINARY DIFFERE  LEC   52855  MW  15:30-16:50  UTLF 0403  Engineering Course Outside CS
                                             DIS   52857  R   14:00-14:50  CHUNG 141
 
 ====================================================================================================
@@ -178,7 +178,7 @@ ENGR101I  PROFESSIONAL DEVELOPMENT AND MEN  LEC   47527  M   17:00-17:50  UNLH 1
 CS166     DATABASE MANAGEMENT SYSTEMS       LEC   47517  MW  11:00-12:20  SOMED G650  Technical Electives
                                             LAB   52102  R   15:00-16:50  UTLF 0303
 CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   56997  W   17:00-19:50  UTLF 0215   Technical Electives
-EE020A    INTRODUCTION TO ORDINARY DIFFERE  LEC   52859  MW  15:30-16:50  UTLF 0403   Engineering Depth Elective
+EE020A    INTRODUCTION TO ORDINARY DIFFERE  LEC   52859  MW  15:30-16:50  UTLF 0403   Engineering Course Outside CS
                                             DIS   52861  R   14:00-14:50  CHUNG 141
 
 Option 4: 15 units | score 731 | 3 campus days, 1 gaps >2h, 0 early days | validator OK
@@ -189,6 +189,6 @@ ENGR101I  PROFESSIONAL DEVELOPMENT AND MEN  LEC   47527  M   17:00-17:50  UNLH 1
 CS166     DATABASE MANAGEMENT SYSTEMS       LEC   47517  MW  11:00-12:20  SOMED G650  Technical Electives
                                             LAB   52102  R   15:00-16:50  UTLF 0303
 CS119L    LABORATORY IN PROBLEM SOLVING AN  LEC   56997  W   17:00-19:50  UTLF 0215   Technical Electives
-MATH045   INTRODUCTION TO ORDINARY DIFFERE  LEC   52855  MW  15:30-16:50  UTLF 0403   Engineering Depth Elective
+MATH045   INTRODUCTION TO ORDINARY DIFFERE  LEC   52855  MW  15:30-16:50  UTLF 0403   Engineering Course Outside CS
                                             DIS   52857  R   14:00-14:50  CHUNG 141
 

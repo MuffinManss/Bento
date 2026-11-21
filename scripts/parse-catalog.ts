@@ -91,7 +91,7 @@ const UPPER_DIVISION: RequirementGroup[] = [
   { id: "cs-bs-ud-core", name: "Upper-Division CS Core", rule: { type: "all" }, courses: ["CS100", "CS141", "CS150", "CS152", "CS153", "CS161"] },
   // Catalog: "CS 179 (E-Z) Project in Computer Science" — a lettered senior-project course; only variants actually
   // offered/known from scraped section data are listed. See DATA_TODO.md.
-  { id: "cs-bs-ud-topics-seminar", name: "CS 179 Project in Computer Science", rule: { type: "chooseN", n: 1 }, courses: ["CS179G", "CS179M"] },
+  { id: "cs-bs-ud-topics-seminar", name: "CS 179 Project in Computer Science", rule: { type: "chooseN", n: 1 }, courses: ["CS179G", "CS179M"], variantPrefix: "CS179" },
   { id: "cs-bs-ud-logic-design", name: "Logic Design", rule: { type: "chooseN", n: 1 }, courses: ["CS120A", "EE120A"] },
   { id: "cs-bs-ud-discrete-structures", name: "Discrete Structures", rule: { type: "all" }, courses: ["CS111"] },
   { id: "cs-bs-ud-writing", name: "Technical Writing", rule: { type: "all" }, courses: ["ENGR180W"] },
@@ -146,22 +146,22 @@ async function main(): Promise<void> {
 
   const reconcileWarnings: string[] = [];
   const missing: string[] = [];
-  // Which hand-transcribed catalog entries were actually needed, vs. which
-  // Banner now has real section data for (live data always wins).
-  const catalogOnlyUsed: string[] = [];
-  const catalogOnlySuperseded: string[] = [];
+  // Which hand-transcribed catalog entries still carry the data, and which
+  // Banner now has real sections for (live data always wins). Derived from the
+  // lookup rather than from what this run happened to add, so it reads the same
+  // whether or not courses.json already had them from an earlier run.
+  const catalogOnlyUsed = CATALOG_ONLY_COURSES.filter((course) => !lookup.has(course.code)).map((course) => course.code);
+  const catalogOnlySuperseded = CATALOG_ONLY_COURSES.filter((course) => lookup.has(course.code)).map((course) => course.code);
   const newCsRows = new Map<string, BannerSection>();
   for (const code of allReferencedCourses(REQUIREMENTS)) {
     if (courseCodes.has(code)) continue;
     const row = lookup.get(code);
     if (row) {
-      if (catalogOnly.has(code)) catalogOnlySuperseded.push(code);
       if (row.subject === "CS") newCsRows.set(code, row);
       else courses.push(buildCourse(row, undefined, reconcileWarnings, row.term === term));
       courseCodes.add(code);
     } else if (catalogOnly.has(code)) {
       courses.push(catalogOnly.get(code)!);
-      catalogOnlyUsed.push(code);
       courseCodes.add(code);
     } else {
       missing.push(code);
@@ -207,7 +207,7 @@ async function main(): Promise<void> {
     "**Simplifications made to fit the RequirementGroup type (all flagged where they occur above too):**",
     "- `cs-bs-ld-calculus-sequence`: now uses `oneOfTracks` — the catalog's two alternate 3-course calculus tracks (MATH 005A/B/C or MATH 009A/B/C) are modeled as exactly that, so a solver respecting this rule can't mix courses across tracks.",
     "- `cs-bs-ld-engineering-elective`: catalog requires the 8 units to split 4 depth + up to 4 breadth, from two different (overlapping) course lists. The suggested `courses` list is restricted to depth-only electives (dropping the breadth-only CHEM/ECON/LING/PHIL/STAT options) — any chooseUnits=8 pick from this list is guaranteed to satisfy the real \"4 depth units minimum\" sub-rule, at the cost of not offering the breadth-only alternative.",
-    "- `cs-bs-ud-topics-seminar`: catalog says \"CS 179 (E-Z)\", any lettered topics variant from E through Z. Only CS179G and CS179M are listed, because those are the only variants confirmed offered in the scraped term — other letters may be real in other terms and aren't enumerable from catalog text alone.",
+    "- `cs-bs-ud-topics-seminar`: catalog says \"CS 179 (E-Z)\", any lettered topics variant from E through Z. Only the variants confirmed offered in the scraped term are listed in `courses` (other letters may be real in other terms and aren't enumerable from catalog text alone), so the group also carries `variantPrefix: \"CS179\"` — that way a student whose audit shows some other CS 179 letter still satisfies it.",
     "- `cs-bs-ud-tech-electives`: catalog text says \"at least half of the **(16)** units\" must be CS courses, but the stated total is 32 units (half would be 16 — the numbers are internally consistent, but double check this isn't a stale catalog edit from a smaller unit total). Added `preferSubjects: [\"CS\"]` so a solver can bias its picks toward CS courses, but the \"at least half\" split itself still isn't enforced by chooseUnits.",
     "- `ENGR001I`, `ENGR101I`, and `MATH046` (catalog: \"ENGR 001-I\", \"ENGR 101-I\", \"MATH 46\") were originally guessed code formats, not verified live. Now confirmed correct against live Banner data once ENGR/MATH were added to the metadata scrape: ENGR001I = \"Computer Science\" (there's also an ENGR001G for Computer Engineering and ENGR001M for CS+Business — 001I is the right one), ENGR101I likewise, and MATH046 = \"Introduction to Ordinary Differential Equations\" (distinct from MATH045, the physical-sciences/engineering variant).",
     "- The catalog's engineering-elective depth list has what reads like a literal duplicate: \"EE 020A & 30LA\" and, later in the same sentence, \"EE 20A\" — transcribed as EE020A + EE030LA (once) rather than twice.",
