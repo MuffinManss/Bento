@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { CoursesStep } from "./components/CoursesStep";
 import { PreferencesStep } from "./components/PreferencesStep";
 import { ResultsStep } from "./components/ResultsStep";
+import logoUrl from "./assets/bento-logo.png";
 import { meta, requirements } from "./data/index";
 import type { SampleStudent } from "./data/sampleStudents";
 import type { MetSource } from "./lib/auditBlocks";
@@ -31,16 +32,6 @@ function filterProblems(filters: Filters): string[] {
   if (filters.earliestStart && filters.latestEnd && minutes(filters.earliestStart) >= minutes(filters.latestEnd)) problems.push("Earliest start must be before latest end.");
   if (filters.daysOff.length === 5) problems.push("Leave at least one day on campus.");
   return problems;
-}
-
-function Logo() {
-  return (
-    <span className="grid size-8 grid-cols-2 grid-rows-2 gap-0.5 rounded-lg bg-rose-700 p-1" aria-hidden>
-      <span className="rounded-sm bg-amber-300" />
-      <span className="row-span-2 rounded-sm bg-white/90" />
-      <span className="rounded-sm bg-emerald-300" />
-    </span>
-  );
 }
 
 export default function App() {
@@ -97,12 +88,12 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Logo />
-            <div>
-              <h1 className="text-xl font-bold leading-tight tracking-tight">Bento</h1>
-              <p className="text-sm text-slate-500">Schedules that just fit.</p>
-            </div>
+          <div>
+            {/* The logo carries the wordmark, so it stands in for the page heading. */}
+            <h1 className="leading-none">
+              <img src={logoUrl} alt="Bento" width={189} height={62} className="h-9 w-auto" />
+            </h1>
+            <p className="mt-1.5 text-sm text-slate-500">Schedules that just fit.</p>
           </div>
           <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-200">Planning: {meta.termLabel}</span>
         </div>
